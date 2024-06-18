@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/components/debug_lola_state.dart';
 import 'package:lola_ai_app/features/Lola/lola.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
