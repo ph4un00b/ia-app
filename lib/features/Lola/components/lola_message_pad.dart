@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/Lola/components/debug_lola_state.dart';
 import 'package:lola_ai_app/features/Lola/lola.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
@@ -30,6 +31,14 @@ class LolaMessagePad extends StatelessWidget {
                 children: [
                   Text(
                     $lola.aiState.toString(),
+                    textScaler: const TextScaler.linear(1.6),
+                  ),
+                  Text(
+                    $lola.state.toString(),
+                    textScaler: const TextScaler.linear(1.6),
+                  ),
+                  Text(
+                    'fetching-count: ${$lola.fetchingCounter.toString()}',
                     textScaler: const TextScaler.linear(1.6),
                   ),
                   FutureBuilder(
@@ -70,6 +79,14 @@ class LolaMessagePad extends StatelessWidget {
                 children: [
                   Text(
                     $lola.aiState.toString(),
+                    textScaler: const TextScaler.linear(1.6),
+                  ),
+                  Text(
+                    $lola.state.toString(),
+                    textScaler: const TextScaler.linear(1.6),
+                  ),
+                  Text(
+                    'fetching-count: ${$lola.fetchingCounter.toString()}',
                     textScaler: const TextScaler.linear(1.6),
                   ),
                   Expanded(
