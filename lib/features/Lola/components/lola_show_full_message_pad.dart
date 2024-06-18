@@ -7,10 +7,12 @@ class LolaShowFullMessagePad extends StatelessWidget {
   const LolaShowFullMessagePad({
     super.key,
     required this.$lola,
+        required this.scale,
     // required this.parentContext,
   });
 
   final Lola $lola;
+  final double scale;
   // final BuildContext parentContext;
 
   @override
@@ -25,7 +27,7 @@ class LolaShowFullMessagePad extends StatelessWidget {
                 child: ActionButton(
                   icon: const Icon(Icons.expand_more),
                   text: 'Ver Mensaje',
-                  scale: 1.0,
+                  scale: scale,
                   handleAction: () {
                     showModalBottomSheet(
                       isScrollControlled: true,

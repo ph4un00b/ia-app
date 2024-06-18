@@ -102,16 +102,19 @@ class _VozBodyState extends State<VozBody> {
                 Expanded(
                   flex: 1,
                   child: Card(
-                      clipBehavior: Clip.hardEdge,
-                      child: InkWell(
-                        child: LolaToggleAudioPad($lola: $lola, scale: scale),
-                      )),
+                    clipBehavior: Clip.hardEdge,
+                    child: InkWell(
+                      child: LolaToggleAudioPad($lola: $lola, scale: scale),
+                    ),
+                  ),
                 ),
                 Expanded(
                   flex: 1,
                   child: Card(
                     clipBehavior: Clip.hardEdge,
-                    child: InkWell(child: LolaShowFullMessagePad($lola: $lola)),
+                    child: InkWell(
+                      child: LolaShowFullMessagePad($lola: $lola, scale: scale),
+                    ),
                   ),
                 ),
               ],
