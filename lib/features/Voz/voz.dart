@@ -111,7 +111,7 @@ final class Voz with ChangeNotifier {
 
   bool get hasPath => _path.isNotEmpty;
 
-  Future<void> playInput() async {
+  Future<void> notifyPlayAudio() async {
     if (_path.isEmpty) {
       debugPrint('no path');
       return;
@@ -119,45 +119,40 @@ final class Voz with ChangeNotifier {
 
     try {
       debugPrint('play');
-      // final source = DeviceFileSource(path);
-      // debugPrint('source: $source');
       _player.setFilePath(_path);
       await _player.play();
+
       state = VozState.playing;
       notifyListeners();
-      // await player.dispose();
+
     } catch (e) {
-      // setStatus((VozStatus.error, null));
+
       state = VozState.playingError;
       notifyListeners();
+
       debugPrint(e.toString());
     }
   }
 
-  Future<void> stopInput() async {
+  Future<void> notifyStopAudio() async {
     try {
       debugPrint('stop play');
-      // final source = DeviceFileSource(path);
-      // debugPrint('source: $source');
+
       state = VozState.stopPlaying;
       notifyListeners();
+
       await _player.stop();
-      // await player.dispose();
     } catch (e) {
-      // setStatus((VozStatus.error, null));
+
       state = VozState.stopPlayingError;
       notifyListeners();
+
       debugPrint(e.toString());
     }
   }
 
-  Future<void> startRecording() async {
+  Future<void> notifyStartRecording() async {
     try {
-      // if (currentPlayer.state case PlayerState.playing) {
-      //     debugPrint('>>>>>> will stop lola');
-      //     await currentPlayer.stop();
-      //   }
-
       var hasPermission = await _recorder.hasPermission();
       debugPrint('recording tiene permisos?: $hasPermission');
 
@@ -178,37 +173,32 @@ final class Voz with ChangeNotifier {
             await buildPath(encoder: encoder, folder: FolderKind.temp);
         debugPrint(">> path: $path");
         _path = path;
+
         state = VozState.recording;
         notifyListeners();
-        // setStatus((VozStatus.recording, null));
+
         await _recorder.start(config, path: path);
       }
     } catch (e) {
-      // setStatus((VozStatus.error, null));
       state = VozState.recordingError;
       notifyListeners();
       debugPrint(e.toString());
     }
   }
 
-  Future<void> stopRecording() async {
+  Future<void> notifyStopRecording() async {
     state = VozState.stopRecording;
     notifyListeners();
     try {
       debugPrint('stop');
-      // Stop recording...
       var path = await _recorder.stop() ?? '';
       assert(path == _path);
 
       input = await _fetchAITranscription();
-      // ... or cancel it (and implicitly remove file/blob).
-      // await record.cancel();
-      // recorder.dispose(); // As always, don't forget this one.
-      // setStatus((VozStatus.recorded, path));
     } catch (e) {
-      // setStatus((VozStatus.error, null));
       state = VozState.stopRecordingError;
       notifyListeners();
+
       debugPrint('stop-recording err: ${e.toString()}');
       debugPrint(e.toString());
     }

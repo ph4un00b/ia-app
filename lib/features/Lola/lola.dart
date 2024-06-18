@@ -37,6 +37,7 @@ final class Lola with ChangeNotifier {
 
   Lola() {
     _player.playbackEventStream.listen((event) async {
+      debugPrint('>> lola _audio ${event.processingState}');
       switch (event.processingState) {
         case audio.ProcessingState.idle:
           // debugPrint('>> $event');
@@ -44,13 +45,13 @@ final class Lola with ChangeNotifier {
           notifyListeners();
           break;
         case audio.ProcessingState.loading:
-        // debugPrint('>> $event');
+          // debugPrint('>> $event');
           break;
         case audio.ProcessingState.buffering:
-        // debugPrint('>> $event');
+          // debugPrint('>> $event');
           break;
         case audio.ProcessingState.ready:
-        // debugPrint('>> $event');
+          // debugPrint('>> $event');
           break;
         case audio.ProcessingState.completed:
           // debugPrint('>> $event');
@@ -61,23 +62,20 @@ final class Lola with ChangeNotifier {
     });
   }
 
-  Future<void> stopSpeech() async {
+  Future<void> notifyStopSpeech() async {
     try {
       debugPrint('stop play');
-      // final source = DeviceFileSource(path);
-      // debugPrint('source: $source');
       state = LolaState.stopPlaying;
       notifyListeners();
       await _player.stop();
-      // await player.dispose();
     } catch (e) {
-      // setStatus((VozStatus.error, null));
       state = LolaState.stopPlayingError;
       notifyListeners();
       debugPrint(e.toString());
     }
   }
 
+  /// there is no notification signal
   Future<void> playSpeech() async {
     if (_path.isEmpty) {
       debugPrint('no path');
@@ -99,6 +97,19 @@ final class Lola with ChangeNotifier {
     //   notifyListeners();
     //   debugPrint(e.toString());
     // }
+  }
+
+  Future<void> notifyPlaySpeech() async {
+    if (_path.isEmpty) {
+      debugPrint('no path');
+      return;
+    }
+
+    debugPrint('play lola');
+    _player.setFilePath(_path);
+    await _player.play();
+    state = LolaState.playing;
+    notifyListeners();
   }
 
   Future<String> _fetchCompletion({

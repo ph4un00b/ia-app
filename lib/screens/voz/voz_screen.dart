@@ -94,7 +94,7 @@ class _VozBodyState extends State<VozBody> {
             ),
           ),
           Expanded(
-            flex: 1,
+            flex: 2,
             child: Row(
               children: [
                 Expanded(
@@ -104,14 +104,13 @@ class _VozBodyState extends State<VozBody> {
                     child: InkWell(
                       splashColor: Colors.purple.withAlpha(30),
                       onTap: () {
-                        debugPrint(
-                            '>> lola tapped: ${$lola.state.toString()}}');
+                        debugPrint('>> lola tapped: ${$lola.state.toString()}');
 
                         if ($lola.state
                             case LolaState.playingCompleted || LolaState.idle) {
-                          $lola.playSpeech();
+                          $lola.notifyPlaySpeech();
                         } else if ($lola.state case LolaState.playing) {
-                          $lola.stopSpeech();
+                          $lola.notifyStopSpeech();
                         } else if ($lola.state case _) {
                           debugPrint('noop');
                         }
@@ -122,12 +121,15 @@ class _VozBodyState extends State<VozBody> {
                           return Center(
                             child: Column(
                               children: [
-                                Text(
-                                  $lola.state.toString(),
-                                  // textScaler: const TextScaler.linear(1.6),
+                                Expanded(
+                                  child: Text(
+                                    $lola.state.toString(),
+                                  ),
                                 ),
-                                Text(
-                                    "fetching-count: ${$lola.fetchingCounter}"),
+                                Expanded(
+                                  child: Text(
+                                      "fetching-count: ${$lola.fetchingCounter}"),
+                                ),
                               ],
                             ),
                           );
@@ -171,10 +173,10 @@ class _VozBodyState extends State<VozBody> {
                           VozState.stopRecording ||
                           VozState.playingError ||
                           VozState.playingCompleted) {
-                    $lola.stopSpeech();
-                    $phau.startRecording();
+                    $lola.notifyStopSpeech();
+                    $phau.notifyStartRecording();
                   } else if ($phau.state case VozState.recording) {
-                    await $phau.stopRecording();
+                    await $phau.notifyStopRecording();
                     $lola.notifyStart();
                   } else if ($phau.state case _) {
                     debugPrint('noop');
@@ -202,9 +204,9 @@ class _VozBodyState extends State<VozBody> {
                             case VozState.recordingOk ||
                                 VozState.playingCompleted ||
                                 VozState.idle) {
-                          $phau.playInput();
+                          $phau.notifyPlayAudio();
                         } else if ($phau.state case VozState.playing) {
-                          $phau.stopInput();
+                          $phau.notifyStopAudio();
                         } else if ($phau.state case _) {
                           debugPrint('noop');
                         }
