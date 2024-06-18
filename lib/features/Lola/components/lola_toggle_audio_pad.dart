@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/lola.dart';
+import 'package:lola_ai_app/features/core/components/action_btn.dart';
 
 class LolaToggleAudioPad extends StatelessWidget {
   const LolaToggleAudioPad({
@@ -10,6 +11,7 @@ class LolaToggleAudioPad extends StatelessWidget {
 
   final Lola $lola;
   final double scale;
+  final Icon icon = const Icon(Icons.play_circle_fill_sharp);
 
   void _toggleLolaAudio() {
     debugPrint('>> lola tapped: ${$lola.state.toString()}');
@@ -51,6 +53,7 @@ class LolaToggleAudioPad extends StatelessWidget {
               switch ($lola.state) {
                 LolaState.idle => Expanded(
                     child: ActionButton(
+                      icon: icon,
                       text: 'Repetir',
                       scale: scale,
                       color: Colors.lightGreen,
@@ -59,6 +62,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                   ),
                 LolaState.playing => Expanded(
                     child: ActionButton(
+                      icon: icon,
                       text: 'Parar',
                       scale: scale,
                       handleAction: _toggleLolaAudio,
@@ -66,6 +70,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                   ),
                 LolaState.playingError => Expanded(
                     child: ActionButton(
+                      icon: icon,
                       text: 'Repetir',
                       scale: scale,
                       color: Colors.lightGreen,
@@ -74,6 +79,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                   ),
                 LolaState.stopPlaying => Expanded(
                     child: ActionButton(
+                      icon: icon,
                       text: 'Repetir',
                       scale: scale,
                       color: Colors.lightGreen,
@@ -82,6 +88,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                   ),
                 LolaState.stopPlayingError => Expanded(
                     child: ActionButton(
+                      icon: icon,
                       text: 'Repetir',
                       scale: scale,
                       color: Colors.lightGreen,
@@ -90,6 +97,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                   ),
                 LolaState.playingCompleted => Expanded(
                     child: ActionButton(
+                      icon: icon,
                       text: 'Repetir',
                       scale: scale,
                       color: Colors.lightGreen,
@@ -101,44 +109,6 @@ class LolaToggleAudioPad extends StatelessWidget {
           ),
         );
       },
-    );
-  }
-}
-
-class ActionButton extends StatelessWidget {
-  const ActionButton({
-    super.key,
-    required this.text,
-    required this.scale,
-    required this.handleAction,
-    this.color,
-  });
-
-  final String text;
-  final double scale;
-  final Color? color;
-  final void Function() handleAction;
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton.icon(
-      icon: const Icon(Icons.play_circle_fill_sharp),
-      style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.symmetric(
-            horizontal: 10 * scale,
-            vertical: 10 * scale,
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
-          iconColor: color == null ? null : Colors.lightGreen),
-      onPressed: () {
-        handleAction();
-      },
-      label: Text(
-        text,
-        style: TextStyle(color: color == null ? null : Colors.lightGreen),
-        textScaler: TextScaler.linear(1.4 * scale),
-      ),
     );
   }
 }

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_message.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_play_audio_pad.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_show_full_message_pad.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_toggle_audio_pad.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Lola/lola.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_message.dart';
@@ -102,48 +102,16 @@ class _VozBodyState extends State<VozBody> {
                 Expanded(
                   flex: 1,
                   child: Card(
-                    clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      child: LolaToggleAudioPad($lola: $lola, scale: scale),
-                    ),
-                  ),
+                      clipBehavior: Clip.hardEdge,
+                      child: InkWell(
+                        child: LolaToggleAudioPad($lola: $lola, scale: scale),
+                      )),
                 ),
                 Expanded(
                   flex: 1,
                   child: Card(
                     clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      splashColor: Colors.purple.withAlpha(30),
-                      onTap: () {
-                        showModalBottomSheet(
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (ctx) {
-                            return LolaMessage($lola: $lola, context: context);
-                          },
-                        );
-                      },
-                      child: ListenableBuilder(
-                        listenable: $lola,
-                        builder: (context, child) {
-                          return Center(
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    $lola.state.toString(),
-                                  ),
-                                ),
-                                Expanded(
-                                  child: Text(
-                                      "fetching-count: ${$lola.fetchingCounter}"),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
+                    child: InkWell(child: LolaShowFullMessagePad($lola: $lola)),
                   ),
                 ),
               ],
