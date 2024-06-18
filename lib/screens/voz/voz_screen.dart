@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_message.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_play_audio_pad.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Lola/lola.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_message.dart';
@@ -52,6 +53,7 @@ class _VozBodyState extends State<VozBody> {
 
   final TextEditingController lolaController = TextEditingController();
   VoiceLola $lolavoice = VoiceLola.nova;
+  var scale = 1.0;
 
   @override
   void initState() {
@@ -94,7 +96,7 @@ class _VozBodyState extends State<VozBody> {
             ),
           ),
           Expanded(
-            flex: 2,
+            flex: 1,
             child: Row(
               children: [
                 Expanded(
@@ -102,18 +104,24 @@ class _VozBodyState extends State<VozBody> {
                   child: Card(
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
+                      child: LolaToggleAudioPad($lola: $lola, scale: scale),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Card(
+                    clipBehavior: Clip.hardEdge,
+                    child: InkWell(
                       splashColor: Colors.purple.withAlpha(30),
                       onTap: () {
-                        debugPrint('>> lola tapped: ${$lola.state.toString()}');
-
-                        if ($lola.state
-                            case LolaState.playingCompleted || LolaState.idle) {
-                          $lola.notifyPlaySpeech();
-                        } else if ($lola.state case LolaState.playing) {
-                          $lola.notifyStopSpeech();
-                        } else if ($lola.state case _) {
-                          debugPrint('noop');
-                        }
+                        showModalBottomSheet(
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (ctx) {
+                            return LolaMessage($lola: $lola, context: context);
+                          },
+                        );
                       },
                       child: ListenableBuilder(
                         listenable: $lola,
@@ -135,24 +143,6 @@ class _VozBodyState extends State<VozBody> {
                           );
                         },
                       ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Card(
-                    clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      splashColor: Colors.purple.withAlpha(30),
-                      onTap: () {
-                        showModalBottomSheet(
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (ctx) {
-                            return LolaMessage($lola: $lola, context: context);
-                          },
-                        );
-                      },
                     ),
                   ),
                 ),
