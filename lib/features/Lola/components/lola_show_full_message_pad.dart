@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_message.dart';
+import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 import 'package:lola_ai_app/features/Lola/lola.dart';
 import 'package:lola_ai_app/features/core/components/action_btn.dart';
 
@@ -7,7 +7,7 @@ class LolaShowFullMessagePad extends StatelessWidget {
   const LolaShowFullMessagePad({
     super.key,
     required this.$lola,
-        required this.scale,
+    required this.scale,
     // required this.parentContext,
   });
 
@@ -28,15 +28,14 @@ class LolaShowFullMessagePad extends StatelessWidget {
                   icon: const Icon(Icons.expand_more),
                   text: 'Ver Mensaje',
                   scale: scale,
-                  handleAction: () {
-                    showModalBottomSheet(
-                      isScrollControlled: true,
+                  handleAction: () => showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (ctx) => LolaMessageScreen(
+                      message: $lola.output,
                       context: context,
-                      builder: (ctx) {
-                        return LolaMessage(message: $lola.output, context: context);
-                      },
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
             ],

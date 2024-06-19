@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_message.dart';
+import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_message.dart';
@@ -161,18 +161,14 @@ class _VozBodyState extends State<VozBody> {
                             NoMessage() => state.disabled(scale: scale),
                             HasMessage() => state.openMessage(
                                 scale: scale,
-                                action: () {
-                                  showModalBottomSheet(
-                                    isScrollControlled: true,
+                                action: () => showModalBottomSheet(
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: (ctx) => LolaMessageScreen(
+                                    message: state.message,
                                     context: context,
-                                    builder: (ctx) {
-                                      return LolaMessage(
-                                        message: state.message,
-                                        context: context,
-                                      );
-                                    },
-                                  );
-                                },
+                                  ),
+                                ),
                               ),
                           };
                         },

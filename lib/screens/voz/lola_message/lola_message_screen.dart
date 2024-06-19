@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LolaMessage extends StatelessWidget {
-  const LolaMessage({
+class LolaMessageScreen extends StatelessWidget {
+  const LolaMessageScreen({
     super.key,
     required this.message,
     required this.context,
