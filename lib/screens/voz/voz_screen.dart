@@ -161,14 +161,7 @@ class _VozBodyState extends State<VozBody> {
                             NoMessage() => state.disabled(scale: scale),
                             HasMessage() => state.openMessage(
                                 scale: scale,
-                                action: () => showModalBottomSheet(
-                                  isScrollControlled: true,
-                                  context: context,
-                                  builder: (ctx) => LolaMessageScreen(
-                                    message: state.message,
-                                    context: context,
-                                  ),
-                                ),
+                                action: () => openMessage(context, state),
                               ),
                           };
                         },
@@ -288,6 +281,17 @@ class _VozBodyState extends State<VozBody> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Future<dynamic> openMessage(BuildContext context, HasMessage state) {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (ctx) => LolaMessageScreen(
+        message: state.message,
+        context: context,
       ),
     );
   }
