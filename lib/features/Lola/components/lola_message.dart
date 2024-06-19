@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/lola.dart';
 
 class LolaMessage extends StatelessWidget {
   const LolaMessage({
     super.key,
-    required this.$lola,
+    required this.message,
     required this.context,
   });
 
-  final Lola $lola;
+  final String message;
   final BuildContext context;
 
   @override
@@ -30,21 +29,22 @@ class LolaMessage extends StatelessWidget {
             const SizedBox(height: 10),
             Expanded(
               child: SingleChildScrollView(
-                child: Text($lola.output),
+                child: Text(message),
               ),
             ),
             const SizedBox(height: 10),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    // foregroundColor: Color.
-                  ),
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text('exit')),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  // foregroundColor: Color.
+                ),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: const Text('exit'),
+              ),
             )
           ],
         ),

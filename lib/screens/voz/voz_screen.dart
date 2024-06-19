@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_show_full_message_pad.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_toggle_audio_pad.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_message.dart';
+import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
-import 'package:lola_ai_app/features/Lola/lola.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_message.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_message_pad.dart';
 import 'package:lola_ai_app/screens/drawer.dart';
@@ -49,7 +47,7 @@ class VozBody extends StatefulWidget {
 
 class _VozBodyState extends State<VozBody> {
   final $phau = Voz();
-  final $lola = Lola();
+  final lola$ = Lola$();
 
   final TextEditingController lolaController = TextEditingController();
   VoiceLola $lolavoice = VoiceLola.nova;
@@ -86,12 +84,24 @@ class _VozBodyState extends State<VozBody> {
                     // refresh
                   });
                 },
-                child: LolaMessagePad(
-                  $lola: $lola,
-                  $lolavoice: $lolavoice,
-                  voz: $phau,
-                  context: context,
-                ),
+                child: StreamBuilder(
+                    stream: lola$.state.stream,
+                    builder: (context, snap) {
+                      final state = snap.data;
+                      return switch (state) {
+                        null => lola$.empty(),
+                        Idle() => state.empty(),
+                        FetchingCompletion() => state.empty(),
+                        CompletionOK() => state.message(),
+                        CompletionErr() => state.empty(),
+                        FetchingSpeech() => state.message(),
+                        SpeechOk() => state.message(),
+                        SpeechErr() => state.message(),
+                        SpeakingIdle() => state.message(),
+                        SpeakingOK() => state.message(),
+                        SpeakingErr() => state.message(),
+                      };
+                    }),
               ),
             ),
           ),
@@ -104,7 +114,36 @@ class _VozBodyState extends State<VozBody> {
                   child: Card(
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
-                      child: LolaToggleAudioPad($lola: $lola, scale: scale),
+                      child: StreamBuilder(
+                        stream: lola$.audioState.stream,
+                        builder: (context, snap) {
+                          final state = snap.data;
+                          return switch (state) {
+                            null => Container(),
+                            NonePath() => state.disabled(scale: scale),
+                            Playing() => state.stop(
+                                scale: scale,
+                                action: () => lola$.stopSpeech(),
+                              ),
+                            PlayingErr() => state.replay(
+                                scale: scale,
+                                action: () => lola$.playSpeech(),
+                              ),
+                            PlayingCompleted() => state.replay(
+                                scale: scale,
+                                action: () => lola$.playSpeech(),
+                              ),
+                            Stopped() => state.play(
+                                scale,
+                                action: () => lola$.playSpeech(),
+                              ),
+                            StoppedErr() => state.play(
+                                scale,
+                                action: () => lola$.playSpeech(),
+                              ),
+                          };
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -113,7 +152,31 @@ class _VozBodyState extends State<VozBody> {
                   child: Card(
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
-                      child: LolaShowFullMessagePad($lola: $lola, scale: scale),
+                      child: StreamBuilder(
+                        stream: lola$.outputState.stream,
+                        builder: (context, snap) {
+                          final state = snap.data;
+                          return switch (state) {
+                            null => Container(),
+                            NoMessage() => state.disabled(scale: scale),
+                            HasMessage() => state.openMessage(
+                                scale: scale,
+                                action: () {
+                                  showModalBottomSheet(
+                                    isScrollControlled: true,
+                                    context: context,
+                                    builder: (ctx) {
+                                      return LolaMessage(
+                                        message: state.message,
+                                        context: context,
+                                      );
+                                    },
+                                  );
+                                },
+                              ),
+                          };
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -134,11 +197,12 @@ class _VozBodyState extends State<VozBody> {
                           VozState.stopRecording ||
                           VozState.playingError ||
                           VozState.playingCompleted) {
-                    $lola.notifyStopSpeech();
+                    lola$.stopSpeech();
                     $phau.notifyStartRecording();
                   } else if ($phau.state case VozState.recording) {
                     await $phau.notifyStopRecording();
-                    $lola.notifyStart();
+                    await lola$.loadReply(
+                        input: $phau.input, voice: $lolavoice);
                   } else if ($phau.state case _) {
                     debugPrint('noop');
                   }

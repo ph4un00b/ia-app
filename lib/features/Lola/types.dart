@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/core/components/action_btn.dart';
 import 'package:lola_ai_app/features/core/time.dart';
 import 'package:lola_ai_app/secrets.dart' as secrets;
 import 'package:path_provider/path_provider.dart';
@@ -75,5 +76,290 @@ enum VoiceLola {
       default:
         return throw UnimplementedError();
     }
+  }
+}
+
+sealed class LolaOutState$ {}
+
+final class NoMessage implements LolaOutState$ {
+  Widget disabled({required double scale}) {
+    return Center(
+      child: Column(
+        children: [
+          Expanded(
+            child: ActionButton(
+              icon: const Icon(Icons.expand_more),
+              text: 'Ver Mensaje',
+              scale: scale,
+              color: Colors.grey,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+final class HasMessage implements LolaOutState$ {
+  final String message;
+  const HasMessage({required this.message});
+
+  Widget openMessage({required double scale, required Function action}) {
+    return Center(
+      child: Column(
+        children: [
+          Expanded(
+            child: ActionButton(
+              icon: const Icon(Icons.expand_more),
+              text: 'Ver Mensaje',
+              scale: scale,
+              handleAction: () => action(),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+sealed class LolaAudioState$ {}
+
+final class NonePath implements LolaAudioState$ {
+  Widget disabled({required double scale}) {
+    return ActionButton(
+      icon: const Icon(Icons.play_arrow_rounded),
+      text: 'Repetir',
+      scale: scale,
+      color: Colors.grey,
+    );
+  }
+}
+
+final class Playing implements LolaAudioState$ {
+  Widget stop({required double scale, required Future<void> Function() action}) {
+    return ActionButton(
+      icon: const Icon(Icons.stop),
+      text: 'Parar',
+      scale: scale,
+      handleAction: () => action(),
+    );
+  }
+}
+
+final class PlayingErr implements LolaAudioState$ {
+  Widget replay({required double scale, required Future<void> Function() action}) {
+    return ActionButton(
+      icon: const Icon(Icons.play_arrow_rounded),
+      text: 'Repetir',
+      scale: scale,
+      color: Colors.green,
+      handleAction: () => action(),
+    );
+  }
+}
+
+final class PlayingCompleted implements LolaAudioState$ {
+  Widget replay({required double scale, required Future<void> Function() action}) {
+    return ActionButton(
+      icon: const Icon(Icons.play_arrow_rounded),
+      text: 'Repetir',
+      scale: scale,
+      color: Colors.green,
+      handleAction: () => action(),
+    );
+  }
+}
+
+final class Stopped implements LolaAudioState$ {
+  Widget play(double scale, {required Future<void> Function() action}) {
+    return ActionButton(
+      icon: const Icon(Icons.play_arrow_rounded),
+      text: 'Repetir',
+      scale: scale,
+      handleAction: () => action(),
+    );
+  }
+}
+
+final class StoppedErr implements LolaAudioState$ {
+  Widget play(double scale, {required Future<void> Function() action}) {
+    return ActionButton(
+      icon: const Icon(Icons.play_arrow_rounded),
+      text: 'Repetir',
+      scale: scale,
+      handleAction: () => action(),
+    );
+  }
+}
+
+sealed class LolaState$ {}
+
+mixin None {
+  Widget empty();
+}
+mixin Some {
+  Widget message();
+}
+
+final class Idle with None implements LolaState$ {
+  @override
+  Widget empty() {
+    return Empty(state: toString());
+  }
+}
+
+final class FetchingCompletion with None implements LolaState$ {
+  @override
+  Widget empty() {
+    return Empty(state: toString());
+  }
+}
+
+final class CompletionOK with Some implements LolaState$ {
+  final String output;
+  const CompletionOK({required this.output});
+
+  @override
+  Widget message() {
+    return WithMessage(state: toString(), message: output);
+  }
+}
+
+final class CompletionErr with None implements LolaState$ {
+  final String cause;
+  const CompletionErr({required this.cause});
+
+  @override
+  Widget empty() {
+    return Empty(state: toString());
+  }
+}
+
+final class FetchingSpeech with Some implements LolaState$ {
+  final String output;
+  const FetchingSpeech({required this.output});
+
+  @override
+  Widget message() {
+    return WithMessage(state: toString(), message: output);
+  }
+}
+
+final class SpeechOk with Some implements LolaState$ {
+  final String path;
+  final String output;
+  const SpeechOk({required this.path, required this.output});
+
+  @override
+  Widget message() {
+    return WithMessage(state: toString(), message: output);
+  }
+}
+
+final class SpeechErr with Some implements LolaState$ {
+  final String output;
+  final String cause;
+  const SpeechErr({required this.cause, required this.output});
+
+  @override
+  Widget message() {
+    return WithMessage(state: toString(), message: output);
+  }
+}
+
+final class SpeakingIdle with Some implements LolaState$ {
+  final String output;
+  const SpeakingIdle({required this.output});
+
+  @override
+  Widget message() {
+    return WithMessage(state: toString(), message: output);
+  }
+}
+
+final class SpeakingOK with Some implements LolaState$ {
+  final String output;
+  const SpeakingOK({required this.output});
+
+  @override
+  Widget message() {
+    return WithMessage(state: toString(), message: output);
+  }
+}
+
+final class SpeakingErr with Some implements LolaState$ {
+  final String output;
+  final String cause;
+  const SpeakingErr({required this.cause, required this.output});
+
+  @override
+  Widget message() {
+    return WithMessage(state: toString(), message: output);
+  }
+}
+
+class WithMessage extends StatelessWidget {
+  const WithMessage({
+    super.key,
+    required this.state,
+    required this.message,
+  });
+
+  final String state;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            state,
+            textScaler: const TextScaler.linear(1.6),
+          ),
+          Expanded(
+            child: Text(
+              message,
+              textScaler: const TextScaler.linear(2.6),
+              maxLines: 4,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Empty extends StatelessWidget {
+  final String state;
+
+  const Empty({
+    super.key,
+    required this.state,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Text(
+            state,
+            textScaler: const TextScaler.linear(1.6),
+          ),
+          const Expanded(
+            child: Text(
+              '',
+              textScaler: TextScaler.linear(2.6),
+              maxLines: 4,
+              softWrap: true,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

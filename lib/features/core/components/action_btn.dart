@@ -6,7 +6,7 @@ class ActionButton extends StatelessWidget {
     required this.icon,
     required this.text,
     required this.scale,
-    required this.handleAction,
+    this.handleAction,
     this.color,
   });
 
@@ -14,7 +14,7 @@ class ActionButton extends StatelessWidget {
   final String text;
   final double scale;
   final Color? color;
-  final void Function() handleAction;
+  final void Function()? handleAction;
 
   @override
   Widget build(BuildContext context) {
@@ -28,14 +28,14 @@ class ActionButton extends StatelessWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(100),
         ),
-        iconColor: color == null ? null : Colors.lightGreen,
+        iconColor: color,
       ),
       onPressed: () {
-        handleAction();
+        handleAction?.call();
       },
       label: Text(
         text,
-        style: TextStyle(color: color == null ? null : Colors.lightGreen),
+        style: TextStyle(color: color),
         textScaler: TextScaler.linear(1.4 * scale),
       ),
     );
