@@ -334,7 +334,7 @@ class SettingAppText extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              '${scale.toStringAsFixed(2)}: tamaño del texto',
+              '${scale.toStringAsFixed(2)} - Ajuste de texto',
               textScaler: TextScaler.linear(1.6 * scale),
             ),
           ),
