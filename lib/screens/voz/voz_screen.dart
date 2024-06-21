@@ -75,6 +75,15 @@ class _VozBodyState extends State<VozBody> {
       child: Column(
         children: [
           Expanded(
+            flex: 1,
+            child: SettingAppText(
+              scale: scale,
+              onChangedValue: (value) => setState(
+                () => scale = value,
+              ),
+            ),
+          ),
+          Expanded(
             flex: 4,
             child: Card(
               child: InkWell(
@@ -92,14 +101,14 @@ class _VozBodyState extends State<VozBody> {
                         null => lola$.empty(),
                         Idle() => state.empty(),
                         FetchingCompletion() => state.empty(),
-                        CompletionOK() => state.message(),
+                        CompletionOK() => state.message(scale: scale),
                         CompletionErr() => state.empty(),
-                        FetchingSpeech() => state.message(),
-                        SpeechOk() => state.message(),
-                        SpeechErr() => state.message(),
-                        SpeakingIdle() => state.message(),
-                        SpeakingOK() => state.message(),
-                        SpeakingErr() => state.message(),
+                        FetchingSpeech() => state.message(scale: scale),
+                        SpeechOk() => state.message(scale: scale),
+                        SpeechErr() => state.message(scale: scale),
+                        SpeakingIdle() => state.message(scale: scale),
+                        SpeakingOK() => state.message(scale: scale),
+                        SpeakingErr() => state.message(scale: scale),
                       };
                     }),
               ),
@@ -191,12 +200,18 @@ class _VozBodyState extends State<VozBody> {
                   } else if ($phau.state case VozState.recording) {
                     await $phau.notifyStopRecording();
                     await lola$.loadReply(
-                        input: $phau.input, voice: $lolavoice);
+                      input: $phau.input,
+                      voice: $lolavoice,
+                    );
                   } else if ($phau.state case _) {
                     debugPrint('noop');
                   }
                 },
-                child: VozMessagePad(voz: $phau, context: context),
+                child: VozMessagePad(
+                  voz: $phau,
+                  context: context,
+                  scale: scale,
+                ),
               ),
             ),
           ),
@@ -292,6 +307,46 @@ class _VozBodyState extends State<VozBody> {
       builder: (ctx) => LolaMessageScreen(
         message: state.message,
         context: context,
+      ),
+    );
+  }
+}
+
+class SettingAppText extends StatelessWidget {
+  const SettingAppText({
+    super.key,
+    required this.scale,
+    required this.onChangedValue,
+  });
+
+  final double scale;
+  final void Function(double) onChangedValue;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Expanded(
+            child: Text(
+              'Ajustar tamaño del texto',
+              textScaler: TextScaler.linear(1.6 * scale),
+            ),
+          ),
+          Expanded(
+            child: Slider(
+              value: scale,
+              // value: 1.0,
+              min: 0.5,
+              max: 3.0,
+              // divisions: 5,
+              label: scale.toString(),
+              onChanged: (double value) {
+                onChangedValue(value);
+              },
+            ),
+          ),
+        ],
       ),
     );
   }

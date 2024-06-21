@@ -6,8 +6,10 @@ class VozMessagePad extends StatelessWidget {
     super.key,
     required this.voz,
     required this.context,
+    required this.scale,
   });
 
+  final double scale;
   final Voz voz;
   final BuildContext context;
 
@@ -25,12 +27,12 @@ class VozMessagePad extends StatelessWidget {
                 children: [
                   Text(
                     voz.aiState.toString(),
-                    textScaler: const TextScaler.linear(1.6),
+                    textScaler: TextScaler.linear(1.6 * scale),
                   ),
                   Expanded(
                     child: Text(
                       voz.input,
-                      textScaler: const TextScaler.linear(2.6),
+                      textScaler: TextScaler.linear(2.6 * scale),
                       maxLines: 4,
                       softWrap: true,
                       overflow: TextOverflow.ellipsis,
@@ -45,7 +47,7 @@ class VozMessagePad extends StatelessWidget {
                 children: [
                   Text(
                     voz.aiState.toString(),
-                    textScaler: const TextScaler.linear(1.6),
+                    textScaler: TextScaler.linear(1.6 * scale),
                   ),
                 ],
               ),

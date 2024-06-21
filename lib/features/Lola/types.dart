@@ -198,7 +198,7 @@ mixin None {
   Widget empty();
 }
 mixin Some {
-  Widget message();
+  Widget message({required double scale});
 }
 
 final class Idle with None implements LolaState$ {
@@ -220,8 +220,8 @@ final class CompletionOK with Some implements LolaState$ {
   const CompletionOK({required this.output});
 
   @override
-  Widget message() {
-    return WithMessage(state: toString(), message: output);
+  Widget message({required double scale}) {
+    return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
 
@@ -240,8 +240,8 @@ final class FetchingSpeech with Some implements LolaState$ {
   const FetchingSpeech({required this.output});
 
   @override
-  Widget message() {
-    return WithMessage(state: toString(), message: output);
+  Widget message({required double scale}) {
+    return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
 
@@ -251,8 +251,8 @@ final class SpeechOk with Some implements LolaState$ {
   const SpeechOk({required this.path, required this.output});
 
   @override
-  Widget message() {
-    return WithMessage(state: toString(), message: output);
+  Widget message({required double scale}) {
+    return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
 
@@ -262,8 +262,8 @@ final class SpeechErr with Some implements LolaState$ {
   const SpeechErr({required this.cause, required this.output});
 
   @override
-  Widget message() {
-    return WithMessage(state: toString(), message: output);
+  Widget message({required double scale}) {
+    return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
 
@@ -272,8 +272,8 @@ final class SpeakingIdle with Some implements LolaState$ {
   const SpeakingIdle({required this.output});
 
   @override
-  Widget message() {
-    return WithMessage(state: toString(), message: output);
+  Widget message({required double scale}) {
+    return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
 
@@ -282,8 +282,8 @@ final class SpeakingOK with Some implements LolaState$ {
   const SpeakingOK({required this.output});
 
   @override
-  Widget message() {
-    return WithMessage(state: toString(), message: output);
+  Widget message({required double scale}) {
+    return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
 
@@ -293,18 +293,20 @@ final class SpeakingErr with Some implements LolaState$ {
   const SpeakingErr({required this.cause, required this.output});
 
   @override
-  Widget message() {
-    return WithMessage(state: toString(), message: output);
+  Widget message({required double scale}) {
+    return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
 
 class WithMessage extends StatelessWidget {
   const WithMessage({
     super.key,
+    required this.scale,
     required this.state,
     required this.message,
   });
 
+  final double scale;
   final String state;
   final String message;
 
@@ -315,12 +317,12 @@ class WithMessage extends StatelessWidget {
         children: [
           Text(
             state,
-            textScaler: const TextScaler.linear(1.6),
+            textScaler: TextScaler.linear(1.6 * scale),
           ),
           Expanded(
             child: Text(
               message,
-              textScaler: const TextScaler.linear(2.6),
+              textScaler: TextScaler.linear(2.6 * scale),
               maxLines: 4,
               softWrap: true,
               overflow: TextOverflow.ellipsis,
