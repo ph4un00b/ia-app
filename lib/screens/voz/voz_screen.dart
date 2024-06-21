@@ -56,15 +56,16 @@ class _VozBodyState extends State<VozBody> {
   @override
   void initState() {
     super.initState();
-    _loadLolaVoz();
+    _loadUserPrefereces();
   }
 
-  Future<void> _loadLolaVoz() async {
+  Future<void> _loadUserPrefereces() async {
     final prefs = await SharedPreferences.getInstance();
     String voz = prefs.getString('lola-voice') ?? 'nova';
 
     setState(() {
       $lolavoice = VoiceLola.values.firstWhere((v) => v.name == voz);
+      scale = prefs.getDouble('app-setting-text') ?? 1.0;
     });
   }
 
@@ -78,9 +79,14 @@ class _VozBodyState extends State<VozBody> {
             flex: 1,
             child: SettingAppText(
               scale: scale,
-              onChangedValue: (value) => setState(
-                () => scale = value,
-              ),
+              onChangedValue: (value) async {
+                setState(() => scale = value);
+                final prefs = await SharedPreferences.getInstance();
+                prefs.setDouble(
+                  'app-setting-text',
+                  value,
+                );
+              },
             ),
           ),
           Expanded(
@@ -283,10 +289,9 @@ class _VozBodyState extends State<VozBody> {
                 if (voz != null) {
                   final prefs = await SharedPreferences.getInstance();
                   prefs.setString(
-                      'lola-voice',
-                      VoiceLola.values
-                          .firstWhere((v) => v.name == voz.name)
-                          .name);
+                    'lola-voice',
+                    VoiceLola.values.firstWhere((v) => v.name == voz.name).name,
+                  );
 
                   setState(() {
                     $lolavoice = voz;
@@ -329,7 +334,7 @@ class SettingAppText extends StatelessWidget {
         children: [
           Expanded(
             child: Text(
-              'Ajustar tamaño del texto',
+              '${scale.toStringAsFixed(2)}: tamaño del texto',
               textScaler: TextScaler.linear(1.6 * scale),
             ),
           ),
