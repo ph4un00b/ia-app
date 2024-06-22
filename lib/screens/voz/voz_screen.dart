@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
+import 'package:lola_ai_app/features/core/components/action_btn.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
@@ -52,6 +53,9 @@ class _VozBodyState extends State<VozBody> {
   final TextEditingController lolaController = TextEditingController();
   VoiceLola $lolavoice = VoiceLola.nova;
   var scale = 1.0;
+
+  final _vozMessageFormKey = GlobalKey<FormState>();
+  var _vozMessageStatus = VozMessageState.printine;
 
   @override
   void initState() {
@@ -214,9 +218,23 @@ class _VozBodyState extends State<VozBody> {
                   }
                 },
                 child: VozMessagePad(
+                  formkey: _vozMessageFormKey,
+                  state: _vozMessageStatus,
                   voz: $phau,
                   context: context,
                   scale: scale,
+                  onSaved: (value) async {
+                    if (value == null) {
+                      return;
+                    }
+                    setState(() {
+                      $phau.input = value;
+                    });
+                    await lola$.loadReply(
+                      input: $phau.input,
+                      voice: $lolavoice,
+                    );
+                  },
                 ),
               ),
             ),
@@ -230,50 +248,89 @@ class _VozBodyState extends State<VozBody> {
                   child: Card.filled(
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
-                      splashColor: Colors.purple.withAlpha(30),
-                      onTap: () {
-                        debugPrint(
-                            '>> from: ${$phau.state.toString()}; path?: ${$phau.hasPath}');
-
-                        if ($phau.state
-                            case VozState.recordingOk ||
-                                VozState.playingCompleted ||
-                                VozState.idle) {
-                          $phau.notifyPlayAudio();
-                        } else if ($phau.state case VozState.playing) {
-                          $phau.notifyStopAudio();
-                        } else if ($phau.state case _) {
-                          debugPrint('noop');
-                        }
-                      },
-                      child: ListenableBuilder(
-                        listenable: $phau,
-                        builder: (context, child) {
-                          return Center(
-                            child: Text(
-                              $phau.state.toString(),
-                              // textScaler: const TextScaler.linear(1.6),
+                        splashColor: Colors.purple.withAlpha(30),
+                        child: switch (_vozMessageStatus) {
+                          VozMessageState.printine => ActionButtonAlt(
+                              icon: const Icon(Icons.edit),
+                              text: 'Editar',
+                              scale: scale,
+                              handleAction: () {
+                                setState(() {
+                                  _vozMessageStatus = VozMessageState.editing;
+                                });
+                              },
                             ),
-                          );
-                        },
-                      ),
-                    ),
+                          VozMessageState.editing => ActionButtonAlt(
+                              icon: const Icon(Icons.send),
+                              text: 'Enviar',
+                              scale: scale,
+                              handleAction: () {
+                                setState(() {
+                                  _vozMessageStatus = VozMessageState.edited;
+                                });
+
+                                _vozMessageFormKey.currentState?.save();
+                              },
+                            ),
+                          VozMessageState.edited => ActionButtonAlt(
+                              icon: const Icon(Icons.edit),
+                              text: 'Editar',
+                              scale: scale,
+                              handleAction: () {
+                                setState(() {
+                                  _vozMessageStatus = VozMessageState.editing;
+                                });
+                              },
+                            ),
+                        }),
                   ),
                 ),
                 Expanded(
                   flex: 1,
-                  child: Card(
+                  child: Card.filled(
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
                       splashColor: Colors.purple.withAlpha(30),
-                      onTap: () {
-                        showModalBottomSheet(
-                          isScrollControlled: true,
-                          context: context,
-                          builder: (ctx) {
-                            return VozMessage(voz: $phau, context: context);
-                          },
-                        );
+                      onTap: () {},
+                      child: switch (_vozMessageStatus) {
+                        VozMessageState.printine => ActionButtonAlt(
+                            icon: const Icon(Icons.expand_less),
+                            text: 'Ver Mensaje',
+                            scale: scale,
+                            handleAction: () {
+                              showModalBottomSheet(
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (ctx) => LolaMessageScreen(
+                                  message: $phau.input,
+                                  context: context,
+                                  scale: scale,
+                                ),
+                              );
+                            },
+                          ),
+                        VozMessageState.editing => ActionButtonAlt(
+                            icon: const Icon(Icons.expand_less),
+                            text: 'Ver Mensaje',
+                            scale: scale,
+                            color: Colors.grey,
+                          ),
+                        VozMessageState.edited => ActionButtonAlt(
+                            icon: const Icon(Icons.expand_less_sharp),
+                            text: 'Ver Mensaje',
+                            scale: scale,
+                            handleAction: () {
+                              showModalBottomSheet(
+                                isScrollControlled: true,
+                                context: context,
+                                builder: (ctx) => LolaMessageScreen(
+                                  message: $phau.input,
+                                  context: context,
+                                  scale: scale,
+                                ),
+                              );
+                            },
+                          ),
                       },
                     ),
                   ),
@@ -281,25 +338,85 @@ class _VozBodyState extends State<VozBody> {
               ],
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: DebugVoiceSelector(
-              $lolavoice: $lolavoice,
-              onSelected: (voz) async {
-                if (voz != null) {
-                  final prefs = await SharedPreferences.getInstance();
-                  prefs.setString(
-                    'lola-voice',
-                    VoiceLola.values.firstWhere((v) => v.name == voz.name).name,
-                  );
+          // Expanded(
+          //   flex: 1,
+          //   child: Row(
+          //     children: [
+          //       Expanded(
+          //         flex: 1,
+          //         child: Card.filled(
+          //           clipBehavior: Clip.hardEdge,
+          //           child: InkWell(
+          //             splashColor: Colors.purple.withAlpha(30),
+          //             onTap: () {
+          //               debugPrint(
+          //                   '>> from: ${$phau.state.toString()}; path?: ${$phau.hasPath}');
 
-                  setState(() {
-                    $lolavoice = voz;
-                  });
-                }
-              },
-            ),
-          ),
+          //               if ($phau.state
+          //                   case VozState.recordingOk ||
+          //                       VozState.playingCompleted ||
+          //                       VozState.idle) {
+          //                 $phau.notifyPlayAudio();
+          //               } else if ($phau.state case VozState.playing) {
+          //                 $phau.notifyStopAudio();
+          //               } else if ($phau.state case _) {
+          //                 debugPrint('noop');
+          //               }
+          //             },
+          //             child: ListenableBuilder(
+          //               listenable: $phau,
+          //               builder: (context, child) {
+          //                 return Center(
+          //                   child: Text(
+          //                     $phau.state.toString(),
+          //                     // textScaler: const TextScaler.linear(1.6),
+          //                   ),
+          //                 );
+          //               },
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //       Expanded(
+          //         flex: 1,
+          //         child: Card(
+          //           clipBehavior: Clip.hardEdge,
+          //           child: InkWell(
+          //             splashColor: Colors.purple.withAlpha(30),
+          //             onTap: () {
+          //               showModalBottomSheet(
+          //                 isScrollControlled: true,
+          //                 context: context,
+          //                 builder: (ctx) {
+          //                   return VozMessage(voz: $phau, context: context);
+          //                 },
+          //               );
+          //             },
+          //           ),
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
+          // Expanded(
+          //   flex: 2,
+          //   child: DebugVoiceSelector(
+          //     $lolavoice: $lolavoice,
+          //     onSelected: (voz) async {
+          //       if (voz != null) {
+          //         final prefs = await SharedPreferences.getInstance();
+          //         prefs.setString(
+          //           'lola-voice',
+          //           VoiceLola.values.firstWhere((v) => v.name == voz.name).name,
+          //         );
+
+          //         setState(() {
+          //           $lolavoice = voz;
+          //         });
+          //       }
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );
@@ -312,6 +429,7 @@ class _VozBodyState extends State<VozBody> {
       builder: (ctx) => LolaMessageScreen(
         message: state.message,
         context: context,
+        scale: scale,
       ),
     );
   }

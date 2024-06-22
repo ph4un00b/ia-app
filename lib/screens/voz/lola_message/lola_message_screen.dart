@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 class LolaMessageScreen extends StatelessWidget {
   const LolaMessageScreen({
     super.key,
+    required this.scale,
     required this.message,
     required this.context,
   });
 
+  final double scale;
   final String message;
   final BuildContext context;
 
@@ -19,17 +21,20 @@ class LolaMessageScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
+            Text(
               "Lola Message",
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: 20,
+                fontSize: 20.0 * scale,
               ),
             ),
             const SizedBox(height: 10),
             Expanded(
               child: SingleChildScrollView(
-                child: Text(message),
+                child: Text(
+                  message,
+                  textScaler: TextScaler.linear(2.6 * scale),
+                ),
               ),
             ),
             const SizedBox(height: 10),

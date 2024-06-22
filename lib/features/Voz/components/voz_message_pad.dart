@@ -1,17 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
 
+enum VozMessageState {
+  printine,
+  editing,
+  edited,
+}
+
 class VozMessagePad extends StatelessWidget {
   const VozMessagePad({
     super.key,
     required this.voz,
     required this.context,
     required this.scale,
+    required this.formkey,
+    required this.onSaved,
+    required this.state,
   });
 
   final double scale;
   final Voz voz;
   final BuildContext context;
+  final GlobalKey<FormState> formkey;
+  final Function(String?) onSaved;
+  final VozMessageState state;
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +33,6 @@ class VozMessagePad extends StatelessWidget {
         debugPrint('>> ${voz.state}, ${voz.aiState}');
         switch (voz.aiState) {
           case VozAI.transcribingOk:
-            // $userTalks.to($lolaTalks);
             return Center(
               child: Column(
                 children: [
@@ -30,14 +41,43 @@ class VozMessagePad extends StatelessWidget {
                     textScaler: TextScaler.linear(1.6 * scale),
                   ),
                   Expanded(
-                    child: Text(
-                      voz.input,
-                      textScaler: TextScaler.linear(2.6 * scale),
-                      maxLines: 4,
-                      softWrap: true,
-                      overflow: TextOverflow.ellipsis,
+                    child: Form(
+                      key: formkey,
+                      child: TextFormField(
+                        enabled: state == VozMessageState.editing,
+                        minLines: 4,
+                        maxLines: 10,
+                        controller: TextEditingController(text: voz.input),
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          border: state == VozMessageState.editing
+                              ? const OutlineInputBorder()
+                              : InputBorder.none,
+                          // labelText: '',
+                          // hintText: '',
+                        ),
+                        style: TextStyle(
+                            fontSize: 36.0 * scale,
+                            color: state == VozMessageState.editing
+                                ? null
+                                : Colors.white70),
+                        onSaved: (value) {
+                          debugPrint('>> value: $value');
+                          onSaved(value);
+                          // voz.input = value ?? '';
+                        },
+                      ),
                     ),
                   ),
+                  // Expanded(
+                  //   child: Text(
+                  //     voz.input,
+                  //     textScaler: TextScaler.linear(2.6 * scale),
+                  //     maxLines: 4,
+                  //     softWrap: true,
+                  //     overflow: TextOverflow.ellipsis,
+                  //   ),
+                  // ),
                 ],
               ),
             );
