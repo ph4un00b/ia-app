@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
 
-enum VozMessageState {
-  printine,
-  editing,
-  edited,
-}
-
 class VozMessagePad extends StatelessWidget {
   const VozMessagePad({
     super.key,

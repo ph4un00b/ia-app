@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
 import 'package:lola_ai_app/features/core/components/action_btn.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
-import 'package:lola_ai_app/features/Voz/components/voz_message.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_message_pad.dart';
 import 'package:lola_ai_app/screens/drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -49,13 +47,9 @@ class VozBody extends StatefulWidget {
 class _VozBodyState extends State<VozBody> {
   final $phau = Voz();
   final lola$ = Lola$();
-
-  final TextEditingController lolaController = TextEditingController();
   VoiceLola $lolavoice = VoiceLola.nova;
   var scale = 1.0;
-
-  final _vozMessageFormKey = GlobalKey<FormState>();
-  var _vozMessageStatus = VozMessageState.printine;
+  final messageForm = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -218,8 +212,8 @@ class _VozBodyState extends State<VozBody> {
                   }
                 },
                 child: VozMessagePad(
-                  formkey: _vozMessageFormKey,
-                  state: _vozMessageStatus,
+                  formkey: messageForm,
+                  state: $phau.messageState,
                   voz: $phau,
                   context: context,
                   scale: scale,
@@ -249,14 +243,14 @@ class _VozBodyState extends State<VozBody> {
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
                         splashColor: Colors.purple.withAlpha(30),
-                        child: switch (_vozMessageStatus) {
+                        child: switch ($phau.messageState) {
                           VozMessageState.printine => ActionButtonAlt(
                               icon: const Icon(Icons.edit),
                               text: 'Editar',
                               scale: scale,
                               handleAction: () {
                                 setState(() {
-                                  _vozMessageStatus = VozMessageState.editing;
+                                  $phau.messageState = VozMessageState.editing;
                                 });
                               },
                             ),
@@ -266,10 +260,10 @@ class _VozBodyState extends State<VozBody> {
                               scale: scale,
                               handleAction: () {
                                 setState(() {
-                                  _vozMessageStatus = VozMessageState.edited;
+                                  $phau.messageState = VozMessageState.edited;
                                 });
 
-                                _vozMessageFormKey.currentState?.save();
+                                messageForm.currentState?.save();
                               },
                             ),
                           VozMessageState.edited => ActionButtonAlt(
@@ -278,7 +272,7 @@ class _VozBodyState extends State<VozBody> {
                               scale: scale,
                               handleAction: () {
                                 setState(() {
-                                  _vozMessageStatus = VozMessageState.editing;
+                                  $phau.messageState = VozMessageState.editing;
                                 });
                               },
                             ),
@@ -292,7 +286,7 @@ class _VozBodyState extends State<VozBody> {
                     child: InkWell(
                       splashColor: Colors.purple.withAlpha(30),
                       onTap: () {},
-                      child: switch (_vozMessageStatus) {
+                      child: switch ($phau.messageState) {
                         VozMessageState.printine => ActionButtonAlt(
                             icon: const Icon(Icons.expand_less),
                             text: 'Ver Mensaje',
