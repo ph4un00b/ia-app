@@ -57,6 +57,13 @@ class _VozBodyState extends State<VozBody> {
     _loadUserPrefereces();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    $phau.dispose();
+    lola$.dispose();
+  }
+
   Future<void> _loadUserPrefereces() async {
     final prefs = await SharedPreferences.getInstance();
     String voz = prefs.getString('lola-voice') ?? 'nova';

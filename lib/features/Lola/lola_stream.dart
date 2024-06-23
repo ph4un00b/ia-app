@@ -167,4 +167,8 @@ final class Lola$ {
       audioState.add(PlayingErr());
     }
   }
+
+  void dispose() {
+    _player.dispose();
+  }
 }
