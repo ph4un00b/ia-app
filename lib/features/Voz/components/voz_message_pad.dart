@@ -4,7 +4,7 @@ import 'package:lola_ai_app/features/Voz/voz.dart';
 class VozMessagePad extends StatelessWidget {
   const VozMessagePad({
     super.key,
-    required this.voz,
+    required this.controller,
     required this.context,
     required this.scale,
     required this.formkey,
@@ -13,7 +13,7 @@ class VozMessagePad extends StatelessWidget {
   });
 
   final double scale;
-  final Voz voz;
+  final Voz controller;
   final BuildContext context;
   final GlobalKey<FormState> formkey;
   final Function(String?) onSaved;
@@ -22,16 +22,16 @@ class VozMessagePad extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: voz,
+      listenable: controller,
       builder: (context, child) {
-        debugPrint('>> ${voz.state}, ${voz.aiState}');
-        switch (voz.aiState) {
+        debugPrint('>> ${controller.state}, ${controller.aiState}');
+        switch (controller.aiState) {
           case VozAI.transcribingOk:
             return Center(
               child: Column(
                 children: [
                   Text(
-                    voz.aiState.toString(),
+                    controller.aiState.toString(),
                     textScaler: TextScaler.linear(1.6 * scale),
                   ),
                   Expanded(
@@ -41,7 +41,8 @@ class VozMessagePad extends StatelessWidget {
                         enabled: state == VozMessageState.editing,
                         minLines: 4,
                         maxLines: 10,
-                        controller: TextEditingController(text: voz.input),
+                        controller:
+                            TextEditingController(text: controller.input),
                         keyboardType: TextInputType.multiline,
                         decoration: InputDecoration(
                           border: state == VozMessageState.editing
@@ -80,7 +81,7 @@ class VozMessagePad extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                    voz.aiState.toString(),
+                    controller.aiState.toString(),
                     textScaler: TextScaler.linear(1.6 * scale),
                   ),
                 ],

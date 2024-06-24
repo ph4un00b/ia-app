@@ -49,7 +49,7 @@ class _VozBodyState extends State<VozBody> {
   final lola$ = Lola$();
   VoiceLola $lolavoice = VoiceLola.nova;
   var scale = 1.0;
-  final messageForm = GlobalKey<FormState>();
+  final messageFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -219,9 +219,9 @@ class _VozBodyState extends State<VozBody> {
                   }
                 },
                 child: VozMessagePad(
-                  formkey: messageForm,
+                  formkey: messageFormKey,
                   state: $phau.messageState,
-                  voz: $phau,
+                  controller: $phau,
                   context: context,
                   scale: scale,
                   onSaved: (value) async {
@@ -270,7 +270,7 @@ class _VozBodyState extends State<VozBody> {
                                   $phau.messageState = VozMessageState.edited;
                                 });
 
-                                messageForm.currentState?.save();
+                                messageFormKey.currentState?.save();
                               },
                             ),
                           VozMessageState.edited => ActionButtonAlt(
