@@ -105,19 +105,11 @@ final class LolaMessage implements LolaOutState$ {
   const LolaMessage({required this.message});
 
   Widget actionEnabled({required double scale, required Function action}) {
-    return Center(
-      child: Column(
-        children: [
-          Expanded(
-            child: ActionButton(
-              icon: const Icon(Icons.expand_less),
-              text: 'Ver Mensaje',
-              scale: scale,
-              onPressed: () => action(),
-            ),
-          ),
-        ],
-      ),
+    return ActionButton(
+      icon: const Icon(Icons.expand_less),
+      text: 'Ver Mensaje',
+      scale: scale,
+      onPressed: () => action(),
     );
   }
 }
