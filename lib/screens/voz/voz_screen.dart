@@ -47,7 +47,7 @@ class VozBody extends StatefulWidget {
 }
 
 class _VozBodyState extends State<VozBody> {
-  bool debug = true;
+  bool debug = !true;
   var debugLolaState = '';
   var debugLolaAudioState = '';
   var debugLolaReplyState = '';
@@ -235,8 +235,7 @@ class _VozBodyState extends State<VozBody> {
                           VozState.stopRecording ||
                           VozState.playingError ||
                           VozState.playingCompleted) {
-                    lola$.stopSpeech();
-                    $phau.notifyStartRecording();
+                    recordMessage();
                   } else if ($phau.state case VozState.recording) {
                     await $phau.notifyStopRecording();
                     await lola$.loadReply(
@@ -252,7 +251,7 @@ class _VozBodyState extends State<VozBody> {
                   state: $phau.messageState,
                   controller: $phau,
                   scale: scale,
-                  onSaved: (value) async {
+                  onMessageEdited: (value) async {
                     if (value != null) {
                       await askLola(value);
                     }
@@ -270,35 +269,46 @@ class _VozBodyState extends State<VozBody> {
                   child: Card.filled(
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
-                        splashColor: Colors.purple.withAlpha(30),
-                        child: switch ($phau.messageState) {
-                          VozMessageState.empty => VozEditAction(
-                              scale: scale,
-                              onPressed: () {
-                                setState(() {
-                                  $phau.messageState = VozMessageState.editing;
-                                });
-                              },
-                            ),
-                          VozMessageState.editing => VozRequestAction(
-                              scale: scale,
-                              onPressed: () {
-                                setState(() {
-                                  $phau.messageState = VozMessageState.edited;
-                                });
+                      splashColor: Colors.purple.withAlpha(30),
+                      child: ListenableBuilder(
+                        listenable: $phau,
+                        builder: (context, child) {
+                          return switch ($phau.messageState) {
+                            VozMessageState.empty => VozEditDisabled(
+                                scale: scale,
+                              ),
+                            VozMessageState.editing => VozRequestAction(
+                                scale: scale,
+                                onPressed: () {
+                                  setState(() {
+                                    $phau.messageState = VozMessageState.edited;
+                                  });
 
-                                messageFormKey.currentState?.save();
-                              },
-                            ),
-                          VozMessageState.edited => VozEditAction(
-                              scale: scale,
-                              onPressed: () {
-                                setState(() {
-                                  $phau.messageState = VozMessageState.editing;
-                                });
-                              },
-                            ),
-                        }),
+                                  messageFormKey.currentState?.save();
+                                },
+                              ),
+                            VozMessageState.edited => VozEditAction(
+                                scale: scale,
+                                onPressed: () {
+                                  setState(() {
+                                    $phau.messageState =
+                                        VozMessageState.editing;
+                                  });
+                                },
+                              ),
+                            VozMessageState.loaded => VozEditAction(
+                                scale: scale,
+                                onPressed: () {
+                                  setState(() {
+                                    $phau.messageState =
+                                        VozMessageState.editing;
+                                  });
+                                },
+                              ),
+                          };
+                        },
+                      ),
+                    ),
                   ),
                 ),
                 Expanded(
@@ -308,18 +318,27 @@ class _VozBodyState extends State<VozBody> {
                     child: InkWell(
                       splashColor: Colors.purple.withAlpha(30),
                       onTap: () {},
-                      child: switch ($phau.messageState) {
-                        VozMessageState.empty => VozOpenMessageDisabled(
-                            scale: scale,
-                          ),
-                        VozMessageState.editing => VozOpenMessageDisabled(
-                            scale: scale,
-                          ),
-                        VozMessageState.edited => VozOpenMessageAction(
-                            scale: scale,
-                            onPressed: () => openUserMessage(context),
-                          ),
-                      },
+                      child: ListenableBuilder(
+                        listenable: $phau,
+                        builder: (context, child) {
+                          return switch ($phau.messageState) {
+                            VozMessageState.empty => VozOpenMessageDisabled(
+                                scale: scale,
+                              ),
+                            VozMessageState.editing => VozOpenMessageDisabled(
+                                scale: scale,
+                              ),
+                            VozMessageState.edited => VozOpenMessageAction(
+                                scale: scale,
+                                onPressed: () => openUserMessage(context),
+                              ),
+                            VozMessageState.loaded => VozOpenMessageAction(
+                                scale: scale,
+                                onPressed: () => openUserMessage(context),
+                              ),
+                          };
+                        },
+                      ),
                     ),
                   ),
                 ),
@@ -333,6 +352,11 @@ class _VozBodyState extends State<VozBody> {
         ],
       ),
     );
+  }
+
+  void recordMessage() {
+    lola$.stopSpeech();
+    $phau.notifyStartRecording();
   }
 
   Expanded _debugVozMessage() {

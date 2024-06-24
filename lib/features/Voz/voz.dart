@@ -28,6 +28,7 @@ enum VozAI { idle, transcribing, transcribingError, transcribingOk }
 
 enum VozMessageState {
   empty,
+  loaded,
   editing,
   edited,
 }
@@ -112,6 +113,7 @@ final class Voz with ChangeNotifier {
     // debugPrint(transcription.duration.toString());
     // debugPrint(transcription.task);
     aiState = VozAI.transcribingOk;
+    messageState = VozMessageState.loaded;
     notifyListeners();
     return transcription.text;
   }

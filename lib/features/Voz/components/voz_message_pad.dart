@@ -7,14 +7,14 @@ class VozMessagePad extends StatelessWidget {
     required this.controller,
     required this.scale,
     required this.formkey,
-    required this.onSaved,
+    required this.onMessageEdited,
     required this.state,
   });
 
   final double scale;
   final Voz controller;
   final GlobalKey<FormState> formkey;
-  final Function(String?) onSaved;
+  final Function(String?) onMessageEdited;
   final VozMessageState state;
 
   @override
@@ -42,8 +42,8 @@ class VozMessagePad extends StatelessWidget {
                           border: state == VozMessageState.editing
                               ? const OutlineInputBorder()
                               : InputBorder.none,
-                          // labelText: '',
-                          // hintText: '',
+                          labelText: 'Presiona para grabar mensaje',
+                          // hintText: 'jamon',
                         ),
                         style: TextStyle(
                             fontSize: 36.0 * scale,
@@ -52,7 +52,7 @@ class VozMessagePad extends StatelessWidget {
                                 : Colors.white70),
                         onSaved: (value) {
                           debugPrint('>> value: $value');
-                          onSaved(value);
+                          onMessageEdited(value);
                           // voz.input = value ?? '';
                         },
                       ),
@@ -71,7 +71,12 @@ class VozMessagePad extends StatelessWidget {
               ),
             );
           default:
-            return Container();
+            return Center(
+              child: Text(
+                'Presiona para grabar mensaje.',
+                style: TextStyle(fontSize: 36.0 * scale),
+              ),
+            );
         }
       },
     );
