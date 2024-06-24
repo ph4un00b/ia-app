@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/App/components/setting_text.dart';
+import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 import 'package:lola_ai_app/features/Lola/lola_stream.dart';
@@ -46,6 +47,7 @@ class VozBody extends StatefulWidget {
 }
 
 class _VozBodyState extends State<VozBody> {
+  bool debug = !true;
   final $phau = Voz();
   final lola$ = Lola$();
   VoiceLola $lolavoice = VoiceLola.nova;
@@ -225,16 +227,9 @@ class _VozBodyState extends State<VozBody> {
                   controller: $phau,
                   scale: scale,
                   onSaved: (value) async {
-                    if (value == null) {
-                      return;
+                    if (value != null) {
+                      await askLola(value);
                     }
-                    setState(() {
-                      $phau.input = value;
-                    });
-                    await lola$.loadReply(
-                      input: $phau.input,
-                      voice: $lolavoice,
-                    );
                   },
                 ),
               ),
@@ -306,87 +301,87 @@ class _VozBodyState extends State<VozBody> {
               ],
             ),
           ),
-          // Expanded(
-          //   flex: 1,
-          //   child: Row(
-          //     children: [
-          //       Expanded(
-          //         flex: 1,
-          //         child: Card.filled(
-          //           clipBehavior: Clip.hardEdge,
-          //           child: InkWell(
-          //             splashColor: Colors.purple.withAlpha(30),
-          //             onTap: () {
-          //               debugPrint(
-          //                   '>> from: ${$phau.state.toString()}; path?: ${$phau.hasPath}');
-
-          //               if ($phau.state
-          //                   case VozState.recordingOk ||
-          //                       VozState.playingCompleted ||
-          //                       VozState.idle) {
-          //                 $phau.notifyPlayAudio();
-          //               } else if ($phau.state case VozState.playing) {
-          //                 $phau.notifyStopAudio();
-          //               } else if ($phau.state case _) {
-          //                 debugPrint('noop');
-          //               }
-          //             },
-          //             child: ListenableBuilder(
-          //               listenable: $phau,
-          //               builder: (context, child) {
-          //                 return Center(
-          //                   child: Text(
-          //                     $phau.state.toString(),
-          //                     // textScaler: const TextScaler.linear(1.6),
-          //                   ),
-          //                 );
-          //               },
-          //             ),
-          //           ),
-          //         ),
-          //       ),
-          //       Expanded(
-          //         flex: 1,
-          //         child: Card(
-          //           clipBehavior: Clip.hardEdge,
-          //           child: InkWell(
-          //             splashColor: Colors.purple.withAlpha(30),
-          //             onTap: () {
-          //               showModalBottomSheet(
-          //                 isScrollControlled: true,
-          //                 context: context,
-          //                 builder: (ctx) {
-          //                   return VozMessage(voz: $phau, context: context);
-          //                 },
-          //               );
-          //             },
-          //           ),
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
-          // Expanded(
-          //   flex: 2,
-          //   child: DebugVoiceSelector(
-          //     $lolavoice: $lolavoice,
-          //     onSelected: (voz) async {
-          //       if (voz != null) {
-          //         final prefs = await SharedPreferences.getInstance();
-          //         prefs.setString(
-          //           'lola-voice',
-          //           VoiceLola.values.firstWhere((v) => v.name == voz.name).name,
-          //         );
-
-          //         setState(() {
-          //           $lolavoice = voz;
-          //         });
-          //       }
-          //     },
-          //   ),
-          // ),
+          if (debug) debugRecording(),
+          if (debug) debugLolaVoz(),
         ],
       ),
+    );
+  }
+
+  Expanded debugLolaVoz() {
+    return Expanded(
+      flex: 2,
+      child: DebugVoiceSelector(
+        $lolavoice: $lolavoice,
+        onSelected: (voz) async {
+          if (voz != null) {
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString(
+              'lola-voice',
+              VoiceLola.values.firstWhere((v) => v.name == voz.name).name,
+            );
+
+            setState(() {
+              $lolavoice = voz;
+            });
+          }
+        },
+      ),
+    );
+  }
+
+  Expanded debugRecording() {
+    return Expanded(
+      flex: 1,
+      child: Row(
+        children: [
+          Expanded(
+            flex: 1,
+            child: Card.filled(
+              clipBehavior: Clip.hardEdge,
+              child: InkWell(
+                splashColor: Colors.purple.withAlpha(30),
+                onTap: () {
+                  debugPrint(
+                      '>> from: ${$phau.state.toString()}; path?: ${$phau.hasPath}');
+
+                  if ($phau.state
+                      case VozState.recordingOk ||
+                          VozState.playingCompleted ||
+                          VozState.idle) {
+                    $phau.notifyPlayAudio();
+                  } else if ($phau.state case VozState.playing) {
+                    $phau.notifyStopAudio();
+                  } else if ($phau.state case _) {
+                    debugPrint('noop');
+                  }
+                },
+                child: ListenableBuilder(
+                  listenable: $phau,
+                  builder: (context, child) {
+                    return Center(
+                      child: Text(
+                        $phau.state.toString(),
+                        // textScaler: const TextScaler.linear(1.6),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> askLola(String value) async {
+    setState(() {
+      $phau.input = value;
+    });
+    await lola$.loadReply(
+      input: $phau.input,
+      voice: $lolavoice,
     );
   }
 
