@@ -83,19 +83,11 @@ sealed class LolaOutState$ {}
 
 final class LolaEmpty implements LolaOutState$ {
   Widget actionDisabled({required double scale}) {
-    return Center(
-      child: Column(
-        children: [
-          Expanded(
-            child: ActionButton(
-              icon: const Icon(Icons.expand_less),
-              text: 'Ver Mensaje',
-              scale: scale,
-              color: Colors.grey,
-            ),
-          ),
-        ],
-      ),
+    return ActionButton(
+      icon: const Icon(Icons.expand_less),
+      text: 'Ver Mensaje',
+      scale: scale,
+      color: Colors.grey,
     );
   }
 }
