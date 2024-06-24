@@ -272,7 +272,7 @@ class _VozBodyState extends State<VozBody> {
                     child: InkWell(
                         splashColor: Colors.purple.withAlpha(30),
                         child: switch ($phau.messageState) {
-                          VozMessageState.printine => VozEditAction(
+                          VozMessageState.empty => VozEditAction(
                               scale: scale,
                               onPressed: () {
                                 setState(() {
@@ -309,9 +309,8 @@ class _VozBodyState extends State<VozBody> {
                       splashColor: Colors.purple.withAlpha(30),
                       onTap: () {},
                       child: switch ($phau.messageState) {
-                        VozMessageState.printine => VozOpenMessageAction(
+                        VozMessageState.empty => VozOpenMessageDisabled(
                             scale: scale,
-                            onPressed: () => openUserMessage(context),
                           ),
                         VozMessageState.editing => VozOpenMessageDisabled(
                             scale: scale,
@@ -327,10 +326,28 @@ class _VozBodyState extends State<VozBody> {
               ],
             ),
           ),
+          if (debug) _debugVozMessage(),
           if (debug) _debugAi(),
           if (debug) _debugVozState(),
           if (debug) _debugLolaVoz(),
         ],
+      ),
+    );
+  }
+
+  Expanded _debugVozMessage() {
+    return Expanded(
+      flex: 1,
+      child: Card.filled(
+        clipBehavior: Clip.hardEdge,
+        child: InkWell(
+          splashColor: Colors.purple.withAlpha(30),
+          child: ListenableBuilder(
+            listenable: $phau,
+            builder: (_, __) =>
+                Center(child: Text($phau.messageState.toString())),
+          ),
+        ),
       ),
     );
   }

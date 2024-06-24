@@ -27,7 +27,7 @@ enum VozState {
 enum VozAI { idle, transcribing, transcribingError, transcribingOk }
 
 enum VozMessageState {
-  printine,
+  empty,
   editing,
   edited,
 }
@@ -35,7 +35,7 @@ enum VozMessageState {
 final class Voz with ChangeNotifier {
   VozState state = VozState.idle;
   VozAI aiState = VozAI.idle;
-  VozMessageState messageState = VozMessageState.printine;
+  VozMessageState messageState = VozMessageState.empty;
 
   String input = '';
   final rec.AudioRecorder _recorder = rec.AudioRecorder();
