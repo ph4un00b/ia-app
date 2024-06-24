@@ -81,8 +81,8 @@ enum VoiceLola {
 
 sealed class LolaOutState$ {}
 
-final class NoMessage implements LolaOutState$ {
-  Widget disabled({required double scale}) {
+final class EmptyLola implements LolaOutState$ {
+  Widget actionDisabled({required double scale}) {
     return Center(
       child: Column(
         children: [
@@ -100,11 +100,11 @@ final class NoMessage implements LolaOutState$ {
   }
 }
 
-final class HasMessage implements LolaOutState$ {
+final class LolaMessage implements LolaOutState$ {
   final String message;
-  const HasMessage({required this.message});
+  const LolaMessage({required this.message});
 
-  Widget openMessage({required double scale, required Function action}) {
+  Widget actionEnabled({required double scale, required Function action}) {
     return Center(
       child: Column(
         children: [
@@ -125,7 +125,7 @@ final class HasMessage implements LolaOutState$ {
 sealed class LolaAudioState$ {}
 
 final class NonePath implements LolaAudioState$ {
-  Widget disabled({required double scale}) {
+  Widget actionDisabled({required double scale}) {
     return ActionButton(
       icon: const Icon(Icons.play_arrow_rounded),
       text: 'Repetir',

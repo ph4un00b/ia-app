@@ -107,19 +107,19 @@ class _VozBodyState extends State<VozBody> {
                 child: StreamBuilder(
                     stream: lola$.state.stream,
                     builder: (context, snap) {
-                      final state = snap.data;
-                      return switch (state) {
+                      final ui = snap.data;
+                      return switch (ui) {
                         null => lola$.empty(),
-                        Idle() => state.empty(),
-                        FetchingCompletion() => state.empty(),
-                        CompletionOK() => state.message(scale: scale),
-                        CompletionErr() => state.empty(),
-                        FetchingSpeech() => state.message(scale: scale),
-                        SpeechOk() => state.message(scale: scale),
-                        SpeechErr() => state.message(scale: scale),
-                        SpeakingIdle() => state.message(scale: scale),
-                        SpeakingOK() => state.message(scale: scale),
-                        SpeakingErr() => state.message(scale: scale),
+                        Idle() => ui.empty(),
+                        FetchingCompletion() => ui.empty(),
+                        CompletionOK() => ui.message(scale: scale),
+                        CompletionErr() => ui.empty(),
+                        FetchingSpeech() => ui.message(scale: scale),
+                        SpeechOk() => ui.message(scale: scale),
+                        SpeechErr() => ui.message(scale: scale),
+                        SpeakingIdle() => ui.message(scale: scale),
+                        SpeakingOK() => ui.message(scale: scale),
+                        SpeakingErr() => ui.message(scale: scale),
                       };
                     }),
               ),
@@ -137,27 +137,27 @@ class _VozBodyState extends State<VozBody> {
                       child: StreamBuilder(
                         stream: lola$.audioState.stream,
                         builder: (context, snap) {
-                          final state = snap.data;
-                          return switch (state) {
+                          final ui = snap.data;
+                          return switch (ui) {
                             null => Container(),
-                            NonePath() => state.disabled(scale: scale),
-                            Playing() => state.stop(
+                            NonePath() => ui.actionDisabled(scale: scale),
+                            Playing() => ui.stop(
                                 scale: scale,
                                 action: () => lola$.stopSpeech(),
                               ),
-                            PlayingErr() => state.replay(
+                            PlayingErr() => ui.replay(
                                 scale: scale,
                                 action: () => lola$.playSpeech(),
                               ),
-                            PlayingCompleted() => state.replay(
+                            PlayingCompleted() => ui.replay(
                                 scale: scale,
                                 action: () => lola$.playSpeech(),
                               ),
-                            Stopped() => state.play(
+                            Stopped() => ui.play(
                                 scale,
                                 action: () => lola$.playSpeech(),
                               ),
-                            StoppedErr() => state.play(
+                            StoppedErr() => ui.play(
                                 scale,
                                 action: () => lola$.playSpeech(),
                               ),
@@ -175,13 +175,13 @@ class _VozBodyState extends State<VozBody> {
                       child: StreamBuilder(
                         stream: lola$.outputState.stream,
                         builder: (context, snap) {
-                          final state = snap.data;
-                          return switch (state) {
+                          final ui = snap.data;
+                          return switch (ui) {
                             null => Container(),
-                            NoMessage() => state.disabled(scale: scale),
-                            HasMessage() => state.openMessage(
+                            EmptyLola() => ui.actionDisabled(scale: scale),
+                            LolaMessage() => ui.actionEnabled(
                                 scale: scale,
-                                action: () => openMessage(context, state),
+                                action: () => openMessage(context, ui),
                               ),
                           };
                         },
@@ -423,7 +423,7 @@ class _VozBodyState extends State<VozBody> {
     );
   }
 
-  Future<dynamic> openMessage(BuildContext context, HasMessage state) {
+  Future<dynamic> openMessage(BuildContext context, LolaMessage state) {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,

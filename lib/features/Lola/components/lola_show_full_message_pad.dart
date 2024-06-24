@@ -34,6 +34,7 @@ class LolaShowFullMessagePad extends StatelessWidget {
                     builder: (ctx) => LolaMessageScreen(
                       message: $lola.output,
                       context: context,
+                      scale: scale,
                     ),
                   ),
                 ),
