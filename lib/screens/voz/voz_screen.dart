@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/App/components/setting_text.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 import 'package:lola_ai_app/features/Lola/lola_stream.dart';
@@ -222,7 +223,6 @@ class _VozBodyState extends State<VozBody> {
                   formkey: messageFormKey,
                   state: $phau.messageState,
                   controller: $phau,
-                  context: context,
                   scale: scale,
                   onSaved: (value) async {
                     if (value == null) {
@@ -414,70 +414,3 @@ class _VozBodyState extends State<VozBody> {
     );
   }
 }
-
-class SettingAppText extends StatelessWidget {
-  const SettingAppText({
-    super.key,
-    required this.scale,
-    required this.onChangedValue,
-  });
-
-  final double scale;
-  final void Function(double) onChangedValue;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Expanded(
-            child: Text(
-              '${scale.toStringAsFixed(2)} - Ajuste de texto',
-              textScaler: TextScaler.linear(1.6 * scale),
-            ),
-          ),
-          Expanded(
-            child: Slider(
-              value: scale,
-              // value: 1.0,
-              min: 0.5,
-              max: 3.0,
-              // divisions: 5,
-              label: scale.toString(),
-              onChanged: (double value) {
-                onChangedValue(value);
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class ProfileArgs {
-  ProfileArgs({required this.city, required this.country});
-  final String city;
-  final String country;
-
-  bool get isGermanCapital {
-    return country == 'Germany' && city == 'Berlin';
-  }
-}
-
-class ExampleDestination {
-  const ExampleDestination(this.label, this.icon, this.selectedIcon);
-
-  final String label;
-  final Widget icon;
-  final Widget selectedIcon;
-}
-
-const List<ExampleDestination> destinations = <ExampleDestination>[
-  ExampleDestination(
-      'Mensajes', Icon(Icons.mail_outline), Icon(Icons.mail_outline)),
-  ExampleDestination(
-      'Perfil', Icon(Icons.manage_accounts), Icon(Icons.manage_accounts)),
-  ExampleDestination(
-      'Otros', Icon(Icons.add_circle_outline), Icon(Icons.add_circle_outline)),
-];

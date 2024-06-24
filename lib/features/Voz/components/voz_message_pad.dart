@@ -5,7 +5,6 @@ class VozMessagePad extends StatelessWidget {
   const VozMessagePad({
     super.key,
     required this.controller,
-    required this.context,
     required this.scale,
     required this.formkey,
     required this.onSaved,
@@ -14,7 +13,6 @@ class VozMessagePad extends StatelessWidget {
 
   final double scale;
   final Voz controller;
-  final BuildContext context;
   final GlobalKey<FormState> formkey;
   final Function(String?) onSaved;
   final VozMessageState state;

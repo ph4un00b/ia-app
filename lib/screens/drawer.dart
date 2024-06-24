@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/screens/voz/voz_screen.dart';
+import 'package:lola_ai_app/features/core/routes.dart';
 
 class AppDrawer extends StatelessWidget {
   const AppDrawer({

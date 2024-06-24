@@ -88,7 +88,7 @@ final class LolaEmpty implements LolaOutState$ {
         children: [
           Expanded(
             child: ActionButton(
-              icon: const Icon(Icons.expand_more),
+              icon: const Icon(Icons.expand_less),
               text: 'Ver Mensaje',
               scale: scale,
               color: Colors.grey,
@@ -110,7 +110,7 @@ final class LolaMessage implements LolaOutState$ {
         children: [
           Expanded(
             child: ActionButton(
-              icon: const Icon(Icons.expand_more),
+              icon: const Icon(Icons.expand_less),
               text: 'Ver Mensaje',
               scale: scale,
               onPressed: () => action(),
