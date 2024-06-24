@@ -21,11 +21,10 @@ class VozMessagePad extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListenableBuilder(
       listenable: controller,
-      builder: (context, child) {
+      builder: (_, __) {
         debugPrint('>> ${controller.state}, ${controller.aiState}');
-        switch (controller.aiState) {
-          case VozAI.transcribingOk:
-            return Center(
+        return switch (controller.aiState) {
+          VozAI.transcribingOk => Center(
               child: Column(
                 children: [
                   Expanded(
@@ -58,26 +57,28 @@ class VozMessagePad extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // Expanded(
-                  //   child: Text(
-                  //     voz.input,
-                  //     textScaler: TextScaler.linear(2.6 * scale),
-                  //     maxLines: 4,
-                  //     softWrap: true,
-                  //     overflow: TextOverflow.ellipsis,
-                  //   ),
-                  // ),
                 ],
               ),
-            );
-          default:
-            return Center(
+            ),
+          VozAI.idle => Center(
               child: Text(
                 'Presiona para grabar mensaje.',
                 style: TextStyle(fontSize: 36.0 * scale),
               ),
-            );
-        }
+            ),
+          VozAI.transcribing => Center(
+              child: Text(
+                'Presiona para grabar mensaje.',
+                style: TextStyle(fontSize: 36.0 * scale),
+              ),
+            ),
+          VozAI.transcribingError => Center(
+              child: Text(
+                'Presiona para grabar mensaje.',
+                style: TextStyle(fontSize: 36.0 * scale),
+              ),
+            ),
+        };
       },
     );
   }

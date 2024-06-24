@@ -224,40 +224,51 @@ class _VozBodyState extends State<VozBody> {
           if (debug) _debugLolaReply(),
           Expanded(
             flex: 4,
-            child: Card.filled(
-              child: InkWell(
-                splashColor: Colors.purple.withAlpha(30),
-                onTap: () async {
-                  debugPrint('Card tapped from: ${$phau.state}');
-                  if ($phau.state
-                      case VozState.idle ||
-                          VozState.recordingOk ||
-                          VozState.stopRecording ||
-                          VozState.playingError ||
-                          VozState.playingCompleted) {
-                    recordMessage();
-                  } else if ($phau.state case VozState.recording) {
-                    await $phau.notifyStopRecording();
-                    await lola$.loadReply(
-                      input: $phau.input,
-                      voice: $lolavoice,
-                    );
-                  } else if ($phau.state case _) {
-                    debugPrint('noop');
-                  }
-                },
-                child: VozMessagePad(
-                  formkey: messageFormKey,
-                  state: $phau.messageState,
-                  controller: $phau,
-                  scale: scale,
-                  onMessageEdited: (value) async {
-                    if (value != null) {
-                      await askLola(value);
-                    }
-                  },
-                ),
-              ),
+            child: ListenableBuilder(
+              listenable: $phau,
+              builder: (_, __) {
+                return Card.filled(
+                  shape: RoundedRectangleBorder(
+                    side: $phau.state == VozState.recording
+                        ? const BorderSide(color: Colors.green, width: 2.0)
+                        : BorderSide.none,
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  child: InkWell(
+                    splashColor: Colors.purple.withAlpha(30),
+                    onTap: () async {
+                      debugPrint('Card tapped from: ${$phau.state}');
+                      if ($phau.state
+                          case VozState.idle ||
+                              VozState.recordingOk ||
+                              VozState.stopRecording ||
+                              VozState.playingError ||
+                              VozState.playingCompleted) {
+                        recordMessage();
+                      } else if ($phau.state case VozState.recording) {
+                        await $phau.notifyStopRecording();
+                        await lola$.loadReply(
+                          input: $phau.input,
+                          voice: $lolavoice,
+                        );
+                      } else if ($phau.state case _) {
+                        debugPrint('noop');
+                      }
+                    },
+                    child: VozMessagePad(
+                      formkey: messageFormKey,
+                      state: $phau.messageState,
+                      controller: $phau,
+                      scale: scale,
+                      onMessageEdited: (value) async {
+                        if (value != null) {
+                          await askLola(value);
+                        }
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
           ),
           Expanded(
@@ -272,7 +283,7 @@ class _VozBodyState extends State<VozBody> {
                       splashColor: Colors.purple.withAlpha(30),
                       child: ListenableBuilder(
                         listenable: $phau,
-                        builder: (context, child) {
+                        builder: (_, __) {
                           return switch ($phau.messageState) {
                             VozMessageState.empty => VozEditDisabled(
                                 scale: scale,
@@ -320,7 +331,7 @@ class _VozBodyState extends State<VozBody> {
                       onTap: () {},
                       child: ListenableBuilder(
                         listenable: $phau,
-                        builder: (context, child) {
+                        builder: (_, __) {
                           return switch ($phau.messageState) {
                             VozMessageState.empty => VozOpenMessageDisabled(
                                 scale: scale,
