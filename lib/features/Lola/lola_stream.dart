@@ -10,7 +10,7 @@ import 'package:just_audio/just_audio.dart' as audio;
 final class Lola$ {
   final state = StreamController<LolaState$>()..add(Idle());
   final audioState = StreamController<LolaAudioState$>()..add(NonePath());
-  final outputState = StreamController<LolaOutState$>()..add(EmptyLola());
+  final outputState = StreamController<LolaOutState$>()..add(LolaEmpty());
   String _output = '';
   String _path = '';
   final audio.AudioPlayer _player = audio.AudioPlayer();
@@ -46,7 +46,7 @@ final class Lola$ {
 
   loadReply({required String input, required VoiceLola voice}) async {
     var completion = '';
-    outputState.add(EmptyLola());
+    outputState.add(LolaEmpty());
     _emit(FetchingCompletion());
     try {
       completion = await _fetchCompletion(input: input);

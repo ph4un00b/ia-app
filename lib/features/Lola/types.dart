@@ -81,7 +81,7 @@ enum VoiceLola {
 
 sealed class LolaOutState$ {}
 
-final class EmptyLola implements LolaOutState$ {
+final class LolaEmpty implements LolaOutState$ {
   Widget actionDisabled({required double scale}) {
     return Center(
       child: Column(

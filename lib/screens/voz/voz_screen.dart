@@ -178,7 +178,7 @@ class _VozBodyState extends State<VozBody> {
                           final ui = snap.data;
                           return switch (ui) {
                             null => Container(),
-                            EmptyLola() => ui.actionDisabled(scale: scale),
+                            LolaEmpty() => ui.actionDisabled(scale: scale),
                             LolaMessage() => ui.actionEnabled(
                                 scale: scale,
                                 action: () => openMessage(context, ui),
