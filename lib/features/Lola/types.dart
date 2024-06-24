@@ -79,9 +79,9 @@ enum VoiceLola {
   }
 }
 
-sealed class LolaOutState$ {}
+sealed class LolaReplyState$ {}
 
-final class LolaEmpty implements LolaOutState$ {
+final class LolaEmpty implements LolaReplyState$ {
   Widget actionDisabled({required double scale}) {
     return ActionButton(
       icon: const Icon(Icons.expand_less),
@@ -92,7 +92,7 @@ final class LolaEmpty implements LolaOutState$ {
   }
 }
 
-final class LolaMessage implements LolaOutState$ {
+final class LolaMessage implements LolaReplyState$ {
   final String message;
   const LolaMessage({required this.message});
 
@@ -302,10 +302,6 @@ class WithMessage extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Text(
-            state,
-            textScaler: TextScaler.linear(1.6 * scale),
-          ),
           Expanded(
             child: Text(
               message,
@@ -331,14 +327,10 @@ class Empty extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
       child: Column(
         children: [
-          Text(
-            state,
-            textScaler: const TextScaler.linear(1.6),
-          ),
-          const Expanded(
+          Expanded(
             child: Text(
               '',
               textScaler: TextScaler.linear(2.6),

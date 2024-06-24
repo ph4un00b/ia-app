@@ -28,10 +28,6 @@ class VozMessagePad extends StatelessWidget {
             return Center(
               child: Column(
                 children: [
-                  Text(
-                    controller.aiState.toString(),
-                    textScaler: TextScaler.linear(1.6 * scale),
-                  ),
                   Expanded(
                     child: Form(
                       key: formkey,
@@ -75,16 +71,7 @@ class VozMessagePad extends StatelessWidget {
               ),
             );
           default:
-            return Center(
-              child: Column(
-                children: [
-                  Text(
-                    controller.aiState.toString(),
-                    textScaler: TextScaler.linear(1.6 * scale),
-                  ),
-                ],
-              ),
-            );
+            return Container();
         }
       },
     );

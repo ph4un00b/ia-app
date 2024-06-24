@@ -47,9 +47,15 @@ class VozBody extends StatefulWidget {
 }
 
 class _VozBodyState extends State<VozBody> {
-  bool debug = !true;
+  bool debug = true;
+  var debugLolaState = '';
+  var debugLolaAudioState = '';
+  var debugLolaReplyState = '';
   final $phau = Voz();
   final lola$ = Lola$();
+  Stream<LolaState$>? lolaState$;
+  Stream<LolaAudioState$>? lolaAudioState$;
+  Stream<LolaReplyState$>? lolaReplyState$;
   VoiceLola $lolavoice = VoiceLola.nova;
   var scale = 1.0;
   final messageFormKey = GlobalKey<FormState>();
@@ -58,6 +64,24 @@ class _VozBodyState extends State<VozBody> {
   void initState() {
     super.initState();
     _loadUserPrefereces();
+
+    lolaState$ = lola$.state.stream.asBroadcastStream();
+    lolaAudioState$ = lola$.audioState.stream.asBroadcastStream();
+    lolaReplyState$ = lola$.replyState.stream.asBroadcastStream();
+
+    if (debug) {
+      lolaState$?.listen((state) {
+        debugLolaState = state.toString();
+      });
+
+      lolaAudioState$?.listen((state) {
+        debugLolaAudioState = state.toString();
+      });
+
+      lolaReplyState$?.listen((state) {
+        debugLolaReplyState = state.toString();
+      });
+    }
   }
 
   @override
@@ -108,7 +132,7 @@ class _VozBodyState extends State<VozBody> {
                   });
                 },
                 child: StreamBuilder(
-                    stream: lola$.state.stream,
+                    stream: lolaState$,
                     builder: (context, snap) {
                       final ui = snap.data;
                       return switch (ui) {
@@ -138,7 +162,7 @@ class _VozBodyState extends State<VozBody> {
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
                       child: StreamBuilder(
-                        stream: lola$.audioState.stream,
+                        stream: lolaAudioState$,
                         builder: (context, snap) {
                           final ui = snap.data;
                           return switch (ui) {
@@ -176,7 +200,7 @@ class _VozBodyState extends State<VozBody> {
                     clipBehavior: Clip.hardEdge,
                     child: InkWell(
                       child: StreamBuilder(
-                        stream: lola$.outputState.stream,
+                        stream: lolaReplyState$,
                         builder: (context, snap) {
                           final ui = snap.data;
                           return switch (ui) {
@@ -195,7 +219,9 @@ class _VozBodyState extends State<VozBody> {
               ],
             ),
           ),
-          // const DebugShowVoices(),
+          if (debug) _debugLolaState(),
+          if (debug) _debugLolaAudio(),
+          if (debug) _debugLolaReply(),
           Expanded(
             flex: 4,
             child: Card.filled(
@@ -301,14 +327,79 @@ class _VozBodyState extends State<VozBody> {
               ],
             ),
           ),
-          if (debug) debugRecording(),
-          if (debug) debugLolaVoz(),
+          if (debug) _debugAi(),
+          if (debug) _debugVozState(),
+          if (debug) _debugLolaVoz(),
         ],
       ),
     );
   }
 
-  Expanded debugLolaVoz() {
+  Expanded _debugAi() {
+    return Expanded(
+      flex: 1,
+      child: Card.filled(
+        clipBehavior: Clip.hardEdge,
+        child: InkWell(
+          splashColor: Colors.purple.withAlpha(30),
+          child: ListenableBuilder(
+            listenable: $phau,
+            builder: (_, __) => Center(child: Text($phau.aiState.toString())),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Expanded _debugLolaReply() {
+    return Expanded(
+      flex: 1,
+      child: Card(
+        clipBehavior: Clip.hardEdge,
+        child: InkWell(
+          splashColor: Colors.purple.withAlpha(30),
+          child: StreamBuilder(
+            stream: lolaReplyState$,
+            builder: (_, __) => Center(child: Text(debugLolaReplyState)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Expanded _debugLolaAudio() {
+    return Expanded(
+      flex: 1,
+      child: Card(
+        clipBehavior: Clip.hardEdge,
+        child: InkWell(
+          splashColor: Colors.purple.withAlpha(30),
+          child: StreamBuilder(
+            stream: lolaAudioState$,
+            builder: (_, __) => Center(child: Text(debugLolaAudioState)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Expanded _debugLolaState() {
+    return Expanded(
+      flex: 1,
+      child: Card(
+        clipBehavior: Clip.hardEdge,
+        child: InkWell(
+          splashColor: Colors.purple.withAlpha(30),
+          child: StreamBuilder(
+            stream: lolaState$,
+            builder: (_, __) => Center(child: Text(debugLolaState)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Expanded _debugLolaVoz() {
     return Expanded(
       flex: 2,
       child: DebugVoiceSelector(
@@ -330,47 +421,40 @@ class _VozBodyState extends State<VozBody> {
     );
   }
 
-  Expanded debugRecording() {
+  Expanded _debugVozState() {
     return Expanded(
       flex: 1,
-      child: Row(
-        children: [
-          Expanded(
-            flex: 1,
-            child: Card.filled(
-              clipBehavior: Clip.hardEdge,
-              child: InkWell(
-                splashColor: Colors.purple.withAlpha(30),
-                onTap: () {
-                  debugPrint(
-                      '>> from: ${$phau.state.toString()}; path?: ${$phau.hasPath}');
+      child: Card.filled(
+        clipBehavior: Clip.hardEdge,
+        child: InkWell(
+          splashColor: Colors.purple.withAlpha(30),
+          onTap: () {
+            debugPrint(
+                '>> from: ${$phau.state.toString()}; path?: ${$phau.hasPath}');
 
-                  if ($phau.state
-                      case VozState.recordingOk ||
-                          VozState.playingCompleted ||
-                          VozState.idle) {
-                    $phau.notifyPlayAudio();
-                  } else if ($phau.state case VozState.playing) {
-                    $phau.notifyStopAudio();
-                  } else if ($phau.state case _) {
-                    debugPrint('noop');
-                  }
-                },
-                child: ListenableBuilder(
-                  listenable: $phau,
-                  builder: (context, child) {
-                    return Center(
-                      child: Text(
-                        $phau.state.toString(),
-                        // textScaler: const TextScaler.linear(1.6),
-                      ),
-                    );
-                  },
+            if ($phau.state
+                case VozState.recordingOk ||
+                    VozState.playingCompleted ||
+                    VozState.idle) {
+              $phau.notifyPlayAudio();
+            } else if ($phau.state case VozState.playing) {
+              $phau.notifyStopAudio();
+            } else if ($phau.state case _) {
+              debugPrint('noop');
+            }
+          },
+          child: ListenableBuilder(
+            listenable: $phau,
+            builder: (context, child) {
+              return Center(
+                child: Text(
+                  $phau.state.toString(),
+                  // textScaler: const TextScaler.linear(1.6),
                 ),
-              ),
-            ),
+              );
+            },
           ),
-        ],
+        ),
       ),
     );
   }
