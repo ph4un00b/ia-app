@@ -113,7 +113,7 @@ final class LolaMessage implements LolaOutState$ {
               icon: const Icon(Icons.expand_more),
               text: 'Ver Mensaje',
               scale: scale,
-              handleAction: () => action(),
+              onPressed: () => action(),
             ),
           ),
         ],
@@ -136,36 +136,39 @@ final class NonePath implements LolaAudioState$ {
 }
 
 final class Playing implements LolaAudioState$ {
-  Widget stop({required double scale, required Future<void> Function() action}) {
+  Widget stop(
+      {required double scale, required Future<void> Function() action}) {
     return ActionButton(
       icon: const Icon(Icons.stop),
       text: 'Parar',
       scale: scale,
-      handleAction: () => action(),
+      onPressed: () => action(),
     );
   }
 }
 
 final class PlayingErr implements LolaAudioState$ {
-  Widget replay({required double scale, required Future<void> Function() action}) {
+  Widget replay(
+      {required double scale, required Future<void> Function() action}) {
     return ActionButton(
       icon: const Icon(Icons.play_arrow_rounded),
       text: 'Repetir',
       scale: scale,
       color: Colors.green,
-      handleAction: () => action(),
+      onPressed: () => action(),
     );
   }
 }
 
 final class PlayingCompleted implements LolaAudioState$ {
-  Widget replay({required double scale, required Future<void> Function() action}) {
+  Widget replay(
+      {required double scale, required Future<void> Function() action}) {
     return ActionButton(
       icon: const Icon(Icons.play_arrow_rounded),
       text: 'Repetir',
       scale: scale,
       color: Colors.green,
-      handleAction: () => action(),
+      onPressed: () => action(),
     );
   }
 }
@@ -176,7 +179,7 @@ final class Stopped implements LolaAudioState$ {
       icon: const Icon(Icons.play_arrow_rounded),
       text: 'Repetir',
       scale: scale,
-      handleAction: () => action(),
+      onPressed: () => action(),
     );
   }
 }
@@ -187,7 +190,7 @@ final class StoppedErr implements LolaAudioState$ {
       icon: const Icon(Icons.play_arrow_rounded),
       text: 'Repetir',
       scale: scale,
-      handleAction: () => action(),
+      onPressed: () => action(),
     );
   }
 }
@@ -198,7 +201,7 @@ mixin None {
   Widget empty();
 }
 mixin Some {
-  Widget message({required double scale});
+  Widget withMessage({required double scale});
 }
 
 final class Idle with None implements LolaState$ {
@@ -220,7 +223,7 @@ final class CompletionOK with Some implements LolaState$ {
   const CompletionOK({required this.output});
 
   @override
-  Widget message({required double scale}) {
+  Widget withMessage({required double scale}) {
     return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
@@ -240,7 +243,7 @@ final class FetchingSpeech with Some implements LolaState$ {
   const FetchingSpeech({required this.output});
 
   @override
-  Widget message({required double scale}) {
+  Widget withMessage({required double scale}) {
     return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
@@ -251,7 +254,7 @@ final class SpeechOk with Some implements LolaState$ {
   const SpeechOk({required this.path, required this.output});
 
   @override
-  Widget message({required double scale}) {
+  Widget withMessage({required double scale}) {
     return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
@@ -262,7 +265,7 @@ final class SpeechErr with Some implements LolaState$ {
   const SpeechErr({required this.cause, required this.output});
 
   @override
-  Widget message({required double scale}) {
+  Widget withMessage({required double scale}) {
     return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
@@ -272,7 +275,7 @@ final class SpeakingIdle with Some implements LolaState$ {
   const SpeakingIdle({required this.output});
 
   @override
-  Widget message({required double scale}) {
+  Widget withMessage({required double scale}) {
     return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
@@ -282,7 +285,7 @@ final class SpeakingOK with Some implements LolaState$ {
   const SpeakingOK({required this.output});
 
   @override
-  Widget message({required double scale}) {
+  Widget withMessage({required double scale}) {
     return WithMessage(state: toString(), message: output, scale: scale);
   }
 }
@@ -293,7 +296,7 @@ final class SpeakingErr with Some implements LolaState$ {
   const SpeakingErr({required this.cause, required this.output});
 
   @override
-  Widget message({required double scale}) {
+  Widget withMessage({required double scale}) {
     return WithMessage(state: toString(), message: output, scale: scale);
   }
 }

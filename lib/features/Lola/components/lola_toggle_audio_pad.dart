@@ -57,7 +57,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                       text: 'Repetir',
                       scale: scale,
                       color: Colors.lightGreen,
-                      handleAction: _toggleLolaAudio,
+                      onPressed: _toggleLolaAudio,
                     ),
                   ),
                 LolaState.playing => Expanded(
@@ -65,7 +65,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                       icon: icon,
                       text: 'Parar',
                       scale: scale,
-                      handleAction: _toggleLolaAudio,
+                      onPressed: _toggleLolaAudio,
                     ),
                   ),
                 LolaState.playingError => Expanded(
@@ -74,7 +74,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                       text: 'Repetir',
                       scale: scale,
                       color: Colors.lightGreen,
-                      handleAction: _toggleLolaAudio,
+                      onPressed: _toggleLolaAudio,
                     ),
                   ),
                 LolaState.stopPlaying => Expanded(
@@ -83,7 +83,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                       text: 'Repetir',
                       scale: scale,
                       color: Colors.lightGreen,
-                      handleAction: _toggleLolaAudio,
+                      onPressed: _toggleLolaAudio,
                     ),
                   ),
                 LolaState.stopPlayingError => Expanded(
@@ -92,7 +92,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                       text: 'Repetir',
                       scale: scale,
                       color: Colors.lightGreen,
-                      handleAction: _toggleLolaAudio,
+                      onPressed: _toggleLolaAudio,
                     ),
                   ),
                 LolaState.playingCompleted => Expanded(
@@ -101,7 +101,7 @@ class LolaToggleAudioPad extends StatelessWidget {
                       text: 'Repetir',
                       scale: scale,
                       color: Colors.lightGreen,
-                      handleAction: _toggleLolaAudio,
+                      onPressed: _toggleLolaAudio,
                     ),
                   ),
               },

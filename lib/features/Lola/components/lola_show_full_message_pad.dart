@@ -28,7 +28,7 @@ class LolaShowFullMessagePad extends StatelessWidget {
                   icon: const Icon(Icons.expand_more),
                   text: 'Ver Mensaje',
                   scale: scale,
-                  handleAction: () => showModalBottomSheet(
+                  onPressed: () => showModalBottomSheet(
                     isScrollControlled: true,
                     context: context,
                     builder: (ctx) => LolaMessageScreen(

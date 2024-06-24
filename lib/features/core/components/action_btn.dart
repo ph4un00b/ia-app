@@ -6,7 +6,7 @@ class ActionButton extends StatelessWidget {
     required this.icon,
     required this.text,
     required this.scale,
-    this.handleAction,
+    this.onPressed,
     this.color,
   });
 
@@ -14,7 +14,7 @@ class ActionButton extends StatelessWidget {
   final String text;
   final double scale;
   final Color? color;
-  final void Function()? handleAction;
+  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +30,7 @@ class ActionButton extends StatelessWidget {
         ),
         iconColor: color
       ),
-      onPressed: () {
-        handleAction?.call();
-      },
+      onPressed: () => onPressed?.call(),
       label: Text(
         text,
         style: TextStyle(color: color),
@@ -48,7 +46,7 @@ class ActionButtonAlt extends StatelessWidget {
     required this.icon,
     required this.text,
     required this.scale,
-    this.handleAction,
+    this.onPressed,
     this.color,
   });
 
@@ -56,7 +54,7 @@ class ActionButtonAlt extends StatelessWidget {
   final String text;
   final double scale;
   final Color? color;
-  final void Function()? handleAction;
+  final void Function()? onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -73,9 +71,7 @@ class ActionButtonAlt extends StatelessWidget {
         iconColor: color,
         backgroundColor: Colors.white10
       ),
-      onPressed: () {
-        handleAction?.call();
-      },
+      onPressed: () => onPressed?.call(),
       label: Text(
         text,
         style: TextStyle(color: color),

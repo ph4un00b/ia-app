@@ -40,10 +40,6 @@ final class Lola$ {
     });
   }
 
-  Widget empty() {
-    return Container();
-  }
-
   loadReply({required String input, required VoiceLola voice}) async {
     var completion = '';
     outputState.add(LolaEmpty());

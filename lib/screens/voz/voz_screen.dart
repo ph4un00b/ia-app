@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/core/components/action_btn.dart';
+import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
@@ -109,17 +109,17 @@ class _VozBodyState extends State<VozBody> {
                     builder: (context, snap) {
                       final ui = snap.data;
                       return switch (ui) {
-                        null => lola$.empty(),
+                        null => Container(),
                         Idle() => ui.empty(),
                         FetchingCompletion() => ui.empty(),
-                        CompletionOK() => ui.message(scale: scale),
+                        CompletionOK() => ui.withMessage(scale: scale),
                         CompletionErr() => ui.empty(),
-                        FetchingSpeech() => ui.message(scale: scale),
-                        SpeechOk() => ui.message(scale: scale),
-                        SpeechErr() => ui.message(scale: scale),
-                        SpeakingIdle() => ui.message(scale: scale),
-                        SpeakingOK() => ui.message(scale: scale),
-                        SpeakingErr() => ui.message(scale: scale),
+                        FetchingSpeech() => ui.withMessage(scale: scale),
+                        SpeechOk() => ui.withMessage(scale: scale),
+                        SpeechErr() => ui.withMessage(scale: scale),
+                        SpeakingIdle() => ui.withMessage(scale: scale),
+                        SpeakingOK() => ui.withMessage(scale: scale),
+                        SpeakingErr() => ui.withMessage(scale: scale),
                       };
                     }),
               ),
@@ -181,7 +181,7 @@ class _VozBodyState extends State<VozBody> {
                             LolaEmpty() => ui.actionDisabled(scale: scale),
                             LolaMessage() => ui.actionEnabled(
                                 scale: scale,
-                                action: () => openMessage(context, ui),
+                                action: () => openLolaMessage(context, ui),
                               ),
                           };
                         },
@@ -251,21 +251,17 @@ class _VozBodyState extends State<VozBody> {
                     child: InkWell(
                         splashColor: Colors.purple.withAlpha(30),
                         child: switch ($phau.messageState) {
-                          VozMessageState.printine => ActionButtonAlt(
-                              icon: const Icon(Icons.edit),
-                              text: 'Editar',
+                          VozMessageState.printine => VozEditAction(
                               scale: scale,
-                              handleAction: () {
+                              onPressed: () {
                                 setState(() {
                                   $phau.messageState = VozMessageState.editing;
                                 });
                               },
                             ),
-                          VozMessageState.editing => ActionButtonAlt(
-                              icon: const Icon(Icons.send),
-                              text: 'Enviar',
+                          VozMessageState.editing => VozRequestAction(
                               scale: scale,
-                              handleAction: () {
+                              onPressed: () {
                                 setState(() {
                                   $phau.messageState = VozMessageState.edited;
                                 });
@@ -273,11 +269,9 @@ class _VozBodyState extends State<VozBody> {
                                 messageFormKey.currentState?.save();
                               },
                             ),
-                          VozMessageState.edited => ActionButtonAlt(
-                              icon: const Icon(Icons.edit),
-                              text: 'Editar',
+                          VozMessageState.edited => VozEditAction(
                               scale: scale,
-                              handleAction: () {
+                              onPressed: () {
                                 setState(() {
                                   $phau.messageState = VozMessageState.editing;
                                 });
@@ -294,43 +288,16 @@ class _VozBodyState extends State<VozBody> {
                       splashColor: Colors.purple.withAlpha(30),
                       onTap: () {},
                       child: switch ($phau.messageState) {
-                        VozMessageState.printine => ActionButtonAlt(
-                            icon: const Icon(Icons.expand_less),
-                            text: 'Ver Mensaje',
+                        VozMessageState.printine => VozOpenMessageAction(
                             scale: scale,
-                            handleAction: () {
-                              showModalBottomSheet(
-                                isScrollControlled: true,
-                                context: context,
-                                builder: (ctx) => LolaMessageScreen(
-                                  message: $phau.input,
-                                  context: context,
-                                  scale: scale,
-                                ),
-                              );
-                            },
+                            onPressed: () => openUserMessage(context),
                           ),
-                        VozMessageState.editing => ActionButtonAlt(
-                            icon: const Icon(Icons.expand_less),
-                            text: 'Ver Mensaje',
+                        VozMessageState.editing => VozOpenMessageDisabled(
                             scale: scale,
-                            color: Colors.grey,
                           ),
-                        VozMessageState.edited => ActionButtonAlt(
-                            icon: const Icon(Icons.expand_less_sharp),
-                            text: 'Ver Mensaje',
+                        VozMessageState.edited => VozOpenMessageAction(
                             scale: scale,
-                            handleAction: () {
-                              showModalBottomSheet(
-                                isScrollControlled: true,
-                                context: context,
-                                builder: (ctx) => LolaMessageScreen(
-                                  message: $phau.input,
-                                  context: context,
-                                  scale: scale,
-                                ),
-                              );
-                            },
+                            onPressed: () => openUserMessage(context),
                           ),
                       },
                     ),
@@ -423,7 +390,19 @@ class _VozBodyState extends State<VozBody> {
     );
   }
 
-  Future<dynamic> openMessage(BuildContext context, LolaMessage state) {
+  Future<dynamic> openUserMessage(BuildContext context) {
+    return showModalBottomSheet(
+      isScrollControlled: true,
+      context: context,
+      builder: (ctx) => LolaMessageScreen(
+        message: $phau.input,
+        context: context,
+        scale: scale,
+      ),
+    );
+  }
+
+  Future<dynamic> openLolaMessage(BuildContext context, LolaMessage state) {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
