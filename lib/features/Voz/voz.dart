@@ -133,9 +133,7 @@ final class Voz with ChangeNotifier {
 
       state = VozState.playing;
       notifyListeners();
-
     } catch (e) {
-
       state = VozState.playingError;
       notifyListeners();
 
@@ -152,7 +150,6 @@ final class Voz with ChangeNotifier {
 
       await _player.stop();
     } catch (e) {
-
       state = VozState.stopPlayingError;
       notifyListeners();
 
@@ -178,8 +175,7 @@ final class Voz with ChangeNotifier {
         debugPrint(">> devices: $devices");
 
         var config = rec.RecordConfig(encoder: encoder, numChannels: 2);
-        String path =
-            await buildPath(encoder: encoder, folder: FolderKind.temp);
+        String path = await buildPath(encoder: encoder, folder: FolderKind.temp);
         debugPrint(">> path: $path");
         _path = path;
 

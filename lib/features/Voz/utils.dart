@@ -8,8 +8,7 @@ enum FolderKind {
   temp,
 }
 
-Future<String> buildPath(
-    {required FolderKind folder, required AudioEncoder encoder}) async {
+Future<String> buildPath({required FolderKind folder, required AudioEncoder encoder}) async {
   switch ((folder, encoder)) {
     case (FolderKind.doc, AudioEncoder.wav):
       final dir = await getApplicationDocumentsDirectory();

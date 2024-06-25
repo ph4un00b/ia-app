@@ -19,10 +19,7 @@ class ExampleDestination {
 }
 
 const List<ExampleDestination> destinations = <ExampleDestination>[
-  ExampleDestination(
-      'Mensajes', Icon(Icons.mail_outline), Icon(Icons.mail_outline)),
-  ExampleDestination(
-      'Perfil', Icon(Icons.manage_accounts), Icon(Icons.manage_accounts)),
-  ExampleDestination(
-      'Otros', Icon(Icons.add_circle_outline), Icon(Icons.add_circle_outline)),
+  ExampleDestination('Mensajes', Icon(Icons.mail_outline), Icon(Icons.mail_outline)),
+  ExampleDestination('Perfil', Icon(Icons.manage_accounts), Icon(Icons.manage_accounts)),
+  ExampleDestination('Otros', Icon(Icons.add_circle_outline), Icon(Icons.add_circle_outline)),
 ];

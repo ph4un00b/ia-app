@@ -16,20 +16,16 @@ Route<dynamic>? routesProvider(RouteSettings settings) {
   return switch (routeParams) {
     (String name, _) when name == "/" => gotoInicio,
     (String name, Null _) when name == "/voz" => gotoVoz,
-    (String name, Object params) when name == "/opciones" =>
-      whereOptRoute(params),
+    (String name, Object params) when name == "/opciones" => whereOptRoute(params),
     // TODO: Handle this case.
     _ => throw UnimplementedError(),
   };
 }
 
 MaterialPageRoute<dynamic> whereOptRoute(Object params) {
-  var gotoOptProfile =
-      MaterialPageRoute(builder: (ctx) => const OptProfileScreen());
-  var gotoOptMessages =
-      MaterialPageRoute(builder: (ctx) => const OptMessagesScreen());
-  var gotoOptOthers =
-      MaterialPageRoute(builder: (ctx) => const OptOthersScreen());
+  var gotoOptProfile = MaterialPageRoute(builder: (ctx) => const OptProfileScreen());
+  var gotoOptMessages = MaterialPageRoute(builder: (ctx) => const OptMessagesScreen());
+  var gotoOptOthers = MaterialPageRoute(builder: (ctx) => const OptOthersScreen());
 
   debugPrint(params.toString());
   return switch (params) {

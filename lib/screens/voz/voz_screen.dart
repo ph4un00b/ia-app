@@ -229,9 +229,7 @@ class _VozBodyState extends State<VozBody> {
               builder: (_, __) {
                 return Card.filled(
                   shape: RoundedRectangleBorder(
-                    side: $phau.state == VozState.recording
-                        ? const BorderSide(color: Colors.green, width: 2.0)
-                        : BorderSide.none,
+                    side: $phau.state == VozState.recording ? const BorderSide(color: Colors.green, width: 2.0) : BorderSide.none,
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: InkWell(
@@ -239,11 +237,7 @@ class _VozBodyState extends State<VozBody> {
                     onTap: () async {
                       debugPrint('Card tapped from: ${$phau.state}');
                       if ($phau.state
-                          case VozState.idle ||
-                              VozState.recordingOk ||
-                              VozState.stopRecording ||
-                              VozState.playingError ||
-                              VozState.playingCompleted) {
+                          case VozState.idle || VozState.recordingOk || VozState.stopRecording || VozState.playingError || VozState.playingCompleted) {
                         recordMessage();
                       } else if ($phau.state case VozState.recording) {
                         await $phau.notifyStopRecording();
@@ -302,8 +296,7 @@ class _VozBodyState extends State<VozBody> {
                                 scale: scale,
                                 onPressed: () {
                                   setState(() {
-                                    $phau.messageState =
-                                        VozMessageState.editing;
+                                    $phau.messageState = VozMessageState.editing;
                                   });
                                 },
                               ),
@@ -311,8 +304,7 @@ class _VozBodyState extends State<VozBody> {
                                 scale: scale,
                                 onPressed: () {
                                   setState(() {
-                                    $phau.messageState =
-                                        VozMessageState.editing;
+                                    $phau.messageState = VozMessageState.editing;
                                   });
                                 },
                               ),
@@ -379,8 +371,7 @@ class _VozBodyState extends State<VozBody> {
           splashColor: Colors.purple.withAlpha(30),
           child: ListenableBuilder(
             listenable: $phau,
-            builder: (_, __) =>
-                Center(child: Text($phau.messageState.toString())),
+            builder: (_, __) => Center(child: Text($phau.messageState.toString())),
           ),
         ),
       ),
@@ -481,13 +472,9 @@ class _VozBodyState extends State<VozBody> {
         child: InkWell(
           splashColor: Colors.purple.withAlpha(30),
           onTap: () {
-            debugPrint(
-                '>> from: ${$phau.state.toString()}; path?: ${$phau.hasPath}');
+            debugPrint('>> from: ${$phau.state.toString()}; path?: ${$phau.hasPath}');
 
-            if ($phau.state
-                case VozState.recordingOk ||
-                    VozState.playingCompleted ||
-                    VozState.idle) {
+            if ($phau.state case VozState.recordingOk || VozState.playingCompleted || VozState.idle) {
               $phau.notifyPlayAudio();
             } else if ($phau.state case VozState.playing) {
               $phau.notifyStopAudio();

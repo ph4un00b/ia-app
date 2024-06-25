@@ -91,8 +91,7 @@ final class Lola$ {
     await _player.play();
   }
 
-  Future<String> _fetchSpeech(
-      {required VoiceLola voice, required String text}) async {
+  Future<String> _fetchSpeech({required VoiceLola voice, required String text}) async {
     File speechFile;
     speechFile = await voice.synthesize(text: text);
     debugPrint(speechFile.path);

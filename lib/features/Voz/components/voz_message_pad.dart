@@ -34,21 +34,14 @@ class VozMessagePad extends StatelessWidget {
                         enabled: state == VozMessageState.editing,
                         minLines: 4,
                         maxLines: 10,
-                        controller:
-                            TextEditingController(text: controller.input),
+                        controller: TextEditingController(text: controller.input),
                         keyboardType: TextInputType.multiline,
                         decoration: InputDecoration(
-                          border: state == VozMessageState.editing
-                              ? const OutlineInputBorder()
-                              : InputBorder.none,
+                          border: state == VozMessageState.editing ? const OutlineInputBorder() : InputBorder.none,
                           labelText: 'Presiona para grabar mensaje',
                           // hintText: 'jamon',
                         ),
-                        style: TextStyle(
-                            fontSize: 36.0 * scale,
-                            color: state == VozMessageState.editing
-                                ? null
-                                : Colors.white70),
+                        style: TextStyle(fontSize: 36.0 * scale, color: state == VozMessageState.editing ? null : Colors.white70),
                         onSaved: (value) {
                           debugPrint('>> value: $value');
                           onMessageEdited(value);

@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 
 class DebugVoiceSelector extends StatelessWidget {
-  const DebugVoiceSelector(
-      {super.key, required this.$lolavoice, required this.onSelected});
+  const DebugVoiceSelector({super.key, required this.$lolavoice, required this.onSelected});
 
   final VoiceLola $lolavoice;
   final Future<void> Function(VoiceLola? voz) onSelected;
@@ -42,14 +41,12 @@ class DebugVoiceSelector extends StatelessWidget {
                 textAlign: TextAlign.start,
               ),
               onSelected: onSelected,
-              dropdownMenuEntries: VoiceLola.values
-                  .map<DropdownMenuEntry<VoiceLola>>((VoiceLola voz) {
+              dropdownMenuEntries: VoiceLola.values.map<DropdownMenuEntry<VoiceLola>>((VoiceLola voz) {
                 return DropdownMenuEntry<VoiceLola>(
                   value: voz,
                   label: voz.label,
                   enabled: true,
-                  style: MenuItemButton.styleFrom(
-                      textStyle: const TextStyle(fontSize: 18.0)),
+                  style: MenuItemButton.styleFrom(textStyle: const TextStyle(fontSize: 18.0)),
                 );
               }).toList(),
             ),

@@ -21,15 +21,14 @@ class ActionButton extends StatelessWidget {
     return ElevatedButton.icon(
       icon: icon,
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(
-          horizontal: 10 * scale,
-          vertical: 10 * scale,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(100),
-        ),
-        iconColor: color
-      ),
+          padding: EdgeInsets.symmetric(
+            horizontal: 10 * scale,
+            vertical: 10 * scale,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
+          iconColor: color),
       onPressed: () => onPressed?.call(),
       label: Text(
         text,
@@ -61,16 +60,15 @@ class ActionButtonAlt extends StatelessWidget {
     return ElevatedButton.icon(
       icon: icon,
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(
-          horizontal: 10 * scale,
-          vertical: 10 * scale,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(100),
-        ),
-        iconColor: color,
-        backgroundColor: Colors.white10
-      ),
+          padding: EdgeInsets.symmetric(
+            horizontal: 10 * scale,
+            vertical: 10 * scale,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
+          iconColor: color,
+          backgroundColor: Colors.white10),
       onPressed: () => onPressed?.call(),
       label: Text(
         text,

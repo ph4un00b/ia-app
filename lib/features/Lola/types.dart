@@ -120,8 +120,7 @@ final class NonePath implements LolaAudioState$ {
 }
 
 final class Playing implements LolaAudioState$ {
-  Widget stop(
-      {required double scale, required Future<void> Function() action}) {
+  Widget stop({required double scale, required Future<void> Function() action}) {
     return ActionButton(
       icon: const Icon(Icons.stop),
       text: 'Parar',
@@ -132,8 +131,7 @@ final class Playing implements LolaAudioState$ {
 }
 
 final class PlayingErr implements LolaAudioState$ {
-  Widget replay(
-      {required double scale, required Future<void> Function() action}) {
+  Widget replay({required double scale, required Future<void> Function() action}) {
     return ActionButton(
       icon: const Icon(Icons.play_arrow_rounded),
       text: 'Repetir',
@@ -145,8 +143,7 @@ final class PlayingErr implements LolaAudioState$ {
 }
 
 final class PlayingCompleted implements LolaAudioState$ {
-  Widget replay(
-      {required double scale, required Future<void> Function() action}) {
+  Widget replay({required double scale, required Future<void> Function() action}) {
     return ActionButton(
       icon: const Icon(Icons.play_arrow_rounded),
       text: 'Repetir',

@@ -33,8 +33,7 @@ class TextToSpeechRequest {
     this.voiceSettings,
   });
 
-  factory TextToSpeechRequest.fromJson(Map<String, dynamic> json) =>
-      _$TextToSpeechRequestFromJson(json);
+  factory TextToSpeechRequest.fromJson(Map<String, dynamic> json) => _$TextToSpeechRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$TextToSpeechRequestToJson(this);
 }
@@ -57,8 +56,7 @@ class VoiceSettings {
     required this.stability,
   });
 
-  factory VoiceSettings.fromJson(Map<String, dynamic> json) =>
-      _$VoiceSettingsFromJson(json);
+  factory VoiceSettings.fromJson(Map<String, dynamic> json) => _$VoiceSettingsFromJson(json);
 
   Map<String, dynamic> toJson() => _$VoiceSettingsToJson(this);
 }
@@ -84,8 +82,7 @@ class TextToSpeechStreamRequest {
     this.voiceSettings,
   });
 
-  factory TextToSpeechStreamRequest.fromJson(Map<String, dynamic> json) =>
-      _$TextToSpeechStreamRequestFromJson(json);
+  factory TextToSpeechStreamRequest.fromJson(Map<String, dynamic> json) => _$TextToSpeechStreamRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$TextToSpeechStreamRequestToJson(this);
 }
@@ -125,8 +122,7 @@ class ElevenModel {
     required this.tokenCostFactor,
   });
 
-  factory ElevenModel.fromJson(Map<String, dynamic> json) =>
-      _$ElevenModelFromJson(json);
+  factory ElevenModel.fromJson(Map<String, dynamic> json) => _$ElevenModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$ElevenModelToJson(this);
 }
@@ -147,8 +143,7 @@ class Language {
     required this.name,
   });
 
-  factory Language.fromJson(Map<String, dynamic> json) =>
-      _$LanguageFromJson(json);
+  factory Language.fromJson(Map<String, dynamic> json) => _$LanguageFromJson(json);
 
   Map<String, dynamic> toJson() => _$LanguageToJson(this);
 }
@@ -251,14 +246,12 @@ class FineTuning {
     this.manualVerification,
   });
 
-  factory FineTuning.fromJson(Map<String, dynamic> json) =>
-      _$FineTuningFromJson(json);
+  factory FineTuning.fromJson(Map<String, dynamic> json) => _$FineTuningFromJson(json);
 
   Map<String, dynamic> toJson() => _$FineTuningToJson(this);
 }
 
-class FineTuningStateConverter
-    implements JsonConverter<FineTuningState, String> {
+class FineTuningStateConverter implements JsonConverter<FineTuningState, String> {
   const FineTuningStateConverter();
 
   @override
@@ -302,8 +295,7 @@ class VerificationAttempt {
     required this.text,
   });
 
-  factory VerificationAttempt.fromJson(Map<String, dynamic> json) =>
-      _$VerificationAttemptFromJson(json);
+  factory VerificationAttempt.fromJson(Map<String, dynamic> json) => _$VerificationAttemptFromJson(json);
 
   Map<String, dynamic> toJson() => _$VerificationAttemptToJson(this);
 }
@@ -331,8 +323,7 @@ class Recording {
     required this.uploadDateUnix,
   });
 
-  factory Recording.fromJson(Map<String, dynamic> json) =>
-      _$RecordingFromJson(json);
+  factory Recording.fromJson(Map<String, dynamic> json) => _$RecordingFromJson(json);
 
   Map<String, dynamic> toJson() => _$RecordingToJson(this);
 }
@@ -417,8 +408,7 @@ class Sharing {
     required this.voiceId,
   });
 
-  factory Sharing.fromJson(Map<String, dynamic> json) =>
-      _$SharingFromJson(json);
+  factory Sharing.fromJson(Map<String, dynamic> json) => _$SharingFromJson(json);
 
   Map<String, dynamic> toJson() => _$SharingToJson(this);
 }
@@ -444,8 +434,7 @@ class AddVoiceRequest {
     required this.name,
   });
 
-  factory AddVoiceRequest.fromJson(Map<String, dynamic> json) =>
-      _$AddVoiceRequestFromJson(json);
+  factory AddVoiceRequest.fromJson(Map<String, dynamic> json) => _$AddVoiceRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$AddVoiceRequestToJson(this);
 
@@ -486,8 +475,7 @@ class AddVoiceResponse {
     required this.voiceId,
   });
 
-  factory AddVoiceResponse.fromJson(Map<String, dynamic> json) =>
-      _$AddVoiceResponseFromJson(json);
+  factory AddVoiceResponse.fromJson(Map<String, dynamic> json) => _$AddVoiceResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$AddVoiceResponseToJson(this);
 }
@@ -513,8 +501,7 @@ class EditVoiceRequest {
     required this.name,
   });
 
-  factory EditVoiceRequest.fromJson(Map<String, dynamic> json) =>
-      _$EditVoiceRequestFromJson(json);
+  factory EditVoiceRequest.fromJson(Map<String, dynamic> json) => _$EditVoiceRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$EditVoiceRequestToJson(this);
 
@@ -554,8 +541,7 @@ class History {
     required this.lastHistoryItemId,
   });
 
-  factory History.fromJson(Map<String, dynamic> json) =>
-      _$HistoryFromJson(json);
+  factory History.fromJson(Map<String, dynamic> json) => _$HistoryFromJson(json);
 
   Map<String, dynamic> toJson() => _$HistoryToJson(this);
 }
@@ -602,8 +588,7 @@ class HistoryItem {
     required this.voiceName,
   });
 
-  factory HistoryItem.fromJson(Map<String, dynamic> json) =>
-      _$HistoryItemFromJson(json);
+  factory HistoryItem.fromJson(Map<String, dynamic> json) => _$HistoryItemFromJson(json);
 
   Map<String, dynamic> toJson() => _$HistoryItemToJson(this);
 }
@@ -639,8 +624,7 @@ class Feedback {
     required this.thumbsUp,
   });
 
-  factory Feedback.fromJson(Map<String, dynamic> json) =>
-      _$FeedbackFromJson(json);
+  factory Feedback.fromJson(Map<String, dynamic> json) => _$FeedbackFromJson(json);
 
   Map<String, dynamic> toJson() => _$FeedbackToJson(this);
 }
@@ -659,8 +643,7 @@ class DownloadHistoryItemsRequest {
     required this.historyItemIds,
   });
 
-  factory DownloadHistoryItemsRequest.fromJson(Map<String, dynamic> json) =>
-      _$DownloadHistoryItemsRequestFromJson(json);
+  factory DownloadHistoryItemsRequest.fromJson(Map<String, dynamic> json) => _$DownloadHistoryItemsRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$DownloadHistoryItemsRequestToJson(this);
 }
@@ -686,8 +669,7 @@ class ElevenUser {
     required this.xiApiKey,
   });
 
-  factory ElevenUser.fromJson(Map<String, dynamic> json) =>
-      _$ElevenUserFromJson(json);
+  factory ElevenUser.fromJson(Map<String, dynamic> json) => _$ElevenUserFromJson(json);
 
   Map<String, dynamic> toJson() => _$ElevenUserToJson(this);
 }
@@ -739,8 +721,7 @@ class SubscriptionInfo {
     required this.voiceLimit,
   });
 
-  factory SubscriptionInfo.fromJson(Map<String, dynamic> json) =>
-      _$SubscriptionInfoFromJson(json);
+  factory SubscriptionInfo.fromJson(Map<String, dynamic> json) => _$SubscriptionInfoFromJson(json);
 
   Map<String, dynamic> toJson() => _$SubscriptionInfoToJson(this);
 }
@@ -795,8 +776,7 @@ class ExtendedSubscriptionInfo {
     required this.voiceLimit,
   });
 
-  factory ExtendedSubscriptionInfo.fromJson(Map<String, dynamic> json) =>
-      _$ExtendedSubscriptionInfoFromJson(json);
+  factory ExtendedSubscriptionInfo.fromJson(Map<String, dynamic> json) => _$ExtendedSubscriptionInfoFromJson(json);
 
   Map<String, dynamic> toJson() => _$ExtendedSubscriptionInfoToJson(this);
 }
@@ -818,8 +798,7 @@ class NextInvoice {
     required this.nextPaymentAttemptUnix,
   });
 
-  factory NextInvoice.fromJson(Map<String, dynamic> json) =>
-      _$NextInvoiceFromJson(json);
+  factory NextInvoice.fromJson(Map<String, dynamic> json) => _$NextInvoiceFromJson(json);
 
   Map<String, dynamic> toJson() => _$NextInvoiceToJson(this);
 }
