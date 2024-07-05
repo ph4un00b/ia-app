@@ -1,10 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:window_manager/window_manager.dart';
 import 'screens/root.dart';
 
 void main() async {
+  await dotenv.load(fileName: ".env");
+
   if (Platform.isMacOS || Platform.isWindows) {
     WidgetsFlutterBinding.ensureInitialized();
     await windowManager.ensureInitialized();

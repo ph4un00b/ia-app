@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/core/elevenlabs/api.dart';
 import 'package:lola_ai_app/secrets.dart' as secrets;
 
@@ -19,8 +20,7 @@ class DebugShowVoices extends StatelessWidget {
             debugPrint('>> 11-labs');
             var api = ElevenLabsAPI();
             // try {
-            api.init(
-                config: const ElevenLabsConfig(apiKey: secrets.ELEVEN_API_KEY));
+            api.init(config: ElevenLabsConfig(apiKey: Env.elevenApiKey));
             var response = await api.listVoices();
             var females = response.voices
                     ?.toList()
