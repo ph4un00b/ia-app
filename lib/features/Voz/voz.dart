@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 import 'package:record/record.dart' as rec;
 import 'package:lola_ai_app/secrets.dart' as secrets;
@@ -33,7 +34,7 @@ enum VozMessageState {
   edited,
 }
 
-final class Voz with ChangeNotifier {
+final class Voz with ChangeNotifier, ContentHandler {
   VozState state = VozState.idle;
   VozAI aiState = VozAI.idle;
   VozMessageState messageState = VozMessageState.empty;
@@ -77,6 +78,17 @@ final class Voz with ChangeNotifier {
           debugPrint('play completed!');
       }
     });
+  }
+
+  @override
+  void updateContent(String value) {
+    input = value;
+    notifyListeners();
+  }
+
+  @override
+  String content() {
+    return input;
   }
 
   Future<String> _fetchAITranscription() async {
@@ -175,7 +187,8 @@ final class Voz with ChangeNotifier {
         debugPrint(">> devices: $devices");
 
         var config = rec.RecordConfig(encoder: encoder, numChannels: 2);
-        String path = await buildPath(encoder: encoder, folder: FolderKind.temp);
+        String path =
+            await buildPath(encoder: encoder, folder: FolderKind.temp);
         debugPrint(">> path: $path");
         _path = path;
 

@@ -77,14 +77,17 @@ class ElevenLabsAPI {
   /// Synthesize text to speech
   /// Takes a [TextToSpeechRequest] object and a value from 0 to 1 on how much to optimize for streaming latency
   /// Returns a [HistoryItem] object
-  Future<File> synthesize(TextToSpeechRequest request, {int optimizeStreamingLatency = 0}) async {
+  Future<File> synthesize(TextToSpeechRequest request,
+      {int optimizeStreamingLatency = 0}) async {
     try {
       Response<dynamic> response;
       if (optimizeStreamingLatency != 0) {
         response = await _dio.post(
           '/v1/text-to-speech/${request.voiceId}',
           data: request,
-          queryParameters: {'optimize_streaming_latency': optimizeStreamingLatency},
+          queryParameters: {
+            'optimize_streaming_latency': optimizeStreamingLatency
+          },
           options: Options(
             responseType: ResponseType.bytes,
           ),
@@ -101,7 +104,8 @@ class ElevenLabsAPI {
 
       // final localStorage = await Directory.systemTemp.createTemp();
       final localStorage = await getTemporaryDirectory();
-      final String fileName = "${localStorage.path}/lola_11labs_tmp_${request.voiceId}_${formatTimestamp(DateTime.now())}.wav";
+      final String fileName =
+          "${localStorage.path}/lola_11labs_tmp_${request.voiceId}_${formatTimestamp(DateTime.now())}.wav";
       debugPrint('>> $fileName');
       final responseFile = await File(fileName).writeAsBytes(response.data);
       return responseFile;

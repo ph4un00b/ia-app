@@ -20,9 +20,11 @@ class InicioScreen extends StatelessWidget {
     return Scaffold(
         appBar: null,
         body: Center(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [AppLogo(text: mainTitle, scale: scale), CallToAction(text: actionBtnText, scale: scale)])));
+            child:
+                Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          AppLogo(text: mainTitle, scale: scale),
+          CallToAction(text: actionBtnText, scale: scale)
+        ])));
   }
 }
 
@@ -81,7 +83,8 @@ class CallToAction extends StatelessWidget {
       child: ElevatedButton.icon(
           // icon: Icon(Icons.mic),
           style: ElevatedButton.styleFrom(
-            padding: EdgeInsets.symmetric(horizontal: 24 * scale, vertical: 22 * scale),
+            padding: EdgeInsets.symmetric(
+                horizontal: 24 * scale, vertical: 22 * scale),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(100),
             ),

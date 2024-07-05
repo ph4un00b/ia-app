@@ -44,10 +44,14 @@ class LolaMessagePad extends StatelessWidget {
                     //! cualquier setState || notifyListeners truena
                     future: $lola.reply(input: voz.input, voice: $lolavoice),
                     builder: (context, snapshot) {
-                      debugPrint('>> lola reply:done:future: ${snapshot.hasData}'); //
+                      debugPrint(
+                          '>> lola reply:done:future: ${snapshot.hasData}'); //
 
                       String lolaOutput;
-                      lolaOutput = switch (snapshot.hasData) { true => snapshot.data!, false => $lola.output };
+                      lolaOutput = switch (snapshot.hasData) {
+                        true => snapshot.data!,
+                        false => $lola.output
+                      };
 
                       if (snapshot.hasError) {
                         debugPrint('>> err: ${snapshot.error}');

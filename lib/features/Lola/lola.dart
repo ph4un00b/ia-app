@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/secrets.dart' as secrets;
 import 'package:just_audio/just_audio.dart' as audio;
 import 'types.dart';
@@ -27,7 +28,7 @@ enum LolaAI {
   error,
 }
 
-final class Lola with ChangeNotifier {
+final class Lola with ChangeNotifier, QueryContent {
   String output = '';
   String _path = '';
   var fetchingCounter = 0;
@@ -60,6 +61,11 @@ final class Lola with ChangeNotifier {
           debugPrint('play lola completed!');
       }
     });
+  }
+
+  @override
+  String content() {
+    return output;
   }
 
   Future<void> notifyStopSpeech() async {

@@ -32,8 +32,8 @@ class LolaShowFullMessagePad extends StatelessWidget {
                     isScrollControlled: true,
                     context: context,
                     builder: (ctx) => LolaMessageScreen(
-                      message: $lola.output,
-                      context: context,
+                      controller: $lola,
+                      parentContext: context,
                       scale: scale,
                     ),
                   ),

@@ -4,16 +4,18 @@ import 'dart:io';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/secrets.dart' as secrets;
 import 'package:just_audio/just_audio.dart' as audio;
 
-final class Lola$ {
+final class Lola$ with QueryContent {
   final state = StreamController<LolaState$>()..add(Idle());
   final audioState = StreamController<LolaAudioState$>()..add(NonePath());
   final replyState = StreamController<LolaReplyState$>()..add(LolaEmpty());
   String _output = '';
   String _path = '';
   final audio.AudioPlayer _player = audio.AudioPlayer();
+  VoiceLola voice = VoiceLola.nova;
 
   Lola$() {
     _player.playbackEventStream.listen((event) async {
@@ -40,7 +42,12 @@ final class Lola$ {
     });
   }
 
-  loadReply({required String input, required VoiceLola voice}) async {
+  @override
+  String content() {
+    return _output;
+  }
+
+  loadReply({required String input}) async {
     var completion = '';
     replyState.add(LolaEmpty());
     _emit(FetchingCompletion());
@@ -91,7 +98,8 @@ final class Lola$ {
     await _player.play();
   }
 
-  Future<String> _fetchSpeech({required VoiceLola voice, required String text}) async {
+  Future<String> _fetchSpeech(
+      {required VoiceLola voice, required String text}) async {
     File speechFile;
     speechFile = await voice.synthesize(text: text);
     debugPrint(speechFile.path);
@@ -165,5 +173,8 @@ final class Lola$ {
 
   void dispose() {
     _player.dispose();
+    state.close();
+    audioState.close();
+    replyState.close();
   }
 }

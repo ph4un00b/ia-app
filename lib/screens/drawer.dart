@@ -13,9 +13,11 @@ class AppDrawer extends StatelessWidget {
         debugPrint("$index");
         var args = {'subroute': '/otros'};
         if (index case 0) {
-          Navigator.pushNamed(context, '/opciones', arguments: ("/mensajes", "luis"));
+          Navigator.pushNamed(context, '/opciones',
+              arguments: ("/mensajes", "luis"));
         } else if (index case 1) {
-          Navigator.pushNamed(context, '/opciones', arguments: ProfileArgs(city: "jamon", country: "bolivia"));
+          Navigator.pushNamed(context, '/opciones',
+              arguments: ProfileArgs(city: "jamon", country: "bolivia"));
         } else if (index case 2) {
           Navigator.pushNamed(context, '/opciones', arguments: args);
         } else if (index case 3) {

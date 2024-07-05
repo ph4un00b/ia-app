@@ -22,44 +22,23 @@ class VozMessagePad extends StatelessWidget {
     return ListenableBuilder(
       listenable: controller,
       builder: (_, __) {
-        debugPrint('>> ${controller.state}, ${controller.aiState}');
+        debugPrint('>> voz-message-pad: ${controller.state}, ${controller.aiState}');
         return switch (controller.aiState) {
-          VozAI.transcribingOk => Center(
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Form(
-                      key: formkey,
-                      child: TextFormField(
-                        enabled: state == VozMessageState.editing,
-                        minLines: 4,
-                        maxLines: 10,
-                        controller: TextEditingController(text: controller.input),
-                        keyboardType: TextInputType.multiline,
-                        decoration: InputDecoration(
-                          border: state == VozMessageState.editing ? const OutlineInputBorder() : InputBorder.none,
-                          labelText: 'Presiona para grabar mensaje',
-                          // hintText: 'jamon',
-                        ),
-                        style: TextStyle(fontSize: 36.0 * scale, color: state == VozMessageState.editing ? null : Colors.white70),
-                        onSaved: (value) {
-                          debugPrint('>> value: $value');
-                          onMessageEdited(value);
-                          // voz.input = value ?? '';
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+          VozAI.transcribingOk => MessageWidget(
+              formkey: formkey,
+              state: state,
+              controller: controller,
+              scale: scale,
+              onMessageEdited: onMessageEdited,
+            ),
+          VozAI.transcribing => MessageWidget(
+              formkey: formkey,
+              state: state,
+              controller: controller,
+              scale: scale,
+              onMessageEdited: onMessageEdited,
             ),
           VozAI.idle => Center(
-              child: Text(
-                'Presiona para grabar mensaje.',
-                style: TextStyle(fontSize: 36.0 * scale),
-              ),
-            ),
-          VozAI.transcribing => Center(
               child: Text(
                 'Presiona para grabar mensaje.',
                 style: TextStyle(fontSize: 36.0 * scale),
@@ -73,6 +52,76 @@ class VozMessagePad extends StatelessWidget {
             ),
         };
       },
+    );
+  }
+}
+
+class MessageWidget extends StatelessWidget {
+  const MessageWidget({
+    super.key,
+    required this.formkey,
+    required this.state,
+    required this.controller,
+    required this.scale,
+    required this.onMessageEdited,
+  });
+
+  final GlobalKey<FormState> formkey;
+  final VozMessageState state;
+  final Voz controller;
+  final double scale;
+  final Function(String? p1) onMessageEdited;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        children: [
+          Expanded(
+            child: Form(
+              key: formkey,
+              child: TextFormField(
+                expands: true,
+                enabled: state == VozMessageState.editing,
+                // minLines: 4,
+                minLines: null,
+                // maxLines: 10,
+                maxLines: null,
+                controller: TextEditingController(text: controller.input),
+                keyboardType: TextInputType.multiline,
+                decoration: InputDecoration(
+                  // filled: !true,
+                  // isDense: !true,
+                  border: state == VozMessageState.editing
+                      ? const OutlineInputBorder()
+                      : InputBorder.none,
+                  labelText: 'Presiona para grabar mensaje',
+                  labelStyle: TextStyle(
+                    // color: Colors.amber[600],
+                    fontStyle: FontStyle.normal,
+                    fontSize: 36 * scale,
+                  ),
+                  // floatingLabelAlignment: FloatingLabelAlignment.start,
+                  // floatingLabelStyle: TextStyle(
+                  //   color: Colors.green,
+                  //   fontSize: 26,
+                  // ),
+                ),
+                style: TextStyle(
+                    fontSize: 36.0 * scale,
+                    color: state == VozMessageState.editing
+                        ? null
+                        : Colors.white70),
+                onSaved: (value) {
+                  debugPrint('>> on-saved-value: $value');
+                  onMessageEdited(value);
+                  // voz.input = value ?? '';
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -45,7 +45,8 @@ class _DropdownState extends State<Dropdown> {
                       dropdownValue = value!;
                     });
                   },
-                  dropdownMenuEntries: list.map<DropdownMenuEntry<String>>((String value) {
+                  dropdownMenuEntries:
+                      list.map<DropdownMenuEntry<String>>((String value) {
                     return DropdownMenuEntry<String>(value: value, label: value);
                   }).toList(),
                 )),

@@ -56,6 +56,8 @@ class VozRequestAction extends StatelessWidget {
   }
 }
 
+
+
 class VozGrabarAction extends StatelessWidget {
   const VozGrabarAction({super.key, required this.scale, this.onPressed});
 
@@ -96,7 +98,8 @@ class VozOpenMessageAction extends StatelessWidget {
 }
 
 class VozOpenMessageDisabled extends StatelessWidget {
-  const VozOpenMessageDisabled({super.key, required this.scale, this.onPressed});
+  const VozOpenMessageDisabled(
+      {super.key, required this.scale, this.onPressed});
 
   final double scale;
   final Function? onPressed;

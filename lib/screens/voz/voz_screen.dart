@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/App/components/setting_text.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
+import 'package:lola_ai_app/features/core/components/debug_alt_widget.dart';
+import 'package:lola_ai_app/features/core/components/debug_widget.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
@@ -11,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../features/Voz/voz.dart';
+import 'user_message/user_message_screen.dart';
 
 class VozScreen extends StatelessWidget {
   const VozScreen({
@@ -56,7 +59,6 @@ class _VozBodyState extends State<VozBody> {
   Stream<LolaState$>? lolaState$;
   Stream<LolaAudioState$>? lolaAudioState$;
   Stream<LolaReplyState$>? lolaReplyState$;
-  VoiceLola $lolavoice = VoiceLola.nova;
   var scale = 1.0;
   final messageFormKey = GlobalKey<FormState>();
 
@@ -96,7 +98,7 @@ class _VozBodyState extends State<VozBody> {
     String voz = prefs.getString('lola-voice') ?? 'nova';
 
     setState(() {
-      $lolavoice = VoiceLola.values.firstWhere((v) => v.name == voz);
+      lola$.voice = VoiceLola.values.firstWhere((v) => v.name == voz);
       scale = prefs.getDouble('app-setting-text') ?? 1.0;
     });
   }
@@ -126,11 +128,7 @@ class _VozBodyState extends State<VozBody> {
             child: Card(
               child: InkWell(
                 splashColor: Colors.purple.withAlpha(30),
-                onTap: () {
-                  setState(() {
-                    // refresh
-                  });
-                },
+                onTap: () => setState(() {}),
                 child: StreamBuilder(
                     stream: lolaState$,
                     builder: (context, snap) {
@@ -158,62 +156,53 @@ class _VozBodyState extends State<VozBody> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: Card(
-                    clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      child: StreamBuilder(
-                        stream: lolaAudioState$,
-                        builder: (context, snap) {
-                          final ui = snap.data;
-                          return switch (ui) {
-                            null => Container(),
-                            NonePath() => ui.actionDisabled(scale: scale),
-                            Playing() => ui.stop(
-                                scale: scale,
-                                action: () => lola$.stopSpeech(),
-                              ),
-                            PlayingErr() => ui.replay(
-                                scale: scale,
-                                action: () => lola$.playSpeech(),
-                              ),
-                            PlayingCompleted() => ui.replay(
-                                scale: scale,
-                                action: () => lola$.playSpeech(),
-                              ),
-                            Stopped() => ui.play(
-                                scale,
-                                action: () => lola$.playSpeech(),
-                              ),
-                            StoppedErr() => ui.play(
-                                scale,
-                                action: () => lola$.playSpeech(),
-                              ),
-                          };
-                        },
-                      ),
-                    ),
+                  child: StreamBuilder(
+                    stream: lolaAudioState$,
+                    builder: (context, snap) {
+                      final ui = snap.data;
+                      return switch (ui) {
+                        null => Container(),
+                        NonePath() => ui.actionDisabled(scale: scale),
+                        Playing() => ui.stop(
+                            scale: scale,
+                            action: () => lola$.stopSpeech(),
+                          ),
+                        PlayingErr() => ui.replay(
+                            scale: scale,
+                            action: () => lola$.playSpeech(),
+                          ),
+                        PlayingCompleted() => ui.replay(
+                            scale: scale,
+                            action: () => lola$.playSpeech(),
+                          ),
+                        Stopped() => ui.play(
+                            scale,
+                            action: () => lola$.playSpeech(),
+                          ),
+                        StoppedErr() => ui.play(
+                            scale,
+                            action: () => lola$.playSpeech(),
+                          ),
+                      };
+                    },
                   ),
                 ),
+                const SizedBox(width: 12),
                 Expanded(
                   flex: 1,
-                  child: Card(
-                    clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      child: StreamBuilder(
-                        stream: lolaReplyState$,
-                        builder: (context, snap) {
-                          final ui = snap.data;
-                          return switch (ui) {
-                            null => Container(),
-                            LolaEmpty() => ui.actionDisabled(scale: scale),
-                            LolaMessage() => ui.actionEnabled(
-                                scale: scale,
-                                action: () => openLolaMessage(context, ui),
-                              ),
-                          };
-                        },
-                      ),
-                    ),
+                  child: StreamBuilder(
+                    stream: lolaReplyState$,
+                    builder: (context, snap) {
+                      final ui = snap.data;
+                      return switch (ui) {
+                        null => Container(),
+                        LolaEmpty() => ui.actionDisabled(scale: scale),
+                        LolaMessage() => ui.actionEnabled(
+                            scale: scale,
+                            action: () => openLolaMessage(context, ui),
+                          ),
+                      };
+                    },
                   ),
                 ),
               ],
@@ -229,7 +218,9 @@ class _VozBodyState extends State<VozBody> {
               builder: (_, __) {
                 return Card.filled(
                   shape: RoundedRectangleBorder(
-                    side: $phau.state == VozState.recording ? const BorderSide(color: Colors.green, width: 2.0) : BorderSide.none,
+                    side: $phau.state == VozState.recording
+                        ? const BorderSide(color: Colors.green, width: 2.0)
+                        : BorderSide.none,
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                   child: InkWell(
@@ -237,14 +228,15 @@ class _VozBodyState extends State<VozBody> {
                     onTap: () async {
                       debugPrint('Card tapped from: ${$phau.state}');
                       if ($phau.state
-                          case VozState.idle || VozState.recordingOk || VozState.stopRecording || VozState.playingError || VozState.playingCompleted) {
+                          case VozState.idle ||
+                              VozState.recordingOk ||
+                              VozState.stopRecording ||
+                              VozState.playingError ||
+                              VozState.playingCompleted) {
                         recordMessage();
                       } else if ($phau.state case VozState.recording) {
                         await $phau.notifyStopRecording();
-                        await lola$.loadReply(
-                          input: $phau.input,
-                          voice: $lolavoice,
-                        );
+                        await lola$.loadReply(input: $phau.input);
                       } else if ($phau.state case _) {
                         debugPrint('noop');
                       }
@@ -255,8 +247,12 @@ class _VozBodyState extends State<VozBody> {
                       controller: $phau,
                       scale: scale,
                       onMessageEdited: (value) async {
+                        debugPrint('>> on-message-edited: $value');
                         if (value != null) {
-                          await askLola(value);
+                          setState(() {
+                            $phau.input = value;
+                          });
+                          await lola$.loadReply(input: $phau.input);
                         }
                       },
                     ),
@@ -271,78 +267,66 @@ class _VozBodyState extends State<VozBody> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: Card.filled(
-                    clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      splashColor: Colors.purple.withAlpha(30),
-                      child: ListenableBuilder(
-                        listenable: $phau,
-                        builder: (_, __) {
-                          return switch ($phau.messageState) {
-                            VozMessageState.empty => VozEditDisabled(
-                                scale: scale,
-                              ),
-                            VozMessageState.editing => VozRequestAction(
-                                scale: scale,
-                                onPressed: () {
-                                  setState(() {
-                                    $phau.messageState = VozMessageState.edited;
-                                  });
+                  child: ListenableBuilder(
+                    listenable: $phau,
+                    builder: (_, __) {
+                      return switch ($phau.messageState) {
+                        VozMessageState.empty => VozEditDisabled(
+                            scale: scale,
+                          ),
+                        VozMessageState.editing => VozRequestAction(
+                            scale: scale,
+                            onPressed: () {
+                              setState(() {
+                                $phau.messageState = VozMessageState.edited;
+                              });
 
-                                  messageFormKey.currentState?.save();
-                                },
-                              ),
-                            VozMessageState.edited => VozEditAction(
-                                scale: scale,
-                                onPressed: () {
-                                  setState(() {
-                                    $phau.messageState = VozMessageState.editing;
-                                  });
-                                },
-                              ),
-                            VozMessageState.loaded => VozEditAction(
-                                scale: scale,
-                                onPressed: () {
-                                  setState(() {
-                                    $phau.messageState = VozMessageState.editing;
-                                  });
-                                },
-                              ),
-                          };
-                        },
-                      ),
-                    ),
+                              messageFormKey.currentState?.save();
+                            },
+                          ),
+                        VozMessageState.edited => VozEditAction(
+                            scale: scale,
+                            onPressed: () {
+                              setState(() {
+                                $phau.messageState = VozMessageState.editing;
+                              });
+                            },
+                          ),
+                        VozMessageState.loaded => VozEditAction(
+                            scale: scale,
+                            onPressed: () {
+                              setState(() {
+                                $phau.messageState = VozMessageState.editing;
+                              });
+                            },
+                          ),
+                      };
+                    },
                   ),
                 ),
+                const SizedBox(width: 12),
                 Expanded(
                   flex: 1,
-                  child: Card.filled(
-                    clipBehavior: Clip.hardEdge,
-                    child: InkWell(
-                      splashColor: Colors.purple.withAlpha(30),
-                      onTap: () {},
-                      child: ListenableBuilder(
-                        listenable: $phau,
-                        builder: (_, __) {
-                          return switch ($phau.messageState) {
-                            VozMessageState.empty => VozOpenMessageDisabled(
-                                scale: scale,
-                              ),
-                            VozMessageState.editing => VozOpenMessageDisabled(
-                                scale: scale,
-                              ),
-                            VozMessageState.edited => VozOpenMessageAction(
-                                scale: scale,
-                                onPressed: () => openUserMessage(context),
-                              ),
-                            VozMessageState.loaded => VozOpenMessageAction(
-                                scale: scale,
-                                onPressed: () => openUserMessage(context),
-                              ),
-                          };
-                        },
-                      ),
-                    ),
+                  child: ListenableBuilder(
+                    listenable: $phau,
+                    builder: (_, __) {
+                      return switch ($phau.messageState) {
+                        VozMessageState.empty => VozOpenMessageDisabled(
+                            scale: scale,
+                          ),
+                        VozMessageState.editing => VozOpenMessageDisabled(
+                            scale: scale,
+                          ),
+                        VozMessageState.edited => VozOpenMessageAction(
+                            scale: scale,
+                            onPressed: () => openUserMessage(context),
+                          ),
+                        VozMessageState.loaded => VozOpenMessageAction(
+                            scale: scale,
+                            onPressed: () => openUserMessage(context),
+                          ),
+                      };
+                    },
                   ),
                 ),
               ],
@@ -362,82 +346,62 @@ class _VozBodyState extends State<VozBody> {
     $phau.notifyStartRecording();
   }
 
-  Expanded _debugVozMessage() {
-    return Expanded(
-      flex: 1,
-      child: Card.filled(
-        clipBehavior: Clip.hardEdge,
-        child: InkWell(
-          splashColor: Colors.purple.withAlpha(30),
-          child: ListenableBuilder(
-            listenable: $phau,
-            builder: (_, __) => Center(child: Text($phau.messageState.toString())),
-          ),
-        ),
+  Widget _debugLolaReply() {
+    return DebugWidget(
+      children: StreamBuilder(
+        stream: lolaReplyState$,
+        builder: (_, __) => Center(child: Text(debugLolaReplyState)),
       ),
     );
   }
 
-  Expanded _debugAi() {
-    return Expanded(
-      flex: 1,
-      child: Card.filled(
-        clipBehavior: Clip.hardEdge,
-        child: InkWell(
-          splashColor: Colors.purple.withAlpha(30),
-          child: ListenableBuilder(
-            listenable: $phau,
-            builder: (_, __) => Center(child: Text($phau.aiState.toString())),
-          ),
-        ),
+  Widget _debugLolaAudio() {
+    return DebugWidget(
+      children: StreamBuilder(
+        stream: lolaAudioState$,
+        builder: (_, __) => Center(child: Text(debugLolaAudioState)),
       ),
     );
   }
 
-  Expanded _debugLolaReply() {
-    return Expanded(
-      flex: 1,
-      child: Card(
-        clipBehavior: Clip.hardEdge,
-        child: InkWell(
-          splashColor: Colors.purple.withAlpha(30),
-          child: StreamBuilder(
-            stream: lolaReplyState$,
-            builder: (_, __) => Center(child: Text(debugLolaReplyState)),
-          ),
-        ),
+  Widget _debugLolaState() {
+    return DebugWidget(
+      children: StreamBuilder(
+        stream: lolaState$,
+        builder: (_, __) => Center(child: Text(debugLolaState)),
       ),
     );
   }
 
-  Expanded _debugLolaAudio() {
-    return Expanded(
-      flex: 1,
-      child: Card(
-        clipBehavior: Clip.hardEdge,
-        child: InkWell(
-          splashColor: Colors.purple.withAlpha(30),
-          child: StreamBuilder(
-            stream: lolaAudioState$,
-            builder: (_, __) => Center(child: Text(debugLolaAudioState)),
-          ),
-        ),
+  Widget _debugVozMessage() {
+    return DebugAltWidget(
+      children: ListenableBuilder(
+        listenable: $phau,
+        builder: (_, __) {
+          return Center(child: Text($phau.messageState.toString()));
+        },
       ),
     );
   }
 
-  Expanded _debugLolaState() {
-    return Expanded(
-      flex: 1,
-      child: Card(
-        clipBehavior: Clip.hardEdge,
-        child: InkWell(
-          splashColor: Colors.purple.withAlpha(30),
-          child: StreamBuilder(
-            stream: lolaState$,
-            builder: (_, __) => Center(child: Text(debugLolaState)),
-          ),
-        ),
+  Widget _debugAi() {
+    return DebugAltWidget(
+      children: ListenableBuilder(
+        listenable: $phau,
+        builder: (_, __) {
+          return Center(child: Text($phau.aiState.toString()));
+        },
+      ),
+    );
+  }
+
+  Widget _debugVozState() {
+    return DebugAltWidget(
+      children: ListenableBuilder(
+        listenable: $phau,
+        builder: (_, __) {
+          return Center(child: Text($phau.state.toString()));
+        },
       ),
     );
   }
@@ -446,7 +410,7 @@ class _VozBodyState extends State<VozBody> {
     return Expanded(
       flex: 2,
       child: DebugVoiceSelector(
-        $lolavoice: $lolavoice,
+        $lolavoice: lola$.voice,
         onSelected: (voz) async {
           if (voz != null) {
             final prefs = await SharedPreferences.getInstance();
@@ -456,7 +420,7 @@ class _VozBodyState extends State<VozBody> {
             );
 
             setState(() {
-              $lolavoice = voz;
+              lola$.voice = voz;
             });
           }
         },
@@ -464,57 +428,14 @@ class _VozBodyState extends State<VozBody> {
     );
   }
 
-  Expanded _debugVozState() {
-    return Expanded(
-      flex: 1,
-      child: Card.filled(
-        clipBehavior: Clip.hardEdge,
-        child: InkWell(
-          splashColor: Colors.purple.withAlpha(30),
-          onTap: () {
-            debugPrint('>> from: ${$phau.state.toString()}; path?: ${$phau.hasPath}');
-
-            if ($phau.state case VozState.recordingOk || VozState.playingCompleted || VozState.idle) {
-              $phau.notifyPlayAudio();
-            } else if ($phau.state case VozState.playing) {
-              $phau.notifyStopAudio();
-            } else if ($phau.state case _) {
-              debugPrint('noop');
-            }
-          },
-          child: ListenableBuilder(
-            listenable: $phau,
-            builder: (context, child) {
-              return Center(
-                child: Text(
-                  $phau.state.toString(),
-                  // textScaler: const TextScaler.linear(1.6),
-                ),
-              );
-            },
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> askLola(String value) async {
-    setState(() {
-      $phau.input = value;
-    });
-    await lola$.loadReply(
-      input: $phau.input,
-      voice: $lolavoice,
-    );
-  }
-
   Future<dynamic> openUserMessage(BuildContext context) {
     return showModalBottomSheet(
       isScrollControlled: true,
       context: context,
-      builder: (ctx) => LolaMessageScreen(
-        message: $phau.input,
-        context: context,
+      builder: (ctx) => UserMessageScreen(
+        lolaController: lola$,
+        controller: $phau,
+        parentContext: context,
         scale: scale,
       ),
     );
@@ -525,8 +446,8 @@ class _VozBodyState extends State<VozBody> {
       isScrollControlled: true,
       context: context,
       builder: (ctx) => LolaMessageScreen(
-        message: state.message,
-        context: context,
+        controller: lola$,
+        parentContext: context,
         scale: scale,
       ),
     );

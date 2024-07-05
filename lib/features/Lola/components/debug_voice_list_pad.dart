@@ -19,16 +19,21 @@ class DebugShowVoices extends StatelessWidget {
             debugPrint('>> 11-labs');
             var api = ElevenLabsAPI();
             // try {
-            api.init(config: const ElevenLabsConfig(apiKey: secrets.ELEVEN_API_KEY));
+            api.init(
+                config: const ElevenLabsConfig(apiKey: secrets.ELEVEN_API_KEY));
             var response = await api.listVoices();
-            var females =
-                response.voices?.toList().where((voice) => voice.labels?.gender == 'female').where((voice) => voice.fineTuning?.language == 'es') ?? [];
+            var females = response.voices
+                    ?.toList()
+                    .where((voice) => voice.labels?.gender == 'female')
+                    .where((voice) => voice.fineTuning?.language == 'es') ??
+                [];
             // } catch (e) {
             //   debugPrint(e.toString());
             // }
             for (var voice in females) {
               // print(voice.labels?.toJson());
-              debugPrint('>> voice: ${voice.name}, ${voice.voiceId}, ${voice.fineTuning?.language}, ${voice.labels?.accent}');
+              debugPrint(
+                  '>> voice: ${voice.name}, ${voice.voiceId}, ${voice.fineTuning?.language}, ${voice.labels?.accent}');
             }
           },
           child: const Text(
