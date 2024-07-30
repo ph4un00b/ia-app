@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/core/elevenlabs/api.dart';
-import 'package:lola_ai_app/secrets.dart' as secrets;
 
 class DebugShowVoices extends StatelessWidget {
   const DebugShowVoices({

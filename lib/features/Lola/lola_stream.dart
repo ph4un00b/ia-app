@@ -3,9 +3,9 @@ import 'dart:io';
 
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/core/types.dart';
-import 'package:lola_ai_app/secrets.dart' as secrets;
 import 'package:just_audio/just_audio.dart' as audio;
 
 final class Lola$ with QueryContent {
@@ -115,7 +115,7 @@ final class Lola$ with QueryContent {
       return '';
     }
 
-    OpenAI.apiKey = secrets.OPENAI_API_KEY;
+    OpenAI.apiKey = Env.openAiKey;
     OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
     OpenAI.requestsTimeOut = const Duration(seconds: 10); // 60 seconds.
     OpenAI.showLogs = true;

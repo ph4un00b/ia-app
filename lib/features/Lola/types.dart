@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/core/components/action_btn.dart';
 import 'package:lola_ai_app/features/core/time.dart';
-import 'package:lola_ai_app/secrets.dart' as secrets;
 import 'package:path_provider/path_provider.dart';
 
 import '../core/elevenlabs/api.dart';
@@ -47,7 +47,7 @@ enum VoiceLola {
   Future<File> synthesize({required String text}) async {
     switch (ai) {
       case Ai.openai:
-        OpenAI.apiKey = secrets.OPENAI_API_KEY;
+        OpenAI.apiKey = Env.openAiKey;
         OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
         OpenAI.requestsTimeOut = const Duration(seconds: 10); // 60 seconds.
         OpenAI.showLogs = false;
@@ -65,7 +65,7 @@ enum VoiceLola {
       case Ai.elevenlabs:
         var api = ElevenLabsAPI();
         api.init(
-          config: const ElevenLabsConfig(apiKey: secrets.ELEVEN_API_KEY),
+          config: ElevenLabsConfig(apiKey: Env.elevenApiKey),
         );
         return await api.synthesize(TextToSpeechRequest(
           text: text,
