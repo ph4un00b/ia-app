@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/App/components/setting_text.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
+import 'package:lola_ai_app/features/Memory/components/debug.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
 import 'package:lola_ai_app/features/core/components/debug_alt_widget.dart';
 import 'package:lola_ai_app/features/core/components/debug_widget.dart';
+import 'package:lola_ai_app/features/core/constants.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
@@ -50,7 +52,7 @@ class VozBody extends StatefulWidget {
 }
 
 class _VozBodyState extends State<VozBody> {
-  bool debug = !true;
+  bool debug = true;
   var debugLolaState = '';
   var debugLolaAudioState = '';
   var debugLolaReplyState = '';
@@ -59,7 +61,7 @@ class _VozBodyState extends State<VozBody> {
   Stream<LolaState$>? lolaState$;
   Stream<LolaAudioState$>? lolaAudioState$;
   Stream<LolaReplyState$>? lolaReplyState$;
-  var scale = 1.0;
+  var scale = Constants.scale;
   final messageFormKey = GlobalKey<FormState>();
 
   @override
@@ -99,7 +101,7 @@ class _VozBodyState extends State<VozBody> {
 
     setState(() {
       lola$.voice = VoiceLola.values.firstWhere((v) => v.name == voz);
-      scale = prefs.getDouble('app-setting-text') ?? 1.0;
+      scale = prefs.getDouble('app-setting-text') ?? Constants.scale;
     });
   }
 
@@ -231,6 +233,7 @@ class _VozBodyState extends State<VozBody> {
                           case VozState.idle ||
                               VozState.recordingOk ||
                               VozState.stopRecording ||
+                              VozState.stopRecordingError ||
                               VozState.playingError ||
                               VozState.playingCompleted) {
                         recordMessage();
@@ -271,8 +274,13 @@ class _VozBodyState extends State<VozBody> {
                     listenable: $phau,
                     builder: (_, __) {
                       return switch ($phau.messageState) {
-                        VozMessageState.empty => VozEditDisabled(
+                        VozMessageState.empty => VozEditAction(
                             scale: scale,
+                            onPressed: () {
+                              setState(() {
+                                $phau.messageState = VozMessageState.editing;
+                              });
+                            },
                           ),
                         VozMessageState.editing => VozRequestAction(
                             scale: scale,
@@ -332,6 +340,9 @@ class _VozBodyState extends State<VozBody> {
               ],
             ),
           ),
+          if (debug) DebugMemory(lola$: lola$),
+          if (debug) const DebugMemorySaveFile(),
+          if (debug) const DebugMemoryReadFile(),
           if (debug) _debugVozMessage(),
           if (debug) _debugAi(),
           if (debug) _debugVozState(),

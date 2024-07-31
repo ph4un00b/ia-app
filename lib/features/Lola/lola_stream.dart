@@ -5,8 +5,10 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/Memory/query_reply.dart' as memory;
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:just_audio/just_audio.dart' as audio;
+import 'package:path/path.dart' as p;
 
 final class Lola$ with QueryContent {
   final state = StreamController<LolaState$>()..add(Idle());
@@ -19,6 +21,7 @@ final class Lola$ with QueryContent {
 
   Lola$() {
     _player.playbackEventStream.listen((event) async {
+      debugPrint('== LOLA PAYER >> ${event.processingState}');
       switch (event.processingState) {
         case audio.ProcessingState.idle:
           // debugPrint('>> $event');
@@ -52,7 +55,7 @@ final class Lola$ with QueryContent {
     replyState.add(LolaEmpty());
     _emit(FetchingCompletion());
     try {
-      completion = await _fetchCompletion(input: input);
+      completion = await memory.fetchAsistantResponse(input: input);
       _output = completion;
       _emit(CompletionOK(output: completion));
       replyState.add(LolaMessage(message: completion));
@@ -93,17 +96,17 @@ final class Lola$ with QueryContent {
   }
 
   Future<void> _playSpeech({required String path}) async {
-    debugPrint('play lola');
+    debugPrint('play lola: $path');
     _player.setFilePath(path);
-    await _player.play();
+    _player.play();
   }
 
   Future<String> _fetchSpeech(
       {required VoiceLola voice, required String text}) async {
     File speechFile;
     speechFile = await voice.synthesize(text: text);
-    debugPrint(speechFile.path);
-    return speechFile.path;
+    // debugPrint(p.normalize(speechFile.path));
+    return p.normalize(speechFile.path);
   }
 
   Future<String> _fetchCompletion({
@@ -137,6 +140,7 @@ final class Lola$ with QueryContent {
       seed: 42,
       // bestOf: 2,
     );
+
     if (!completion.haveChoices) {
       return '';
     }
