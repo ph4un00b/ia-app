@@ -3,13 +3,13 @@ import 'package:lola_ai_app/features/App/components/setting_text.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
 import 'package:lola_ai_app/features/Memory/components/debug.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
+import 'package:lola_ai_app/features/Voz/components/voz_pad.dart';
 import 'package:lola_ai_app/features/core/components/debug_alt_widget.dart';
 import 'package:lola_ai_app/features/core/components/debug_widget.dart';
 import 'package:lola_ai_app/features/core/constants.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
-import 'package:lola_ai_app/features/Voz/components/voz_message_pad.dart';
 import 'package:lola_ai_app/screens/drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -215,53 +215,11 @@ class _VozBodyState extends State<VozBody> {
           if (debug) _debugLolaReply(),
           Expanded(
             flex: 4,
-            child: ListenableBuilder(
-              listenable: $phau,
-              builder: (_, __) {
-                return Card.filled(
-                  shape: RoundedRectangleBorder(
-                    side: $phau.state == VozState.recording
-                        ? const BorderSide(color: Colors.green, width: 2.0)
-                        : BorderSide.none,
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                  child: InkWell(
-                    splashColor: Colors.purple.withAlpha(30),
-                    onTap: () async {
-                      debugPrint('Card tapped from: ${$phau.state}');
-                      if ($phau.state
-                          case VozState.idle ||
-                              VozState.recordingOk ||
-                              VozState.stopRecording ||
-                              VozState.stopRecordingError ||
-                              VozState.playingError ||
-                              VozState.playingCompleted) {
-                        recordMessage();
-                      } else if ($phau.state case VozState.recording) {
-                        await $phau.notifyStopRecording();
-                        await lola$.loadReply(input: $phau.input);
-                      } else if ($phau.state case _) {
-                        debugPrint('noop');
-                      }
-                    },
-                    child: VozMessagePad(
-                      formkey: messageFormKey,
-                      state: $phau.messageState,
-                      controller: $phau,
-                      scale: scale,
-                      onMessageEdited: (value) async {
-                        debugPrint('>> on-message-edited: $value');
-                        if (value != null) {
-                          setState(() {
-                            $phau.input = value;
-                          });
-                          await lola$.loadReply(input: $phau.input);
-                        }
-                      },
-                    ),
-                  ),
-                );
-              },
+            child: VozPad(
+              user: $phau,
+              lola$: lola$,
+              messageFormKey: messageFormKey,
+              scale: scale,
             ),
           ),
           Expanded(
@@ -350,11 +308,6 @@ class _VozBodyState extends State<VozBody> {
         ],
       ),
     );
-  }
-
-  void recordMessage() {
-    lola$.stopSpeech();
-    $phau.notifyStartRecording();
   }
 
   Widget _debugLolaReply() {

@@ -9,6 +9,7 @@ import 'package:lola_ai_app/features/Memory/query_reply.dart' as memory;
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 import 'package:path/path.dart' as p;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final class Lola$ with QueryContent {
   final state = StreamController<LolaState$>()..add(Idle());
@@ -89,6 +90,50 @@ final class Lola$ with QueryContent {
       _emit(SpeakingErr(cause: e.toString(), output: completion));
       audioState.add(PlayingErr());
     }
+
+    var debug = true;
+    if (debug) {
+      await _saveConversation(
+        userInput: input,
+        lolaCompletion: completion,
+        lolaPath: path,
+      );
+    } else {
+      try {
+        // todo: quiza en debug mode, hacer que falle, es decir quitar el try catch!
+        // todo: retry on fail
+        await _saveConversation(
+          userInput: input,
+          lolaCompletion: completion,
+          lolaPath: path,
+        );
+      } catch (e) {
+        debugPrint(e.toString());
+      }
+    }
+  }
+
+  Future<void> _saveConversation({
+    required String userInput,
+    required String lolaCompletion,
+    required String lolaPath,
+  }) async {
+    await Supabase.instance.client.from('countries').insert([
+      {
+        'title': '',
+        'content': userInput,
+        'system': 'user',
+        'created_at': DateTime.now().toIso8601String()
+      },
+      {
+        'title': '',
+        'content': lolaCompletion,
+        'system': 'lola',
+        'created_at':
+            DateTime.now().add(const Duration(seconds: 1)).toIso8601String(),
+        'path': lolaPath,
+      },
+    ]);
   }
 
   void _emit(LolaState$ ev) {

@@ -87,7 +87,7 @@ class MessageWidget extends StatelessWidget {
                 minLines: null,
                 // maxLines: 10,
                 maxLines: null,
-                controller: TextEditingController(text: controller.input),
+                controller: TextEditingController(text: controller.content()),
                 keyboardType: TextInputType.multiline,
                 decoration: InputDecoration(
                   // filled: !true,

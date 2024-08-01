@@ -7,6 +7,7 @@ import 'package:lola_ai_app/features/core/constants.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 // TODO: create endpoint for memory
+// TODO: implement retry
 Future<String> fetchAsistantResponse({
   required String input,
 }) async {

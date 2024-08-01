@@ -30,7 +30,7 @@ class VozMessage extends StatelessWidget {
             const SizedBox(height: 10),
             Expanded(
               child: SingleChildScrollView(
-                child: Text(voz.input),
+                child: Text(voz.content()),
               ),
             ),
             const SizedBox(height: 10),

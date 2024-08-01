@@ -47,6 +47,8 @@ dependencies:
   shared_preferences: ^2.2.3
   flutter_dotenv: ^5.1.0
   openai_dart: ^0.4.0
+  supabase_flutter: ^2.5.11
+  timeago: ^3.7.0
 
 dev_dependencies:
   flutter_test:

@@ -39,19 +39,19 @@ final class Voz with ChangeNotifier, ContentHandler {
   VozAI aiState = VozAI.idle;
   VozMessageState messageState = VozMessageState.empty;
 
-  String input = '';
+  String _input = '';
   final rec.AudioRecorder _recorder = rec.AudioRecorder();
   final audio.AudioPlayer _player = audio.AudioPlayer();
   String _path = '';
 
   Voz() {
     _recorder.onStateChanged().listen((event) async {
-      debugPrint('>> from: $state');
+      debugPrint('>> recorder-st-machine: $state');
       if (event case rec.RecordState.stop) {
-        state = VozState.recordingOk;
+        // state = VozState.recordingOk;
         notifyListeners();
       } else if (event case _) {
-        debugPrint('>> RECORDER EVENTS => _ : $event');
+        debugPrint('>>  recorder-st-machine EVENTS : $event');
       }
     });
 
@@ -82,13 +82,13 @@ final class Voz with ChangeNotifier, ContentHandler {
 
   @override
   void updateContent(String value) {
-    input = value;
+    _input = value;
     notifyListeners();
   }
 
   @override
   String content() {
-    return input;
+    return _input;
   }
 
   Future<String> _fetchAITranscription() async {
@@ -210,9 +210,10 @@ final class Voz with ChangeNotifier, ContentHandler {
     try {
       debugPrint('stop');
       var path = await _recorder.stop() ?? '';
+      debugPrint('path: $path == $_path');
       assert(path == _path);
 
-      input = await _fetchAITranscription();
+      updateContent(await _fetchAITranscription());
     } catch (e) {
       state = VozState.stopRecordingError;
       notifyListeners();
