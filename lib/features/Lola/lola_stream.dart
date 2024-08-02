@@ -118,17 +118,21 @@ final class Lola$ with QueryContent {
     required String lolaCompletion,
     required String lolaPath,
   }) async {
-    await Supabase.instance.client.from('countries').insert([
+    await Supabase.instance.client.from('conversation').insert([
       {
         'title': '',
         'content': userInput,
         'system': 'user',
+        // TODO: use user id from auth
+        'user_id': 1,
         'created_at': DateTime.now().toIso8601String()
       },
       {
         'title': '',
         'content': lolaCompletion,
         'system': 'lola',
+        // TODO: use user id from auth
+        'user_id': 1,
         'created_at':
             DateTime.now().add(const Duration(seconds: 1)).toIso8601String(),
         'path': lolaPath,

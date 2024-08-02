@@ -35,13 +35,14 @@ final class MessagesController {
 
     try {
       List<Map<String, dynamic>> result = await Supabase.instance.client
-          .from('countries')
+          .from('conversation')
           .select()
           .order('created_at', ascending: false);
 
       messagesState
           .add(Success(text: 'Success', messages: _messagesFrom(result)));
     } catch (e) {
+      // TODO: handle PostgrestException
       messagesState.add(Error(err: e));
     }
   }
@@ -76,7 +77,7 @@ final class MessagesController {
     messagesState.add(Fetching());
     try {
       List<Map<String, dynamic>> result = await Supabase.instance.client
-          .from("countries")
+          .from("conversation")
           .select()
           // TODO(app.message): find an strategy for accents.
           // .textSearch("content", "'eggs' & 'ham'", config: "english");
