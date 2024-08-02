@@ -1,5 +1,44 @@
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class DebugLolaVoice extends StatefulWidget {
+  const DebugLolaVoice({
+    super.key,
+    required this.lola,
+  });
+
+  final Lola$ lola;
+
+  @override
+  State<DebugLolaVoice> createState() => _DebugLolaVoiceState();
+}
+
+class _DebugLolaVoiceState extends State<DebugLolaVoice> {
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      flex: 2,
+      child: DebugVoiceSelector(
+        $lolavoice: widget.lola.voice,
+        onSelected: (voz) async {
+          if (voz != null) {
+            final prefs = await SharedPreferences.getInstance();
+            prefs.setString(
+              'lola-voice',
+              VoiceLola.values.firstWhere((v) => v.name == voz.name).name,
+            );
+
+            setState(() {
+              widget.lola.voice = voz;
+            });
+          }
+        },
+      ),
+    );
+  }
+}
 
 class DebugVoiceSelector extends StatelessWidget {
   const DebugVoiceSelector({

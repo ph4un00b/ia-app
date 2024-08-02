@@ -45,10 +45,10 @@ class DebugMemorySaveFile extends StatelessWidget {
 class DebugMemory extends StatelessWidget {
   const DebugMemory({
     super.key,
-    required this.lola$,
+    required this.lola,
   });
 
-  final Lola$ lola$;
+  final Lola$ lola;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class DebugMemory extends StatelessWidget {
         child: InkWell(
           splashColor: Colors.purple.withAlpha(30),
           onTap: () async =>
-              lola$.loadReply(input: 'hola lola que debo hacer los viernes?'),
+              lola.loadReply(input: 'hola lola que debo hacer los viernes?'),
           child: const Center(child: Text('test lola with memory')),
         ),
       ),
