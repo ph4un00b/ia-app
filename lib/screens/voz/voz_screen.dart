@@ -3,6 +3,8 @@ import 'package:lola_ai_app/features/App/components/setting_text.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
 import 'package:lola_ai_app/features/Memory/components/debug.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
+import 'package:lola_ai_app/features/Voz/components/voz_control_form.dart';
+import 'package:lola_ai_app/features/Voz/components/voz_control_message.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_pad.dart';
 import 'package:lola_ai_app/features/core/components/debug_alt_widget.dart';
 import 'package:lola_ai_app/features/core/components/debug_widget.dart';
@@ -216,9 +218,9 @@ class _VozBodyState extends State<VozBody> {
           Expanded(
             flex: 4,
             child: VozPad(
+              formKey: messageFormKey,
               user: $phau,
               lola$: lola$,
-              messageFormKey: messageFormKey,
               scale: scale,
             ),
           ),
@@ -228,71 +230,20 @@ class _VozBodyState extends State<VozBody> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: ListenableBuilder(
-                    listenable: $phau,
-                    builder: (_, __) {
-                      return switch ($phau.messageState) {
-                        VozMessageState.empty => VozEditAction(
-                            scale: scale,
-                            onPressed: () {
-                              setState(() {
-                                $phau.messageState = VozMessageState.editing;
-                              });
-                            },
-                          ),
-                        VozMessageState.editing => VozRequestAction(
-                            scale: scale,
-                            onPressed: () {
-                              setState(() {
-                                $phau.messageState = VozMessageState.edited;
-                              });
-
-                              messageFormKey.currentState?.save();
-                            },
-                          ),
-                        VozMessageState.edited => VozEditAction(
-                            scale: scale,
-                            onPressed: () {
-                              setState(() {
-                                $phau.messageState = VozMessageState.editing;
-                              });
-                            },
-                          ),
-                        VozMessageState.loaded => VozEditAction(
-                            scale: scale,
-                            onPressed: () {
-                              setState(() {
-                                $phau.messageState = VozMessageState.editing;
-                              });
-                            },
-                          ),
-                      };
-                    },
+                  child: VozControlFormMessage(
+                    formKey: messageFormKey,
+                    setState: setState,
+                    user: $phau,
+                    scale: scale,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   flex: 1,
-                  child: ListenableBuilder(
-                    listenable: $phau,
-                    builder: (_, __) {
-                      return switch ($phau.messageState) {
-                        VozMessageState.empty => VozOpenMessageDisabled(
-                            scale: scale,
-                          ),
-                        VozMessageState.editing => VozOpenMessageDisabled(
-                            scale: scale,
-                          ),
-                        VozMessageState.edited => VozOpenMessageAction(
-                            scale: scale,
-                            onPressed: () => openUserMessage(context),
-                          ),
-                        VozMessageState.loaded => VozOpenMessageAction(
-                            scale: scale,
-                            onPressed: () => openUserMessage(context),
-                          ),
-                      };
-                    },
+                  child: VozControlDisplayMessage(
+                    user: $phau,
+                    lola: lola$,
+                    scale: scale,
                   ),
                 ),
               ],

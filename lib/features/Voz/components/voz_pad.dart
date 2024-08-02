@@ -8,13 +8,13 @@ class VozPad extends StatelessWidget {
     super.key,
     required this.user,
     required this.lola$,
-    required this.messageFormKey,
+    required this.formKey,
     required this.scale,
   });
 
   final Voz user;
   final Lola$ lola$;
-  final GlobalKey<FormState> messageFormKey;
+  final GlobalKey<FormState> formKey;
   final double scale;
 
   @override
@@ -50,7 +50,7 @@ class VozPad extends StatelessWidget {
               }
             },
             child: VozMessagePad(
-              formkey: messageFormKey,
+              formkey: formKey,
               state: user.messageState,
               controller: user,
               scale: scale,
