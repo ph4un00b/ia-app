@@ -4,7 +4,7 @@ import 'package:lola_ai_app/features/App/components/setting_text.dart';
 import 'package:lola_ai_app/features/Mensajes/components/messages_list.dart';
 import 'package:lola_ai_app/features/Mensajes/components/messages_search.dart';
 import 'package:lola_ai_app/features/Mensajes/mensajes_controller.dart';
-import 'package:lola_ai_app/features/core/constants.dart';
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

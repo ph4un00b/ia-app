@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/config/env.dart';
-import 'package:lola_ai_app/features/core/constants.dart';
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 // TODO: create endpoint for memory

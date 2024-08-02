@@ -10,7 +10,7 @@ import 'package:lola_ai_app/features/Voz/components/voz_control_form.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_control_message.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_pad.dart';
 import 'package:lola_ai_app/features/core/components/debug_widget.dart';
-import 'package:lola_ai_app/features/core/constants.dart';
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/screens/drawer.dart';
