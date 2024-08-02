@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/screens/opciones/messages/messages_screen.dart';
+import 'package:lola_ai_app/features/Mensajes/types.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 
@@ -12,7 +13,7 @@ final class Initial implements MessagesScreenState {}
 final class Fetching implements MessagesScreenState {}
 
 final class Success implements MessagesScreenState {
-  List<SingleMessage<String, String, String>> messages;
+  List<SingleMessage> messages;
   String text;
   Success({required this.text, required this.messages});
 }
@@ -46,16 +47,20 @@ final class MessagesController {
   }
 
   Future<void> playSpeech({required String path}) async {
-    debugPrint('play lola: $path');
-    _player.setFilePath(path);
-    _player.play();
+    File file = File(path);
+    if (await file.exists()) {
+      debugPrint('play lola: $path');
+      _player.setFilePath(path);
+      _player.play();
+    } else {
+      debugPrint('audio file not found: $path');
+    }
   }
 
-  List<SingleMessage<String, String, String>> _messagesFrom(
+  List<SingleMessage> _messagesFrom(
     List<Map<String, dynamic>> data,
   ) {
-    return List<SingleMessage<String, String, String>>.generate(data.length,
-        (i) {
+    return List<SingleMessage>.generate(data.length, (i) {
       final country = data[i];
       final title = country['title'];
       final content = country['content'];
@@ -97,25 +102,5 @@ final class MessagesController {
 
   void dispose() {
     messagesState.close();
-  }
-}
-
-class _FakeAPI {
-  static const List<String> _kOptions = <String>[
-    'aardvark  sda sad as dsa dasdsdsada ds d a flutter: **** onAuthStateChange: AuthChangeEvent.initialSession',
-    'bobcat 3422  fds f ds fsd f fdf dsfdsfdsfd Restarted application in 559ms.',
-    'chameleon 32 2 r 23 32  f  sd fd f d sf fds ffdsfds flutter: RouteSettings("/voz", null)',
-  ];
-
-  // Searches the options, but injects a fake "network" delay.
-  static Future<Iterable<String>> search(String query) async {
-    await Future<void>.delayed(
-        const Duration(seconds: 1)); // Fake 1 second delay.
-    if (query == '') {
-      return const Iterable<String>.empty();
-    }
-    return _kOptions.where((String option) {
-      return option.contains(query.toLowerCase());
-    });
   }
 }
