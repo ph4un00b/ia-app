@@ -38,11 +38,12 @@ class VozMessagePad extends StatelessWidget {
               scale: scale,
               onMessageEdited: onMessageEdited,
             ),
-          VozAI.idle => Center(
-              child: Text(
-                'Presiona para grabar mensaje.',
-                style: TextStyle(fontSize: 36.0 * scale),
-              ),
+          VozAI.idle => MessageWidget(
+              formkey: formkey,
+              state: state,
+              controller: controller,
+              scale: scale,
+              onMessageEdited: onMessageEdited,
             ),
           VozAI.transcribingError => Center(
               child: Text(
@@ -97,7 +98,7 @@ class MessageWidget extends StatelessWidget {
                       : InputBorder.none,
                   labelText: 'Presiona para grabar mensaje',
                   labelStyle: TextStyle(
-                    // color: Colors.amber[600],
+                    color: Colors.white70,
                     fontStyle: FontStyle.normal,
                     fontSize: 36 * scale,
                   ),
