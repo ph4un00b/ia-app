@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Mensajes/components/messages_list.dart';
 import 'package:lola_ai_app/features/Mensajes/mensajes_controller.dart';
+import 'package:lola_ai_app/features/Mensajes/screens/readable_message.dart';
 import 'package:lola_ai_app/features/Mensajes/types.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
