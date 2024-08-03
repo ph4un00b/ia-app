@@ -6,6 +6,11 @@ import 'screens/root.dart';
 
 void main() async {
   await dotenv.load(fileName: ".env");
+  assert(Env.openAiKey.isNotEmpty, "OPENAI_API_KEY not defined");
+  assert(Env.openAiBaseUrl.isNotEmpty, "OPENAI_API_BASE not defined");
+  assert(Env.elevenApiKey.isNotEmpty, "ELEVEN_API_KEY not defined");
+  assert(Env.dbUrl.isNotEmpty, "DB_URL not defined");
+  assert(Env.dbKey.isNotEmpty, "DB_KEY not defined");
   await Supabase.initialize(
     url: Env.dbUrl,
     anonKey: Env.dbKey,
