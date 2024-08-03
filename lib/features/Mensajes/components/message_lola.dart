@@ -84,9 +84,10 @@ class MessageLola extends StatelessWidget {
                       builder: (ctx) {
                         final content = items[index].content;
                         final kontext = ctx;
-                        return Readable(
+                        return ReadableMessageScreen(
                           content: content,
                           kontext: kontext,
+                          initialScale: scale,
                         );
                       },
                     );

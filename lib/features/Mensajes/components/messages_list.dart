@@ -3,6 +3,7 @@ import 'package:lola_ai_app/features/Mensajes/components/message_lola.dart';
 import 'package:lola_ai_app/features/Mensajes/components/message_user.dart';
 import 'package:lola_ai_app/features/Mensajes/mensajes_controller.dart';
 import 'package:lola_ai_app/features/Mensajes/types.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MessagesList extends StatelessWidget {
   final List<SingleMessage> items;
@@ -26,6 +27,7 @@ class MessagesList extends StatelessWidget {
       // ),
       itemBuilder: (_, index) {
         return items[index].from == "user"
+            // TODO: refactor in order to remove index
             ? MessageUser(items: items, index: index, scale: scale)
             : MessageLola(
                 controller: controller,
@@ -60,10 +62,6 @@ class PlayButton extends StatelessWidget {
           horizontal: 10 * scale,
           vertical: 10 * scale,
         ),
-        // shape: RoundedRectangleBorder(
-        //   borderRadius: BorderRadius.circular(10),
-        // ),
-        // iconColor: Colors.grey[700],
       ),
       onPressed: () async {
         if (audioPath != null) {
@@ -72,7 +70,6 @@ class PlayButton extends StatelessWidget {
       },
       label: Text(
         'Reproducir',
-        // style: TextStyle(color: Colors.grey[700]),
         textScaler: TextScaler.linear(1.4 * scale),
       ),
     );
@@ -97,9 +94,6 @@ class DisabledPlayButton extends StatelessWidget {
           vertical: 10 * scale,
         ),
         backgroundColor: Colors.transparent,
-        // shape: RoundedRectangleBorder(
-        //   borderRadius: BorderRadius.circular(10),
-        // ),
         iconColor: Colors.grey[600],
       ),
       onPressed: null,
@@ -112,64 +106,100 @@ class DisabledPlayButton extends StatelessWidget {
   }
 }
 
-class Readable extends StatelessWidget {
-  const Readable({
+class ReadableMessageScreen extends StatefulWidget {
+  const ReadableMessageScreen({
     super.key,
     required this.content,
     required this.kontext,
+    required this.initialScale,
   });
 
   final String content;
   final BuildContext kontext;
+  final double initialScale;
+
+  @override
+  State<ReadableMessageScreen> createState() => _ReadableMessageScreenState();
+}
+
+class _ReadableMessageScreenState extends State<ReadableMessageScreen> {
+  double scale = 1.0;
+
+  @override
+  initState() {
+    super.initState();
+    _loadUserPrefereces();
+  }
+
+  Future<void> _loadUserPrefereces() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      scale = prefs.getDouble('app-setting-full-message-text') ??
+          widget.initialScale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-      child: Column(
-        children: [
-          const SizedBox(height: 40),
-          const Slider(
-            value: 1.0,
-            // value: 1.0,
-            min: 0.5,
-            max: 3.0,
-            // divisions: 5,
-            label: '1.0',
-            onChanged: null,
-            // onChanged: (double value) async {
-            //   setState(() => screenScale = value);
-            //   final prefs = await SharedPreferences.getInstance();
-            //   prefs.setDouble(
-            //     'app-setting-full-message-text',
-            //     value,
-            //   );
-            // },
-          ),
-          const SizedBox(height: 10),
-          Expanded(
-            child: SingleChildScrollView(
-              child: Text(content),
-            ),
-          ),
-          const SizedBox(height: 10),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
+    return StatefulBuilder(
+      builder: (_, setState) {
+        return Container(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+          child: Column(
+            children: [
+              const SizedBox(height: 40),
+              Slider(
+                value: scale,
+                min: 0.5,
+                max: 3.0,
+                // divisions: 5,
+                label: scale.toString(),
+                // onChanged: null,
+                onChanged: (double value) async {
+                  setState(() => scale = value);
+                  final prefs = await SharedPreferences.getInstance();
+                  prefs.setDouble(
+                    'app-setting-full-message-text',
+                    value,
+                  );
+                },
               ),
-              onPressed: () {
-                Navigator.pop(kontext);
-              },
-              child: const Text(
-                'Cerrar',
-                textScaler: TextScaler.linear(1.4),
+              Text(
+                "Message",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20.0 * scale,
+                ),
               ),
-            ),
-          )
-        ],
-      ),
+              const SizedBox(height: 10),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    widget.content,
+                    textScaler: TextScaler.linear(2.6 * scale),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                  ),
+                  onPressed: () {
+                    Navigator.pop(widget.kontext);
+                  },
+                  child: Text(
+                    'Cerrar',
+                     textScaler: TextScaler.linear(1.4 * scale),
+                  ),
+                ),
+              )
+            ],
+          ),
+        );
+      },
     );
   }
 }
