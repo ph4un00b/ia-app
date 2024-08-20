@@ -35,13 +35,13 @@ enum VozMessageState {
 }
 
 final class Voz with ChangeNotifier, ContentHandler {
+  final rec.AudioRecorder _recorder = rec.AudioRecorder();
+  final audio.AudioPlayer _player = audio.AudioPlayer();
   VozState state = VozState.idle;
   VozAI aiState = VozAI.idle;
   VozMessageState messageState = VozMessageState.empty;
 
   String _input = '';
-  final rec.AudioRecorder _recorder = rec.AudioRecorder();
-  final audio.AudioPlayer _player = audio.AudioPlayer();
   String _path = '';
 
   Voz() {

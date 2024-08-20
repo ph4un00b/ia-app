@@ -3,21 +3,20 @@ import 'package:lola_ai_app/features/App/components/setting_text.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_control_audio.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_control_message.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_pad.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
 import 'package:lola_ai_app/features/Memory/components/debug.dart';
 import 'package:lola_ai_app/features/Voz/components/debug.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_control_form.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_control_message.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_pad.dart';
+import 'package:lola_ai_app/features/Voz/voz.dart';
 import 'package:lola_ai_app/features/core/components/debug_widget.dart';
 import 'package:lola_ai_app/config/constants.dart';
-import 'package:lola_ai_app/features/Lola/lola_stream.dart';
+import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/screens/drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../../features/Voz/voz.dart';
 
 class VozScreen extends StatelessWidget {
   const VozScreen({
@@ -57,12 +56,10 @@ class _VozBodyState extends State<VozBody> {
   bool debug = true;
   var debugLolaState = '';
   var debugLolaAudioState = '';
-  var debugLolaReplyState = '';
   final $phau = Voz();
-  final lola$ = Lola$();
-  Stream<LolaState$>? lolaState$;
+  final lola$ = LolaController();
+  Stream<LolaServiceState>? lolaServiceState;
   Stream<LolaAudioState$>? lolaAudioState$;
-  Stream<LolaReplyState$>? lolaReplyState$;
   var scale = Constants.scale;
   final messageFormKey = GlobalKey<FormState>();
 
@@ -71,21 +68,17 @@ class _VozBodyState extends State<VozBody> {
     super.initState();
     _loadUserPrefereces();
 
-    lolaState$ = lola$.state.stream.asBroadcastStream();
+    lola$.loadInitialSummary(debug: debug);
+    lolaServiceState = lola$.serviceState.stream.asBroadcastStream();
     lolaAudioState$ = lola$.audioState.stream.asBroadcastStream();
-    lolaReplyState$ = lola$.replyState.stream.asBroadcastStream();
 
     if (debug) {
-      lolaState$?.listen((state) {
+      lolaServiceState?.listen((state) {
         debugLolaState = state.toString();
       });
 
       lolaAudioState$?.listen((state) {
         debugLolaAudioState = state.toString();
-      });
-
-      lolaReplyState$?.listen((state) {
-        debugLolaReplyState = state.toString();
       });
     }
   }
@@ -129,8 +122,8 @@ class _VozBodyState extends State<VozBody> {
           ),
           Expanded(
             flex: 4,
-            child: LolaPad(
-              stream: lolaState$,
+            child: LolaServerMessagePad(
+              stream: lolaServiceState,
               scale: scale,
             ),
           ),
@@ -150,9 +143,8 @@ class _VozBodyState extends State<VozBody> {
                 Expanded(
                   flex: 1,
                   child: LolaControlMessage(
-                    stream: lolaReplyState$,
-                    lola: lola$,
                     scale: scale,
+                    stream: lolaServiceState,
                   ),
                 ),
               ],
@@ -161,8 +153,9 @@ class _VozBodyState extends State<VozBody> {
           if (debug)
             DebugWidget(
               children: StreamBuilder(
-                stream: lolaState$,
-                builder: (_, __) => Center(child: Text(debugLolaState)),
+                stream: lolaServiceState,
+                builder: (_, __) =>
+                    Center(child: Text(debugLolaState.toString())),
               ),
             ),
           if (debug)
@@ -170,13 +163,6 @@ class _VozBodyState extends State<VozBody> {
               children: StreamBuilder(
                 stream: lolaAudioState$,
                 builder: (_, __) => Center(child: Text(debugLolaAudioState)),
-              ),
-            ),
-          if (debug)
-            DebugWidget(
-              children: StreamBuilder(
-                stream: lolaReplyState$,
-                builder: (_, __) => Center(child: Text(debugLolaReplyState)),
               ),
             ),
           Expanded(
@@ -213,6 +199,7 @@ class _VozBodyState extends State<VozBody> {
               ],
             ),
           ),
+          if (debug) const DebugClassificationAgent(),
           if (debug) DebugMemory(lola: lola$),
           if (debug) const DebugMemorySaveFile(),
           if (debug) const DebugMemoryReadFile(),

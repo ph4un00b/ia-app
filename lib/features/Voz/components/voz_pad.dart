@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/lola_stream.dart';
+import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_message_pad.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
 
@@ -13,7 +13,7 @@ class VozPad extends StatelessWidget {
   });
 
   final Voz user;
-  final Lola$ lola$;
+  final LolaController lola$;
   final GlobalKey<FormState> formKey;
   final double scale;
 
@@ -40,11 +40,12 @@ class VozPad extends StatelessWidget {
                       VozState.stopRecordingError ||
                       VozState.playingError ||
                       VozState.playingCompleted) {
-                lola$.stopSpeech();
-                user.notifyStartRecording();
+                await lola$.stopSpeech();
+                await user.notifyStartRecording();
               } else if (user.state case VozState.recording) {
                 await user.notifyStopRecording();
-                await lola$.loadReply(input: user.content());
+                // TODO: handle debug
+                await lola$.loadReply(question: user.content(), debug: false);
               } else if (user.state case _) {
                 debugPrint('noop');
               }
@@ -58,7 +59,8 @@ class VozPad extends StatelessWidget {
                 debugPrint('>> on-message-edited: $value');
                 if (value != null) {
                   user.updateContent(value);
-                  await lola$.loadReply(input: user.content());
+                  // TODO: handle debug
+                  await lola$.loadReply(question: user.content(), debug: false);
                 }
               },
             ),

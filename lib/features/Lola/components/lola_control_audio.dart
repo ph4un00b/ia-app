@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/lola_stream.dart';
+import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 
 class LolaControlAudio extends StatelessWidget {
@@ -12,7 +12,7 @@ class LolaControlAudio extends StatelessWidget {
 
   final Stream<LolaAudioState$>? stream;
   final double scale;
-  final Lola$ lola;
+  final LolaController lola;
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +23,15 @@ class LolaControlAudio extends StatelessWidget {
         return switch (ui) {
           null => Container(),
           NonePath() => ui.actionDisabled(scale: scale),
-          Playing() => ui.stop(
+          PlayingAudio() => ui.stop(
               scale: scale,
               action: () => lola.stopSpeech(),
             ),
-          PlayingErr() => ui.replay(
+          PlayingAudioErr() => ui.replay(
               scale: scale,
               action: () => lola.playSpeech(),
             ),
-          PlayingCompleted() => ui.replay(
+          PlayingAudioOk() => ui.replay(
               scale: scale,
               action: () => lola.playSpeech(),
             ),

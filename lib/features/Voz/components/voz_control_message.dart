@@ -1,6 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/lola_stream.dart';
+import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
 import 'package:lola_ai_app/screens/voz/user_message/user_message_screen.dart';
@@ -15,7 +14,7 @@ class VozControlDisplayMessage extends StatelessWidget {
 
   final Voz user;
   final double scale;
-  final Lola$ lola;
+  final LolaController lola;
 
   @override
   Widget build(BuildContext context) {

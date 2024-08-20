@@ -10,6 +10,25 @@ import 'package:path_provider/path_provider.dart';
 import '../core/elevenlabs/api.dart';
 import '../core/elevenlabs/types.dart';
 
+class LolaAudioException implements Exception {
+  final String? message;
+
+  LolaAudioException(this.message);
+}
+
+class LolaResponseException implements Exception {
+  final String? message;
+
+  LolaResponseException(this.message);
+}
+
+class LolaResult {
+  final String path;
+  final String reply;
+
+  LolaResult(this.path, this.reply);
+}
+
 enum Ai {
   openai,
   elevenlabs,
@@ -49,7 +68,7 @@ enum VoiceLola {
       case Ai.openai:
         OpenAI.apiKey = Env.openAiKey;
         OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-        OpenAI.requestsTimeOut = const Duration(seconds: 10); // 60 seconds.
+        OpenAI.requestsTimeOut = const Duration(seconds: 25);
         OpenAI.showLogs = false;
         OpenAI.showResponsesLogs = !true;
 
@@ -79,33 +98,6 @@ enum VoiceLola {
   }
 }
 
-sealed class LolaReplyState$ {}
-
-final class LolaEmpty implements LolaReplyState$ {
-  Widget actionDisabled({required double scale}) {
-    return ActionButton(
-      icon: const Icon(Icons.expand_less),
-      text: 'Ver Mensaje',
-      scale: scale,
-      color: Colors.grey,
-    );
-  }
-}
-
-final class LolaMessage implements LolaReplyState$ {
-  final String message;
-  const LolaMessage({required this.message});
-
-  Widget actionEnabled({required double scale, required Function action}) {
-    return ActionButton(
-      icon: const Icon(Icons.expand_less),
-      text: 'Ver Mensaje',
-      scale: scale,
-      onPressed: () => action(),
-    );
-  }
-}
-
 sealed class LolaAudioState$ {}
 
 final class NonePath implements LolaAudioState$ {
@@ -119,7 +111,7 @@ final class NonePath implements LolaAudioState$ {
   }
 }
 
-final class Playing implements LolaAudioState$ {
+final class PlayingAudio implements LolaAudioState$ {
   Widget stop(
       {required double scale, required Future<void> Function() action}) {
     return ActionButton(
@@ -131,7 +123,7 @@ final class Playing implements LolaAudioState$ {
   }
 }
 
-final class PlayingErr implements LolaAudioState$ {
+final class PlayingAudioErr implements LolaAudioState$ {
   Widget replay(
       {required double scale, required Future<void> Function() action}) {
     return ActionButton(
@@ -144,7 +136,7 @@ final class PlayingErr implements LolaAudioState$ {
   }
 }
 
-final class PlayingCompleted implements LolaAudioState$ {
+final class PlayingAudioOk implements LolaAudioState$ {
   Widget replay(
       {required double scale, required Future<void> Function() action}) {
     return ActionButton(
@@ -179,6 +171,45 @@ final class StoppedErr implements LolaAudioState$ {
   }
 }
 
+sealed class LolaServiceState {}
+
+final class IdleService implements LolaServiceState {
+  final String payload;
+  const IdleService({this.payload = ''});
+
+  @override
+  String toString() {
+    return 'IdleService: $payload';
+  }
+}
+
+final class Loading implements LolaServiceState {
+  @override
+  String toString() {
+    return 'Loading Lola Response';
+  }
+}
+
+final class Data implements LolaServiceState {
+  final String payload;
+  const Data({this.payload = ''});
+
+  @override
+  String toString() {
+    return 'Data Loaded';
+  }
+}
+
+final class Error implements LolaServiceState {
+  final String payload;
+  const Error({this.payload = ''});
+
+  @override
+  String toString() {
+    return 'Error';
+  }
+}
+
 sealed class LolaState$ {}
 
 mixin None {
@@ -188,23 +219,9 @@ mixin Some {
   Widget withMessage({required double scale});
 }
 
-final class Idle with None implements LolaState$ {
-  @override
-  Widget empty() {
-    return Empty(state: toString());
-  }
-}
-
-final class FetchingCompletion with None implements LolaState$ {
-  @override
-  Widget empty() {
-    return Empty(state: toString());
-  }
-}
-
-final class CompletionOK with Some implements LolaState$ {
+final class Idle with Some implements LolaState$ {
   final String output;
-  const CompletionOK({required this.output});
+  const Idle({this.output = ''});
 
   @override
   Widget withMessage({required double scale}) {
@@ -212,9 +229,26 @@ final class CompletionOK with Some implements LolaState$ {
   }
 }
 
-final class CompletionErr with None implements LolaState$ {
+final class FetchingResponse with None implements LolaState$ {
+  @override
+  Widget empty() {
+    return Empty(state: toString());
+  }
+}
+
+final class ResponseOk with Some implements LolaState$ {
+  final String output;
+  const ResponseOk({required this.output});
+
+  @override
+  Widget withMessage({required double scale}) {
+    return WithMessage(state: toString(), message: output, scale: scale);
+  }
+}
+
+final class ResponseErr with None implements LolaState$ {
   final String cause;
-  const CompletionErr({required this.cause});
+  const ResponseErr({required this.cause});
 
   @override
   Widget empty() {
@@ -222,9 +256,9 @@ final class CompletionErr with None implements LolaState$ {
   }
 }
 
-final class FetchingSpeech with Some implements LolaState$ {
+final class FetchingAudio with Some implements LolaState$ {
   final String output;
-  const FetchingSpeech({required this.output});
+  const FetchingAudio({required this.output});
 
   @override
   Widget withMessage({required double scale}) {
@@ -232,10 +266,10 @@ final class FetchingSpeech with Some implements LolaState$ {
   }
 }
 
-final class SpeechOk with Some implements LolaState$ {
+final class AudioOk with Some implements LolaState$ {
   final String path;
   final String output;
-  const SpeechOk({required this.path, required this.output});
+  const AudioOk({required this.path, required this.output});
 
   @override
   Widget withMessage({required double scale}) {
@@ -243,10 +277,10 @@ final class SpeechOk with Some implements LolaState$ {
   }
 }
 
-final class SpeechErr with Some implements LolaState$ {
+final class AudioErr with Some implements LolaState$ {
   final String output;
   final String cause;
-  const SpeechErr({required this.cause, required this.output});
+  const AudioErr({required this.cause, required this.output});
 
   @override
   Widget withMessage({required double scale}) {
@@ -254,9 +288,9 @@ final class SpeechErr with Some implements LolaState$ {
   }
 }
 
-final class SpeakingIdle with Some implements LolaState$ {
+final class LolaSilent with Some implements LolaState$ {
   final String output;
-  const SpeakingIdle({required this.output});
+  const LolaSilent({required this.output});
 
   @override
   Widget withMessage({required double scale}) {
@@ -264,9 +298,9 @@ final class SpeakingIdle with Some implements LolaState$ {
   }
 }
 
-final class SpeakingOK with Some implements LolaState$ {
+final class LolaSpoken with Some implements LolaState$ {
   final String output;
-  const SpeakingOK({required this.output});
+  const LolaSpoken({required this.output});
 
   @override
   Widget withMessage({required double scale}) {
@@ -274,10 +308,10 @@ final class SpeakingOK with Some implements LolaState$ {
   }
 }
 
-final class SpeakingErr with Some implements LolaState$ {
+final class LolaSpeechErr with Some implements LolaState$ {
   final String output;
   final String cause;
-  const SpeakingErr({required this.cause, required this.output});
+  const LolaSpeechErr({required this.cause, required this.output});
 
   @override
   Widget withMessage({required double scale}) {

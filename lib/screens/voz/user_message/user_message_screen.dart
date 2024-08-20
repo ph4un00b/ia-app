@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/lola_stream.dart';
+import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,7 +16,7 @@ class UserMessageScreen extends StatefulWidget {
   final double scale;
   final BuildContext parentContext;
   final ContentHandler controller;
-  final Lola$ lolaController;
+  final LolaController lolaController;
 
   @override
   State<UserMessageScreen> createState() => _UserMessageScreenState();
@@ -94,8 +94,11 @@ class _UserMessageScreenState extends State<UserMessageScreen> {
                         message: messageController,
                         screenScale: screenScale,
                         onSaved: () async => {
-                          await widget.lolaController
-                              .loadReply(input: widget.controller.content())
+                          // TODO: handle debug
+                          await widget.lolaController.loadReply(
+                            question: widget.controller.content(),
+                            debug: false,
+                          )
                         },
                       ),
                     VozMessageState.edited => MessageForm(

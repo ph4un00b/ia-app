@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/lola_stream.dart';
+import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -9,7 +9,7 @@ class DebugLolaVoice extends StatefulWidget {
     required this.lola,
   });
 
-  final Lola$ lola;
+  final LolaController lola;
 
   @override
   State<DebugLolaVoice> createState() => _DebugLolaVoiceState();

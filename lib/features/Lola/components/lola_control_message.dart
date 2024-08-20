@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/lola_stream.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/core/components/action_btn.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 
 class LolaControlMessage extends StatelessWidget {
@@ -8,30 +8,60 @@ class LolaControlMessage extends StatelessWidget {
     super.key,
     required this.stream,
     required this.scale,
-    required this.lola,
   });
 
-  final Stream<LolaReplyState$>? stream;
+  final Stream<LolaServiceState>? stream;
   final double scale;
-  final Lola$ lola;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
       stream: stream,
       builder: (context, snap) {
-        final ui = snap.data;
-        return switch (ui) {
+        final service = snap.data;
+        return switch (service) {
           null => Container(),
-          LolaEmpty() => ui.actionDisabled(scale: scale),
-          LolaMessage() => ui.actionEnabled(
+          IdleService(payload: String message) => ActionButton(
+              icon: const Icon(Icons.expand_less),
+              text: 'Ver Mensaje',
               scale: scale,
-              action: () => showModalBottomSheet(
+              onPressed: () => showModalBottomSheet(
                 isScrollControlled: true,
                 context: context,
                 builder: (ctx) => LolaMessageScreen(
-                  controller: lola,
-                  parentContext: context,
+                  text: message,
+                  scale: scale,
+                ),
+              ),
+            ),
+          Loading() => ActionButton(
+              icon: const Icon(Icons.expand_less),
+              text: 'Ver Mensaje',
+              scale: scale,
+              color: Colors.grey,
+            ),
+          Data(payload: String message) => ActionButton(
+              icon: const Icon(Icons.expand_less),
+              text: 'Ver Mensaje',
+              scale: scale,
+              onPressed: () => showModalBottomSheet(
+                isScrollControlled: true,
+                context: context,
+                builder: (ctx) => LolaMessageScreen(
+                  text: message,
+                  scale: scale,
+                ),
+              ),
+            ),
+          Error(payload: String message) => ActionButton(
+              icon: const Icon(Icons.expand_less),
+              text: 'Ver Mensaje',
+              scale: scale,
+              onPressed: () => showModalBottomSheet(
+                isScrollControlled: true,
+                context: context,
+                builder: (ctx) => LolaMessageScreen(
+                  text: message,
                   scale: scale,
                 ),
               ),

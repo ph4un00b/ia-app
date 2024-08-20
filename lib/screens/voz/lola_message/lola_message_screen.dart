@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
-import 'package:lola_ai_app/features/core/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LolaMessageScreen extends StatefulWidget {
   const LolaMessageScreen({
     super.key,
     required this.scale,
-    required this.controller,
-    required this.parentContext,
+    required this.text,
   });
 
+  final String text;
   final double scale;
-  final BuildContext parentContext;
-  final QueryContent controller;
 
   @override
   State<LolaMessageScreen> createState() => _LolaMessageScreenState();
@@ -30,7 +27,7 @@ class _LolaMessageScreenState extends State<LolaMessageScreen> {
   initState() {
     super.initState();
     _loadUserPrefereces();
-    messageController.text = widget.controller.content();
+    messageController.text = widget.text;
   }
 
   Future<void> _loadUserPrefereces() async {
@@ -43,7 +40,7 @@ class _LolaMessageScreenState extends State<LolaMessageScreen> {
 
   @override
   Widget build(BuildContext _) {
-    return StatefulBuilder(builder: (_, setState) {
+    return StatefulBuilder(builder: (ctx, setState) {
       return Padding(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
         child: SizedBox(
@@ -79,13 +76,13 @@ class _LolaMessageScreenState extends State<LolaMessageScreen> {
               Expanded(
                 child: SingleChildScrollView(
                   child: Text(
-                    widget.controller.content(),
+                    widget.text,
                     textScaler: TextScaler.linear(2.6 * screenScale),
                   ),
                 ),
               ),
               if (debug) const SizedBox(height: 40),
-              if (debug) _debugMessageState(),
+              if (debug) _debugMessageState(ctx),
               const SizedBox(height: 10),
               SizedBox(
                 width: double.infinity,
@@ -95,7 +92,7 @@ class _LolaMessageScreenState extends State<LolaMessageScreen> {
                     // foregroundColor: Color.
                   ),
                   onPressed: () {
-                    Navigator.pop(widget.parentContext);
+                    Navigator.pop(ctx);
                   },
                   child: Text(
                     'Cerrar',
@@ -110,7 +107,7 @@ class _LolaMessageScreenState extends State<LolaMessageScreen> {
     });
   }
 
-  Widget _debugMessageState() {
+  Widget _debugMessageState(BuildContext ctx) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -119,7 +116,7 @@ class _LolaMessageScreenState extends State<LolaMessageScreen> {
           // foregroundColor: Color.
         ),
         onPressed: () {
-          Navigator.pop(widget.parentContext);
+          Navigator.pop(ctx);
         },
         child: Text(
           state.toString(),
