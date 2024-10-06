@@ -80,7 +80,7 @@ final class LolaController with QueryContent {
     if (debug) serviceState.add(const IdleService(payload: 'loading response'));
     try {
       serviceState.add(Loading());
-      final result = await LolaReply.query(
+      final result = await LolaResponse.query(
         question: question,
         voice: voice,
         debug: debug,

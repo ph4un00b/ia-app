@@ -4,7 +4,7 @@ import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:path/path.dart' as p;
 
-class LolaReply {
+class LolaResponse {
   static Future<LolaResult> query({
     required question,
     required VoiceLola voice,
@@ -15,6 +15,9 @@ class LolaReply {
     const text = Agent.text;
 
     final agentKind = await classify.query(question);
+
+    print('agentKind: $agentKind');
+
     LLMResponse response = switch (agentKind) {
       TextResponse() => await text.query(question),
       ReminderResponse() => await remind.query(question),
