@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/queries/reply.dart';
+import 'package:lola_ai_app/features/Lola/queries/response.dart';
 import 'package:lola_ai_app/features/Lola/queries/summary.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Mensajes/mutations/save_conversation.dart';
