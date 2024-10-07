@@ -18,6 +18,7 @@ class TextAgent {
       LLM.openaiAssistant => throw UnimplementedError(),
       LLM.openaiChat => await _openaiChat(input, llm),
       LLM.openaiCompletion => await _openaiCompletion(input, llm),
+      LLM.openaiStructuredOutput => throw UnimplementedError(),
     };
 
     return responseText == null

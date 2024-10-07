@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:lola_ai_app/features/Agents/classification_agent.dart';
 import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/main.dart';
 import 'package:path/path.dart' as p;
 
 class LolaResponse {
@@ -10,18 +12,19 @@ class LolaResponse {
     required VoiceLola voice,
     required bool debug,
   }) async {
-    const classify = Agent.classification;
-    const remind = Agent.reminder;
+    AppStatus.instance.lolaStatus = LolaState.running;
+    const classify = StructuredAgent.classification;
+    const reminder = Agent.reminder;
     const text = Agent.text;
+    final userIntention = await classify.query(question);
 
-    final agentKind = await classify.query(question);
+    print('agentKind: $userIntention');
 
-    print('agentKind: $agentKind');
-
-    LLMResponse response = switch (agentKind) {
-      TextResponse() => await text.query(question),
-      ReminderResponse() => await remind.query(question),
-      NoneResponse() => const NoneResponse()
+    LLMResponse response = switch (userIntention) {
+      ResponseType.none => const NoneResponse(),
+      ResponseType.createReminder => await _createReminder(reminder, question),
+      ResponseType.reminder => await reminder.query(question),
+      ResponseType.text => await text.query(question),
     };
 
     if (response.payload.isEmpty) {
@@ -32,5 +35,11 @@ class LolaResponse {
     String path = p.normalize(speechFile.path);
 
     return LolaResult(path, response.payload);
+  }
+
+  static Future<LLMResponse> _createReminder(Agent reminder, question) async {
+
+    print('create reminder: currentState: ${AppStatus.instance.lolaStatus}');
+    return await reminder.query(question);
   }
 }

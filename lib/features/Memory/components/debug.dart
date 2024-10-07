@@ -82,7 +82,7 @@ class DebugClassificationAgent extends StatelessWidget {
           splashColor: Colors.purple.withAlpha(30),
           onTap: () async {
             // var agent = ClassificationAgent('hola lola que debo hacer los viernes?');
-            var agent = Agent.classification;
+            var agent = StructuredAgent.classification;
             // var agent = ClassificationAgent('hola recuerdame que debo hacer los viernes?');
             await agent.query('hola lola que debo hacer los viernes?');
           },

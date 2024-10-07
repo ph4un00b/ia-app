@@ -55,8 +55,22 @@ final class NoneResponse implements LLMResponse {
   }
 }
 
+// configurations global setup for the agents.
+enum StructuredAgent {
+  classification(llm: LLM.openaiStructuredOutput);
+
+  const StructuredAgent({required LLM llm}) : _llm = llm;
+
+  final LLM _llm;
+
+  Future<ResponseType> query(String input) async {
+    return switch (this) {
+      StructuredAgent.classification => ClassifyAgent.query(input, llm: _llm),
+    };
+  }
+}
+
 enum Agent {
-  classification(llm: LLM.openaiChat),
   reminder(llm: LLM.openaiAssistant),
   text(llm: LLM.openaiChat);
 
@@ -66,7 +80,6 @@ enum Agent {
 
   Future<LLMResponse> query(String input) async {
     return switch (this) {
-      Agent.classification => ClassifyAgent.query(input, llm: _llm),
       Agent.reminder => ReminderAgent.query(input, llm: _llm),
       Agent.text => TextAgent.query(input, llm: _llm),
     };

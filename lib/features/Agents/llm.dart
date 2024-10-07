@@ -1,8 +1,10 @@
 import 'package:dart_openai/dart_openai.dart';
+import 'package:openai_dart/openai_dart.dart';
 
 enum LLM {
   openaiAssistant,
   openaiChat,
+  openaiStructuredOutput,
   openaiCompletion;
 
   const LLM();
@@ -33,6 +35,9 @@ enum LLM {
           ],
           role: OpenAIChatMessageRole.system,
         ),
+      LLM.openaiStructuredOutput => ChatCompletionMessage.system(
+          content: message,
+        ),
     };
   }
 
@@ -61,6 +66,11 @@ enum LLM {
             ),
           ],
           role: OpenAIChatMessageRole.user,
+        ),
+      LLM.openaiStructuredOutput => ChatCompletionMessage.user(
+          content: ChatCompletionUserMessageContent.string(
+            message,
+          ),
         ),
     };
   }

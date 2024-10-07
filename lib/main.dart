@@ -11,9 +11,34 @@ void main() async {
   assert(Env.elevenApiKey.isNotEmpty, "ELEVEN_API_KEY not defined");
   assert(Env.dbUrl.isNotEmpty, "DB_URL not defined");
   assert(Env.dbKey.isNotEmpty, "DB_KEY not defined");
+
   await Supabase.initialize(
     url: Env.dbUrl,
     anonKey: Env.dbKey,
   );
+
+  AppStatus.initialize();
+
   runApp(const MyApp());
+}
+
+enum LolaState { idle, running, auth, onboarding, creatingReminder }
+
+class AppStatus {
+  bool _initialized = false;
+  LolaState lolaStatus = LolaState.idle;
+
+  // Private constructor
+  AppStatus._();
+  static final AppStatus _instance = AppStatus._();
+  static AppStatus get instance => _instance;
+
+  static void initialize() {
+    assert(
+      !_instance._initialized,
+      'This instance is already initialized',
+    );
+
+    _instance._initialized = true;
+  }
 }
