@@ -9,32 +9,22 @@ enum LLM {
 
   const LLM();
 
+  dynamic assistant({required String message}) {
+    return switch (this) {
+      LLM.openaiAssistant => throw UnimplementedError(),
+      LLM.openaiChat => throw UnimplementedError(),
+      LLM.openaiStructuredOutput =>
+        ChatCompletionMessage.assistant(content: message),
+      LLM.openaiCompletion => throw UnimplementedError(),
+    };
+  }
+
   dynamic system({required String message}) {
     return switch (this) {
-      LLM.openaiAssistant => OpenAIChatCompletionChoiceMessageModel(
-          content: [
-            OpenAIChatCompletionChoiceMessageContentItemModel.text(
-              message,
-            ),
-          ],
-          role: OpenAIChatMessageRole.system,
-        ),
-      LLM.openaiChat => OpenAIChatCompletionChoiceMessageModel(
-          content: [
-            OpenAIChatCompletionChoiceMessageContentItemModel.text(
-              message,
-            ),
-          ],
-          role: OpenAIChatMessageRole.system,
-        ),
-      LLM.openaiCompletion => OpenAIChatCompletionChoiceMessageModel(
-          content: [
-            OpenAIChatCompletionChoiceMessageContentItemModel.text(
-              message,
-            ),
-          ],
-          role: OpenAIChatMessageRole.system,
-        ),
+      LLM.openaiAssistant ||
+      LLM.openaiChat ||
+      LLM.openaiCompletion =>
+        _createOpenAIMessage(message, OpenAIChatMessageRole.system),
       LLM.openaiStructuredOutput => ChatCompletionMessage.system(
           content: message,
         ),
@@ -43,30 +33,10 @@ enum LLM {
 
   dynamic user({required String message}) {
     return switch (this) {
-      LLM.openaiAssistant => OpenAIChatCompletionChoiceMessageModel(
-          content: [
-            OpenAIChatCompletionChoiceMessageContentItemModel.text(
-              message,
-            ),
-          ],
-          role: OpenAIChatMessageRole.user,
-        ),
-      LLM.openaiChat => OpenAIChatCompletionChoiceMessageModel(
-          content: [
-            OpenAIChatCompletionChoiceMessageContentItemModel.text(
-              message,
-            ),
-          ],
-          role: OpenAIChatMessageRole.user,
-        ),
-      LLM.openaiCompletion => OpenAIChatCompletionChoiceMessageModel(
-          content: [
-            OpenAIChatCompletionChoiceMessageContentItemModel.text(
-              message,
-            ),
-          ],
-          role: OpenAIChatMessageRole.user,
-        ),
+      LLM.openaiAssistant ||
+      LLM.openaiChat ||
+      LLM.openaiCompletion =>
+        _createOpenAIMessage(message, OpenAIChatMessageRole.user),
       LLM.openaiStructuredOutput => ChatCompletionMessage.user(
           content: ChatCompletionUserMessageContent.string(
             message,
@@ -74,4 +44,16 @@ enum LLM {
         ),
     };
   }
+}
+
+OpenAIChatCompletionChoiceMessageModel _createOpenAIMessage(
+  String message,
+  OpenAIChatMessageRole role,
+) {
+  return OpenAIChatCompletionChoiceMessageModel(
+    content: [
+      OpenAIChatCompletionChoiceMessageContentItemModel.text(message),
+    ],
+    role: role,
+  );
 }

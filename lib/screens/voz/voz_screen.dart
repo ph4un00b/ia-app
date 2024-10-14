@@ -96,7 +96,7 @@ class _VozBodyState extends State<VozBody> {
     String voz = prefs.getString('lola-voice') ?? 'nova';
 
     setState(() {
-      lola$.voice = VoiceLola.values.firstWhere((v) => v.name == voz);
+      lola$.currentVoice = VoiceLola.values.firstWhere((v) => v.name == voz);
       scale = prefs.getDouble('app-setting-text') ?? Constants.scale;
     });
   }

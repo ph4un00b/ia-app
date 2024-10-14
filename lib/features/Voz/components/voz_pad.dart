@@ -45,7 +45,7 @@ class VozPad extends StatelessWidget {
               } else if (user.state case VozState.recording) {
                 await user.notifyStopRecording();
                 // TODO: handle debug
-                await lola$.loadReply(question: user.content(), debug: false);
+                await lola$.loadReply(userQuestion: user.content(), debug: false);
               } else if (user.state case _) {
                 debugPrint('noop');
               }
@@ -60,7 +60,7 @@ class VozPad extends StatelessWidget {
                 if (value != null) {
                   user.updateContent(value);
                   // TODO: handle debug
-                  await lola$.loadReply(question: user.content(), debug: false);
+                  await lola$.loadReply(userQuestion: user.content(), debug: false);
                 }
               },
             ),

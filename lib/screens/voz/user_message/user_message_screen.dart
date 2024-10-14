@@ -96,7 +96,7 @@ class _UserMessageScreenState extends State<UserMessageScreen> {
                         onSaved: () async => {
                           // TODO: handle debug
                           await widget.lolaController.loadReply(
-                            question: widget.controller.content(),
+                            userQuestion: widget.controller.content(),
                             debug: false,
                           )
                         },

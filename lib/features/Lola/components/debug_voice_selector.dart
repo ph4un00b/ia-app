@@ -21,7 +21,7 @@ class _DebugLolaVoiceState extends State<DebugLolaVoice> {
     return Expanded(
       flex: 2,
       child: DebugVoiceSelector(
-        $lolavoice: widget.lola.voice,
+        $lolavoice: widget.lola.currentVoice,
         onSelected: (voz) async {
           if (voz != null) {
             final prefs = await SharedPreferences.getInstance();
@@ -31,7 +31,7 @@ class _DebugLolaVoiceState extends State<DebugLolaVoice> {
             );
 
             setState(() {
-              widget.lola.voice = voz;
+              widget.lola.currentVoice = voz;
             });
           }
         },

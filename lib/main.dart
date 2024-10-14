@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lola_ai_app/config/env.dart';
+import 'package:openai_dart/openai_dart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/root.dart';
 
@@ -24,9 +25,13 @@ void main() async {
 
 enum LolaState { idle, running, auth, onboarding, creatingReminder }
 
+enum ReminderState { idle, create, draft, edited, filled }
+
 class AppStatus {
   bool _initialized = false;
   LolaState lolaStatus = LolaState.idle;
+  ReminderState reminderStatus = ReminderState.idle;
+  List<ChatCompletionMessage> currentReminderChat = [];
 
   // Private constructor
   AppStatus._();

@@ -1,26 +1,29 @@
+import 'package:lola_ai_app/main.dart';
+
 import 'reminder_agent.dart';
 import 'text_agent.dart';
 import 'classification_agent.dart';
 import 'llm.dart';
 
-enum QueryKind {
+enum IntentKind {
   text,
   // TODO: add greeting agent
   greeting,
   reminder,
+  createReminder,
   none,
 }
 
 sealed class LLMResponse {
   String get payload => '';
-  QueryKind get intent => QueryKind.none;
+  IntentKind get intent => IntentKind.none;
 }
 
 final class TextResponse implements LLMResponse {
   @override
   final String payload;
   @override
-  final QueryKind intent = QueryKind.text;
+  final IntentKind intent = IntentKind.text;
   const TextResponse({this.payload = ''});
 
   @override
@@ -33,8 +36,11 @@ final class ReminderResponse implements LLMResponse {
   @override
   final String payload;
   @override
-  final QueryKind intent = QueryKind.reminder;
-  const ReminderResponse({this.payload = ''});
+  final IntentKind intent = IntentKind.reminder;
+
+  final ReminderState status;
+
+  const ReminderResponse({this.payload = '', this.status = ReminderState.idle});
 
   @override
   String toString() {
@@ -46,7 +52,7 @@ final class NoneResponse implements LLMResponse {
   @override
   final String payload;
   @override
-  final QueryKind intent = QueryKind.none;
+  final IntentKind intent = IntentKind.none;
   const NoneResponse({this.payload = ''});
 
   @override
@@ -63,7 +69,7 @@ enum StructuredAgent {
 
   final LLM _llm;
 
-  Future<ResponseType> query(String input) async {
+  Future<IntentKind> query(String input) async {
     return switch (this) {
       StructuredAgent.classification => ClassifyAgent.query(input, llm: _llm),
     };

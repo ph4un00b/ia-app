@@ -59,7 +59,7 @@ class DebugMemory extends StatelessWidget {
         child: InkWell(
           splashColor: Colors.purple.withAlpha(30),
           onTap: () async => lola.loadReply(
-            question: 'hola lola que debo hacer los viernes?',
+            userQuestion: 'hola lola que debo hacer los viernes?',
             debug: true,
           ),
           child: const Center(child: Text('test lola with memory')),

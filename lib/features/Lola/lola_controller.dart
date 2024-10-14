@@ -9,16 +9,16 @@ import 'package:lola_ai_app/features/core/types.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 
 final class LolaController with QueryContent {
-  final audio.AudioPlayer _player = audio.AudioPlayer();
+  final audio.AudioPlayer _audioplayer = audio.AudioPlayer();
   final serviceState = StreamController<LolaServiceState>()
     ..add(const IdleService());
   final audioState = StreamController<LolaAudioState$>()..add(NonePath());
-  VoiceLola voice = VoiceLola.nova;
-  String _output = '';
-  String _path = '';
+  VoiceLola currentVoice = VoiceLola.nova;
+  String _currentOutput = '';
+  String _currentAudioPath = '';
 
   LolaController() {
-    _player.playbackEventStream.listen((event) {
+    _audioplayer.playbackEventStream.listen((event) {
       debugPrint('== LOLA PAYER >> ${event.processingState}');
       switch (event.processingState) {
         case audio.ProcessingState.idle:
@@ -49,7 +49,7 @@ final class LolaController with QueryContent {
 
   @override
   String content() {
-    return _output;
+    return _currentOutput;
   }
 
   // no queremos que suban las exceptiones
@@ -61,37 +61,38 @@ final class LolaController with QueryContent {
     if (debug) serviceState.add(const IdleService(payload: 'loading summary'));
     try {
       serviceState.add(Loading());
-      final result = await LolaSummary.query(voice: voice, debug: debug);
-      _path = result.path;
-      _output = result.reply;
+      final result = await LolaSummary.query(voice: currentVoice, debug: debug);
+      _currentAudioPath = result.path;
+      _currentOutput = result.reply;
       serviceState.add(Data(payload: result.reply));
       await _playAudio(result.path);
     } catch (e) {
       if (debug) {
         serviceState.add(Error(payload: e.toString()));
       } else {
-        serviceState.add(Data(payload: _output));
+        serviceState.add(Data(payload: _currentOutput));
       }
       debugPrint('loadShortMemory: error: $e');
     }
   }
 
-  loadReply({required String question, bool debug = false}) async {
+  Future<void> loadReply(
+      {required String userQuestion, bool debug = false}) async {
     if (debug) serviceState.add(const IdleService(payload: 'loading response'));
     try {
       serviceState.add(Loading());
 
       final result = await LolaResponse.query(
-        question: question,
-        voice: voice,
+        userQuery: userQuestion,
+        voiceModel: currentVoice,
         debug: debug,
       );
-      _path = result.path;
-      _output = result.reply;
+      _currentAudioPath = result.path;
+      _currentOutput = result.reply;
 
       serviceState.add(Data(payload: result.reply));
       await Conversation.save(
-        user: question,
+        user: userQuestion,
         lola: result.reply,
         audioPath: result.path,
       );
@@ -100,27 +101,27 @@ final class LolaController with QueryContent {
       if (debug) {
         serviceState.add(Error(payload: e.toString()));
       } else {
-        serviceState.add(Data(payload: _output));
+        serviceState.add(Data(payload: _currentOutput));
       }
       debugPrint('loadReply: error: $e');
     }
   }
 
-  Future<void> _playAudio(String path) async {
-    debugPrint('play lola from path: $path');
+  Future<void> _playAudio(String audioPath) async {
+    debugPrint('play lola from path: $audioPath');
     // await _player.setAudioSource(audio.AudioSource.file(path));
-    await _player.setFilePath(path);
+    await _audioplayer.setFilePath(audioPath);
     audioState.add(PlayingAudio());
-    await _player.play();
+    await _audioplayer.play();
   }
 
   Future<void> stopSpeech() async {
-    if (!_player.playing) {
+    if (!_audioplayer.playing) {
       return;
     }
 
     try {
-      await _player.stop();
+      await _audioplayer.stop();
       audioState.add(Stopped());
     } catch (e) {
       debugPrint(e.toString());
@@ -131,8 +132,8 @@ final class LolaController with QueryContent {
   Future<void> playSpeech() async {
     try {
       audioState.add(PlayingAudio());
-      await _player.setFilePath(_path);
-      await _player.play();
+      await _audioplayer.setFilePath(_currentAudioPath);
+      await _audioplayer.play();
     } catch (e) {
       debugPrint(e.toString());
       audioState.add(PlayingAudioErr());
@@ -140,7 +141,7 @@ final class LolaController with QueryContent {
   }
 
   void dispose() {
-    _player.dispose();
+    _audioplayer.dispose();
     audioState.close();
     serviceState.close();
   }

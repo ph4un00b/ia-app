@@ -13,7 +13,7 @@ class ShortMemoryMessages {
     List<Map<String, dynamic>> result = await Supabase.instance.client
         .from('conversation')
         .select()
-        .not('intent', 'eq', QueryKind.greeting.name)
+        .not('intent', 'eq', IntentKind.greeting.name)
         .not('system', 'eq', 'lola')
         .order('created_at', ascending: false)
         .limit(36);
@@ -22,31 +22,32 @@ class ShortMemoryMessages {
     return _prepare(messages);
   }
 
-  static Future<List<MemoryMessage>> _query() async {
+  static Future<List<MemoryEntry>> _query() async {
     List<Map<String, dynamic>> result = await Supabase.instance.client
         .from('conversation')
         .select()
-        .not('intent', 'eq', QueryKind.greeting.name)
+        .not('intent', 'eq', IntentKind.greeting.name)
         .order('created_at', ascending: false)
+        // TODO: constant
         .limit(36);
 
     var messages = _messagesFrom(result);
     return messages;
   }
 
-  static List<MemoryMessage> _messagesFrom(
+  static List<MemoryEntry> _messagesFrom(
     List<Map<String, dynamic>> data,
   ) {
-    return List<MemoryMessage>.generate(data.length, (i) {
+    return List<MemoryEntry>.generate(data.length, (i) {
       final row = data[i];
-      final QueryKind intent =
-          QueryKind.values.firstWhere((e) => e.name == row['intent']);
+      final IntentKind intent =
+          IntentKind.values.firstWhere((e) => e.name == row['intent']);
       final String content = row['content'];
       final String from = row['system'];
       // TODO(app.messages): manage timezones.
       final DateTime createdAt = DateTime.parse(row['created_at']);
 
-      return MemoryMessage(
+      return MemoryEntry(
         timestamp: createdAt,
         intent: intent,
         role: from,
@@ -56,7 +57,7 @@ class ShortMemoryMessages {
     });
   }
 
-  static String _prepare(List<MemoryMessage> list) {
+  static String _prepare(List<MemoryEntry> list) {
     List<String> msgs = [];
     // XXX: list can be reversed. depending on the query order.
     for (var msg in list.reversed) {

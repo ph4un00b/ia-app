@@ -1,170 +1,12 @@
-import 'dart:convert';
-
 import 'package:dart_openai/dart_openai.dart';
 import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Agents/llm.dart';
+import 'package:lola_ai_app/services/llm_utils.dart';
 import 'package:openai_dart/openai_dart.dart';
 
-const String resetColor = '\x1B[0m';
-const String redColor = '\x1B[31m';
-const String greenColor = '\x1B[32m';
-const String yellowColor = '\x1B[33m';
-const String blueColor = '\x1B[34m';
+import 'types.dart';
 
-enum ResponseType { none, createReminder, reminder, text }
-
-final intentMap = {
-  'text': ResponseType.text,
-  'reminder': ResponseType.reminder,
-  'create_reminder': ResponseType.createReminder,
-};
-
-class ClassifyAgent {
-  static Future<ResponseType> query(String input, {required LLM llm}) async {
-    if (input.isEmpty) {
-      return ResponseType.none;
-    }
-
-    return switch (llm) {
-      LLM.openaiAssistant => throw UnimplementedError(),
-      LLM.openaiChat => await _openaiChat(input, llm),
-      LLM.openaiCompletion => throw UnimplementedError(),
-      LLM.openaiStructuredOutput => await _openaiStructuredOutput(input, llm),
-    };
-  }
-
-  static Future<ResponseType> _openaiStructuredOutput(
-    String input,
-    LLM llm,
-  ) async {
-    Map<String, dynamic> result = {"user_intent": "TEXT"};
-    final client = OpenAIClient(apiKey: Env.openAiKey);
-
-    const responseFormat = ResponseFormat.jsonSchema(
-      jsonSchema: JsonSchemaObject(
-        name: 'Intent_Agent',
-        description: 'AI agent responsible for identifying user intent.',
-        strict: true,
-        schema: {
-          "type": "object",
-          "properties": {
-            "user_intent": {
-              "type": "string",
-              "enum": ["TEXT", "REMINDER", "CREATE_REMINDER"]
-            },
-          },
-          "required": ["user_intent"],
-          "additionalProperties": false,
-        },
-      ),
-    );
-
-    // TODO: retries, logs
-    // OpenAI.apiKey = Env.openAiKey;
-    // OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-    // OpenAI.requestsTimeOut = const Duration(seconds: 10);
-    // OpenAI.showLogs = true;
-    // OpenAI.showResponsesLogs = true;
-
-    final res = await client.createChatCompletion(
-      request: CreateChatCompletionRequest(
-        model: const ChatCompletionModel.model(
-          ChatCompletionModels.gpt4oMini,
-        ),
-        messages: [
-          llm.system(
-            message: _prompt(),
-          ),
-          llm.user(
-            message: input,
-          ),
-        ],
-        temperature: 0,
-        responseFormat: responseFormat,
-      ),
-    );
-
-    print(res.choices.first.message.content);
-
-    result = await extractContent(res);
-    String intent = result['user_intent'];
-    return intentMap[intent.trim().toLowerCase()] ?? ResponseType.none;
-  }
-
-  static Future<Map<String, dynamic>> extractContent(
-      CreateChatCompletionResponse response) async {
-    await trace("$blueColor BEFORE message $resetColor");
-    final ChatCompletionAssistantMessage? message = extractMessage(response);
-    await trace("$blueColor AFTER message $resetColor");
-
-    return switch (message) {
-      ChatCompletionAssistantMessage(content: final content?) => () async {
-          await trace("\nParsed content:");
-          final parsedContent = jsonDecode(content) as Map<String, dynamic>;
-          await trace(prettify(parsedContent));
-          return parsedContent;
-        }(),
-      ChatCompletionAssistantMessage(refusal: final refusal?) =>
-        throw StateError("Request refused by the model: $refusal"),
-      ChatCompletionAssistantMessage() => throw StateError(
-          "Unexpected message format: content and refusal are both null"),
-      null => throw StateError("No message available in the response"),
-    };
-  }
-
-  static ChatCompletionAssistantMessage? extractMessage(
-      CreateChatCompletionResponse response) {
-    return switch (response.choices.firstOrNull?.finishReason) {
-      null => throw StateError("No choices in response"),
-      ChatCompletionFinishReason.stop => response.choices.firstOrNull?.message,
-      ChatCompletionFinishReason.length =>
-        throw StateError("Max length reached"),
-      ChatCompletionFinishReason.toolCalls =>
-        throw StateError("Unexpected tool calls"),
-      ChatCompletionFinishReason.contentFilter =>
-        throw StateError("Content filtered"),
-      ChatCompletionFinishReason.functionCall =>
-        throw StateError("Unexpected function call"),
-    };
-  }
-
-  static String prettify(dynamic data) {
-    return const JsonEncoder.withIndent('  ').convert(data);
-  }
-
-  static Future<void> trace(String txt) async {
-    // await sleep(const Duration(seconds: 0));
-    print(txt);
-  }
-
-  static Future<void> sleep(Duration duration) async {
-    await Future.delayed(duration);
-  }
-
-  static Future<ResponseType> _openaiChat(String input, LLM llm) async {
-    OpenAI.apiKey = Env.openAiKey;
-    OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-    OpenAI.requestsTimeOut = const Duration(seconds: 10);
-    OpenAI.showLogs = true;
-    OpenAI.showResponsesLogs = true;
-
-    var response = await OpenAI.instance.chat.create(
-      model: "gpt-3.5-turbo",
-      messages: [
-        llm.system(message: _prompt()),
-        llm.user(message: input),
-      ],
-      maxTokens: 10,
-      temperature: 0,
-      n: 1,
-    );
-
-    var responseText = response.choices.first.message.content?.first.text ?? "";
-    return intentMap[responseText.trim().toLowerCase()] ?? ResponseType.none;
-  }
-
-  static String _prompt() {
-    return '''# Intent Classification Agent
+const prompt = '''# Intent Classification Agent
 
 You are an AI agent specializing in user intent classification. Your task is to analyze user input and categorize it as either "text", "reminder", or "create_reminder" based on the following criteria:
 
@@ -214,6 +56,103 @@ You are an AI agent specializing in user intent classification. Your task is to 
 
 Remember: Always prioritize accuracy in intent classification to ensure appropriate responses to user queries across various contexts and languages.
     ''';
+
+final intentMap = {
+  'text': IntentKind.text,
+  'reminder': IntentKind.reminder,
+  'create_reminder': IntentKind.createReminder,
+};
+
+const schema = ResponseFormat.jsonSchema(
+  jsonSchema: JsonSchemaObject(
+    name: 'Intent_Agent',
+    description: 'AI agent responsible for identifying user intent.',
+    strict: true,
+    schema: {
+      "type": "object",
+      "properties": {
+        "user_intent": {
+          "type": "string",
+          "enum": ["TEXT", "REMINDER", "CREATE_REMINDER"]
+        },
+      },
+      "required": ["user_intent"],
+      "additionalProperties": false,
+    },
+  ),
+);
+
+class ClassifyAgent {
+  static Future<IntentKind> query(String input, {required LLM llm}) async {
+    if (input.isEmpty) return IntentKind.none;
+
+    return switch (llm) {
+      LLM.openaiAssistant => throw UnimplementedError(),
+      LLM.openaiChat => await _classifyWithOpenAIChat(input, llm),
+      LLM.openaiCompletion => throw UnimplementedError(),
+      LLM.openaiStructuredOutput =>
+        await _classifyWithStructuredOutput(input, llm),
+    };
+  }
+
+  static Future<IntentKind> _classifyWithStructuredOutput(
+    String input,
+    LLM llm,
+  ) async {
+    Map<String, dynamic> result = {"user_intent": "TEXT"};
+    final client = OpenAIClient(apiKey: Env.openAiKey);
+
+    // TODO: retries, logs
+    // OpenAI.apiKey = Env.openAiKey;
+    // OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
+    // OpenAI.requestsTimeOut = const Duration(seconds: 10);
+    // OpenAI.showLogs = true;
+    // OpenAI.showResponsesLogs = true;
+
+    final response = await client.createChatCompletion(
+      request: CreateChatCompletionRequest(
+        model: const ChatCompletionModel.model(
+          ChatCompletionModels.gpt4oMini,
+        ),
+        messages: [
+          llm.system(message: prompt),
+          llm.user(message: input),
+        ],
+        temperature: 0,
+        responseFormat: schema,
+      ),
+    );
+
+    print(response.choices.first.message.content);
+
+    result = await LLMUtils.parseResponseContent(response);
+    String intent = result['user_intent'];
+    return intentMap[intent.trim().toLowerCase()] ?? IntentKind.none;
+  }
+
+  static Future<IntentKind> _classifyWithOpenAIChat(
+    String input,
+    LLM llm,
+  ) async {
+    OpenAI.apiKey = Env.openAiKey;
+    OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
+    OpenAI.requestsTimeOut = const Duration(seconds: 10);
+    OpenAI.showLogs = true;
+    OpenAI.showResponsesLogs = true;
+
+    var response = await OpenAI.instance.chat.create(
+      model: "gpt-3.5-turbo",
+      messages: [
+        llm.system(message: prompt),
+        llm.user(message: input),
+      ],
+      maxTokens: 10,
+      temperature: 0,
+      n: 1,
+    );
+
+    var responseText = response.choices.first.message.content?.first.text ?? "";
+    return intentMap[responseText.trim().toLowerCase()] ?? IntentKind.none;
   }
 
   @override
