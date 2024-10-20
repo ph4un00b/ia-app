@@ -76,8 +76,10 @@ final class LolaController with QueryContent {
     }
   }
 
-  Future<void> loadReply(
-      {required String userQuestion, bool debug = false}) async {
+  Future<void> loadReply({
+    required String userQuestion,
+    bool debug = false,
+  }) async {
     if (debug) serviceState.add(const IdleService(payload: 'loading response'));
     try {
       serviceState.add(Loading());
@@ -97,13 +99,13 @@ final class LolaController with QueryContent {
         audioPath: result.path,
       );
       await _playAudio(result.path);
-    } catch (e) {
+    } catch (e, st) {
       if (debug) {
         serviceState.add(Error(payload: e.toString()));
       } else {
         serviceState.add(Data(payload: _currentOutput));
       }
-      debugPrint('loadReply: error: $e');
+      debugPrint('loadReply: error: $e, $st');
     }
   }
 

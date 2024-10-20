@@ -32,6 +32,7 @@ class AppStatus {
   LolaState lolaStatus = LolaState.idle;
   ReminderState reminderStatus = ReminderState.idle;
   List<ChatCompletionMessage> currentReminderChat = [];
+  Map<String, dynamic> currentReminder = {};
 
   // Private constructor
   AppStatus._();

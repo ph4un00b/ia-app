@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:lola_ai_app/features/Agents/reminder_agent.dart';
 import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/main.dart';
@@ -15,26 +16,61 @@ class LolaResponse {
     required VoiceLola voiceModel,
     required bool debug,
   }) async {
+    final userIntent = await StructuredAgent.classification.query(userQuery);
+
+    if (AppStatus.instance.lolaStatus == LolaState.creatingReminder) {
+      final _ = switch (userIntent) {
+        IntentKind.text ||
+        IntentKind.greeting ||
+        IntentKind.none =>
+          await ReminderAgent.updateReminders(),
+        IntentKind.createReminder || IntentKind.reminder => {},
+      };
+    }
+
     return switch (AppStatus.instance.lolaStatus) {
-      LolaState.idle => await queryLola(userQuery, voiceModel),
-      LolaState.running => await queryLola(userQuery, voiceModel),
-      LolaState.auth => throw StateError("lola auth status not implemented"),
-      LolaState.onboarding =>
-        throw StateError("lola onboarding status not implemented"),
-      LolaState.creatingReminder => await queryReminder(userQuery, voiceModel),
+      LolaState.creatingReminder ||
+      LolaState.idle ||
+      LolaState.running =>
+        _handle(userIntent, userQuery, voiceModel),
+      LolaState.auth => throw StateError("lola auth not implemented"),
+      LolaState.onboarding => throw StateError("onboarding not implemented"),
+    };
+  }
+
+  static Future<LolaResult> _handle(
+    IntentKind userIntent,
+    String userQuery,
+    VoiceLola voiceModel,
+  ) {
+    return switch (userIntent) {
+      IntentKind.createReminder => _setReminder(userQuery, voiceModel),
+      IntentKind.text ||
+      IntentKind.greeting ||
+      IntentKind.reminder ||
+      IntentKind.none =>
+        _askLola(userQuery, voiceModel),
     };
   }
 
   // TODO: look for flutter feedback loop implementations
-  static Future<LolaResult> queryReminder(
+  static Future<LolaResult> _setReminder(
     String userQuery,
     VoiceLola voiceModel,
   ) async {
+    AppStatus.instance.lolaStatus = LolaState.creatingReminder;
     final reminderStatus = AppStatus.instance.reminderStatus;
 
     ReminderResponse response = switch (reminderStatus) {
-      ReminderState.idle =>
-        throw StateError("idle reminder status not implemented"),
+      ReminderState.idle => await (String userInput) async {
+          final draftResult = await ReminderDraftHandler.query(userInput);
+          final botReply = draftResult['bot_reply'];
+
+          return ReminderResponse(
+            payload: botReply,
+            status: ReminderState.draft,
+          );
+        }(userQuery),
       ReminderState.create => await (String userInput) async {
           final draftResult = await ReminderDraftHandler.query(userInput);
           final botReply = draftResult['bot_reply'];
@@ -66,40 +102,33 @@ class LolaResponse {
           payload,
         ),
       ReminderResponse(payload: final payload, status: ReminderState.filled) =>
-        await queryLola(payload, voiceModel),
+        await _askLola(payload, voiceModel),
       ReminderResponse(payload: final payload) when payload.isEmpty =>
         throw LolaResponseException('Empty response'),
       _ => throw LolaResponseException('Unexpected response'),
     };
   }
 
-  static Future<LolaResult> queryLola(
+  static Future<LolaResult> _askLola(
     userQuery,
     VoiceLola voiceModel,
   ) async {
     AppStatus.instance.lolaStatus = LolaState.running;
-    const classificationAgent = StructuredAgent.classification;
-    const reminderAgent = Agent.reminder;
-    const textAgent = Agent.text;
-    final userIntent = await classificationAgent.query(userQuery);
-
+    // TODO: remover classifier?
+    AppStatus.instance.lolaStatus = LolaState.running;
+    final userIntent = await StructuredAgent.classification.query(userQuery);
     print('agentKind: $userIntent');
 
     LLMResponse response = switch (userIntent) {
       IntentKind.none => const NoneResponse(),
-      IntentKind.createReminder =>
-        await (Agent reminderAgent, userQuery) async {
+      IntentKind.createReminder => await (userQuery) async {
           AppStatus.instance.lolaStatus = LolaState.creatingReminder;
           AppStatus.instance.reminderStatus = ReminderState.create;
-
-          print(
-            'create reminder: currentState: ${AppStatus.instance.lolaStatus}',
-          );
-
-          return await reminderAgent.query(userQuery);
-        }(reminderAgent, userQuery),
-      IntentKind.reminder => await reminderAgent.query(userQuery),
-      IntentKind.text => await textAgent.query(userQuery),
+          print('reminder: currentState: ${AppStatus.instance.lolaStatus}');
+          return Agent.reminder.query(userQuery);
+        }(userQuery),
+      IntentKind.reminder => await Agent.reminder.query(userQuery),
+      IntentKind.text => await Agent.text.query(userQuery),
       IntentKind.greeting =>
         throw StateError("greeting response not implemented"),
     };

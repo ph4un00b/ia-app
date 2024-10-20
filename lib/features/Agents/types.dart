@@ -86,7 +86,7 @@ enum Agent {
 
   Future<LLMResponse> query(String input) async {
     return switch (this) {
-      Agent.reminder => ReminderAgent.query(input, llm: _llm),
+      Agent.reminder => ReminderAgent.query(input),
       Agent.text => TextAgent.query(input, llm: _llm),
     };
   }

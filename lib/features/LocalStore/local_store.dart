@@ -2,16 +2,31 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
+
 // todo: test bad paths
 final class LocalStore {
+  static Future<void> append(String filename, String content) async {
+    final appDocumentsDirectory = await getApplicationDocumentsDirectory();
+    final filePath = '${appDocumentsDirectory.path}/$filename';
+
+    final file = File(filePath);
+    final lines = await file.readAsLines();
+    final lineCount = lines.length;
+    debugPrint('Total lines: $lineCount');
+
+    await file.writeAsString(
+      '\n${lineCount + 1}. $content',
+      mode: FileMode.append,
+    );
+  }
+
   static Future<void> save(String filename) async {
     Directory appDocumentsDirectory = await getApplicationDocumentsDirectory();
     String appDocumentsPath = appDocumentsDirectory.path;
     String filePath = '$appDocumentsPath/$filename';
 
     File file = File(filePath);
-    file.writeAsString(
-'''
+    file.writeAsString('''
 1. **Daily reminder** to take your flu medication in the morning and at night.
 2. **Daily reminder** to spend at least 15 minutes stretching for muscle relief and flexibility.
 3. **Daily reminder** to hydrate adequately, aiming for at least 8 glasses of water.
@@ -22,8 +37,7 @@ final class LocalStore {
 8. **Daily reminder** to meditate or practice mindfulness for stress management.
 9. **Weekly reminder** on Saturday to do a thorough laundry wash, ensuring all your gym kit is clean.
 10. **Monthly reminder** every friday to check your weight and body measurements, tracking any changes to ensure your fitness plan is effective.
-'''
-    );
+''');
   }
 
 // todo: security
@@ -32,15 +46,15 @@ final class LocalStore {
     String appDocumentsPath = appDocumentsDirectory.path;
     String filePath = '$appDocumentsPath/$filename';
 
-    try {
-      File file = File(filePath);
-      String fileContent = await file.readAsString();
-      debugPrint(filePath);
-      debugPrint('============= FILE CONTENT ===============');
-      debugPrint(fileContent.trim());
-      debugPrint('============= END FILE CONTENT ===========');
-    } catch (e) {
-      debugPrint(e.toString());
-    }
+    File file = File(filePath);
+    String fileContent = await file.readAsString();
+    List<String> lines = fileContent.split('\n');
+    int lineCount = lines.length;
+
+    debugPrint(filePath);
+    debugPrint('============= FILE CONTENT ===============');
+    debugPrint('Total lines: $lineCount');
+    debugPrint(fileContent.trim());
+    debugPrint('============= END FILE CONTENT ===========');
   }
 }

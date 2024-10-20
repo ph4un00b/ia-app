@@ -67,11 +67,54 @@ const reminderEditSchema = ResponseFormat.jsonSchema(
             {"type": "null"}
           ]
         },
-        "time": {
+       "time": {
           "anyOf": [
             {
               // "items": {"type": "string", "format": "time"} // NOT PERMITTED
               "type": "string",
+              "enum": [
+                "00:00",
+                "01:00",
+                "02:00",
+                "03:00",
+                "04:00",
+                "05:00",
+                "06:00",
+                "07:00",
+                "08:00",
+                "09:00",
+                "10:00",
+                "11:00",
+                "12:00",
+                "13:00",
+                "14:00",
+                "15:00",
+                "16:00",
+                "17:00",
+                "18:00",
+                "19:00",
+                "20:00",
+                "21:00",
+                "22:00",
+                "23:00"
+              ]
+            },
+            {"type": "null"}
+          ]
+        },
+       "dayTime": {
+          "anyOf": [
+            {
+              // "items": {"type": "string", "format": "time"} // NOT PERMITTED
+              "type": "string",
+              "enum": [
+                "MORNING",
+                "AFTERNOON",
+                "EVENING",
+                "EARLY_MORNING",
+                "MIDDAY",
+                "MIDNIGHT",
+              ]
             },
             {"type": "null"}
           ]
@@ -131,6 +174,7 @@ const reminderEditSchema = ResponseFormat.jsonSchema(
         "endDate",
         "repeat",
         "time",
+        "dayTime",
         "interval",
         "priority",
         "notificationType",
@@ -175,6 +219,7 @@ class ReminderEditHandler {
 
     AppStatus.instance.reminderStatus = ReminderState.edited;
     AppStatus.instance.currentReminderChat = messages;
+    AppStatus.instance.currentReminder = resultContent;
 
     return resultContent;
   }
