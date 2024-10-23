@@ -23,7 +23,16 @@ void main() async {
   runApp(const MyApp());
 }
 
-enum LolaState { idle, running, auth, onboarding, creatingReminder }
+// TODO:
+// enum AppState {
+//   idle,
+//   active,
+//   authenticating,
+//   onboarding,
+//   creatingReminder,
+//   remindersCreated,
+// }
+enum LolaState { idle, running, auth, onboarding, creatingReminder, remindersCreated }
 
 enum ReminderState { idle, create, draft, edited, filled }
 
