@@ -10,14 +10,21 @@ final class LocalStore {
     final filePath = '${appDocumentsDirectory.path}/$filename';
 
     final file = File(filePath);
-    final lines = await file.readAsLines();
-    final lineCount = lines.length;
-    debugPrint('Total lines: $lineCount');
 
-    await file.writeAsString(
-      '\n${lineCount + 1}. $content',
-      mode: FileMode.append,
-    );
+    if (await file.exists()) {
+      // Remove this block as it's not necessary for appending
+      // final lines = await file.readAsLines();
+      // final lineCount = lines.length;
+      // debugPrint('Total lines: $lineCount');
+
+      await file.writeAsString(
+        '\n- $content',
+        mode: FileMode.append,
+      );
+    } else {
+      await file.create(recursive: true);
+      await file.writeAsString("- $content");
+    }
   }
 
   static Future<void> save(String filename) async {

@@ -118,6 +118,19 @@ class AppDrawer extends StatelessWidget {
           } catch (e, st) {
             debugPrint('Error occurred: $e, $st');
           }
+        } else if (index == 14) {
+          final appDocumentsDirectory =
+              await getApplicationDocumentsDirectory();
+          final filePath = '${appDocumentsDirectory.path}/jamon.md';
+
+          final file = File(filePath);
+
+          if (await file.exists()) {
+            await file.delete();
+            debugPrint('File deleted: $filePath');
+          } else {
+            debugPrint('File not found: $filePath');
+          }
         }
       },
       selectedIndex: 0,
@@ -194,6 +207,11 @@ class AppDrawer extends StatelessWidget {
         ),
         const NavigationDrawerDestination(
           label: Text("13. Push new reminders file"),
+          icon: Icon(Icons.list),
+          selectedIcon: Icon(Icons.clear),
+        ),
+        const NavigationDrawerDestination(
+          label: Text("14 delete reminders file"),
           icon: Icon(Icons.list),
           selectedIcon: Icon(Icons.clear),
         )

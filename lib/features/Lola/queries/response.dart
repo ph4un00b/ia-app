@@ -30,6 +30,16 @@ class LolaResponse {
       };
     }
 
+    if (lolaStatus == LolaState.onboarding &&
+        userIntent != IntentKind.createReminder &&
+        userIntent != IntentKind.reminder) {
+      const message = "Hola! Necesitas crear un recordatorio primero.";
+      return LolaResult(
+        p.normalize((await voiceModel.synthesize(text: message)).path),
+        message,
+      );
+    }
+
     return switch (AppStatus.instance.lolaStatus) {
       LolaState.auth => throw StateError("Lola authentication not implemented"),
       LolaState.onboarding => () {
@@ -42,8 +52,8 @@ class LolaResponse {
       LolaState.remindersCreated ||
       LolaState.creatingReminder =>
         userIntent == IntentKind.createReminder
-            ? LolaResponse._setReminder(userQuery, voiceModel)
-            : LolaResponse._askLola(userQuery, voiceModel),
+            ? _setReminder(userQuery, voiceModel)
+            : _askLola(userQuery, voiceModel),
     };
   }
 
