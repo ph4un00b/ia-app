@@ -10,10 +10,7 @@ class ReminderParser {
     final String? timeStr = reminder['time'];
     final String? day = reminder['day'];
     final String? date = reminder['date'];
-    final kind = ReminderKind.values.firstWhere(
-      (k) => k.name.toUpperCase() == reminder['kind'] as String,
-      orElse: () => ReminderKind.oneTime,
-    );
+    final ReminderKind kind = _determineReminderKind(reminder);
 
     final reminderTime = _parseTimeString(timeStr);
 
@@ -22,6 +19,21 @@ class ReminderParser {
       ReminderKind.weekly => _weeklyReminder(title, day, reminderTime),
       ReminderKind.monthly => _monthlyReminder(title, day, reminderTime),
       ReminderKind.oneTime => _oneTimeReminder(title, day, date, reminderTime),
+    };
+  }
+
+  static ReminderKind _determineReminderKind(
+      Map<String, dynamic> reminderData) {
+    final String? kindString = reminderData['kind'];
+    final bool hasDay = reminderData['day'] != null;
+
+    return switch ((kindString?.toUpperCase(), hasDay)) {
+      ('DAILY', true) => ReminderKind.weekly,
+      (String kind, _) => ReminderKind.values.firstWhere(
+          (e) => e.name.toUpperCase() == kind,
+          orElse: () => ReminderKind.oneTime,
+        ),
+      _ => ReminderKind.oneTime,
     };
   }
 

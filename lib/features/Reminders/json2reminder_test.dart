@@ -7,6 +7,7 @@ void main() {
       final testCases = [
         (
           name: "Beber yogurt",
+          context: null,
           json: '''
           {
             "title": "Beber yogurt",
@@ -18,6 +19,7 @@ void main() {
         ),
         (
           name: "Beber leche",
+          context: null,
           json: '''
           {
             "title": "Beber leche",
@@ -29,6 +31,7 @@ void main() {
         ),
         (
           name: "Cita con nutricionista",
+          context: null,
           json: '''
           {
             "title": "Cita con nutricionista",
@@ -37,10 +40,12 @@ void main() {
             "date": "2024-11-04",
             "time": "18:00"
           }''',
-          expected: "**Reminder** on MONDAY, 2024-11-04 to cita con nutricionista at 06:00 PM."
+          expected:
+              "**Reminder** on MONDAY, 2024-11-04 to cita con nutricionista at 06:00 PM."
         ),
         (
           name: "Sacar la basura",
+          context: null,
           json: '''
           {
             "title": "Sacar la basura",
@@ -49,10 +54,12 @@ void main() {
             "modifier": "EVERY",
             "time": "20:00"
           }''',
-          expected: "**Weekly reminder** on FRIDAY to sacar la basura at 08:00 PM."
+          expected:
+              "**Weekly reminder** on FRIDAY to sacar la basura at 08:00 PM."
         ),
         (
           name: "Hacer yogurt",
+          context: null,
           json: '''
           {
             "title": "Hacer yogurt",
@@ -63,10 +70,12 @@ void main() {
             "time": "08:00",
             "dayTime": "MORNING"
           }''',
-          expected: "**Monthly reminder** every SUNDAY to hacer yogurt at 08:00 AM."
+          expected:
+              "**Monthly reminder** every SUNDAY to hacer yogurt at 08:00 AM."
         ),
         (
           name: "Operación de nariz",
+          context: null,
           json: '''
           {
             "title": "Operación de nariz",
@@ -77,6 +86,7 @@ void main() {
         ),
         (
           name: "Beber cerveza",
+          context: null,
           json: '''
           {
             "title": "Beber cerveza",
@@ -86,11 +96,25 @@ void main() {
           }''',
           expected: "**Reminder** on MONDAY to beber cerveza at 02:00 PM."
         ),
+        (
+          name: "Comer Tacos los Martes",
+          context: "AI should interpret this as a weekly event",
+          json: '''
+          {
+            "title": "Comer Tacos",
+            "kind": "DAILY",
+            "day": "TUESDAY",
+            "time": "00:00",
+            "dayTime": "MIDNIGHT"
+          }''',
+          expected: "**Weekly reminder** on TUESDAY to comer tacos at 12:00 AM."
+        ),
       ];
 
-      for (final (index, testCase) in testCases.indexed) {
+      for (final testCase in testCases) {
         final sentence = ReminderParser.parseJsonToReminderText(testCase.json);
-        expect(sentence, equals(testCase.expected), reason: 'Failed at test case ${index + 1}. ${testCase.name}');
+        expect(sentence, equals(testCase.expected),
+            reason: 'Failed at test case: ${testCase.name}');
       }
     });
   });

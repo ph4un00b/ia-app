@@ -17,43 +17,90 @@ class LolaResponse {
     required bool debug,
   }) async {
     final userIntent = await StructuredAgent.classification.query(userQuery);
+    final lolaStatus = AppStatus.instance.lolaStatus;
 
-    if (AppStatus.instance.lolaStatus == LolaState.creatingReminder) {
+    if (lolaStatus == LolaState.creatingReminder ||
+        lolaStatus == LolaState.remindersCreated) {
       final _ = switch (userIntent) {
         IntentKind.text ||
-        IntentKind.greeting ||
-        IntentKind.none =>
+        IntentKind.none ||
+        IntentKind.greeting =>
           await ReminderAgent.updateReminders(),
         IntentKind.createReminder || IntentKind.reminder => {},
       };
     }
 
     return switch (AppStatus.instance.lolaStatus) {
-      LolaState.creatingReminder ||
+      LolaState.auth => throw StateError("Lola authentication not implemented"),
+      LolaState.onboarding => () {
+          final result = _handleOnboarding(userQuery, voiceModel);
+          AppStatus.instance.lolaStatus = LolaState.remindersCreated;
+          return result;
+        }(),
       LolaState.idle ||
-      LolaState.running =>
-        _handle(userIntent, userQuery, voiceModel),
-      LolaState.auth => throw StateError("lola auth not implemented"),
-      LolaState.onboarding => throw StateError("onboarding not implemented"),
+      LolaState.running ||
+      LolaState.remindersCreated ||
+      LolaState.creatingReminder =>
+        userIntent == IntentKind.createReminder
+            ? LolaResponse._setReminder(userQuery, voiceModel)
+            : LolaResponse._askLola(userQuery, voiceModel),
     };
   }
 
-  static Future<LolaResult> _handle(
-    IntentKind userIntent,
+  static Future<LolaResult> _handleOnboarding(
     String userQuery,
     VoiceLola voiceModel,
-  ) {
-    return switch (userIntent) {
-      IntentKind.createReminder => _setReminder(userQuery, voiceModel),
-      IntentKind.text ||
-      IntentKind.greeting ||
-      IntentKind.reminder ||
-      IntentKind.none =>
-        _askLola(userQuery, voiceModel),
+  ) async {
+    final reminderStatus = AppStatus.instance.reminderStatus;
+
+    ReminderResponse response = switch (reminderStatus) {
+      ReminderState.idle => await (String userInput) async {
+          final draftResult = await ReminderDraftHandler.query(userInput);
+          final botReply = draftResult['bot_reply'];
+
+          return ReminderResponse(
+            payload: botReply,
+            status: ReminderState.draft,
+          );
+        }(userQuery),
+      ReminderState.create => await (String userInput) async {
+          final draftResult = await ReminderDraftHandler.query(userInput);
+          final botReply = draftResult['bot_reply'];
+
+          return ReminderResponse(
+            payload: botReply,
+            status: ReminderState.draft,
+          );
+        }(userQuery),
+      ReminderState.draft => await (String resultInput) async {
+          final editResult = await ReminderEditHandler.query(resultInput);
+          final botReply = editResult['bot_reply'];
+
+          return ReminderResponse(
+            payload: botReply,
+            status: ReminderState.edited,
+          );
+        }(userQuery),
+      ReminderState.edited => await editedReminder(userQuery),
+      ReminderState.filled =>
+        throw StateError("filled reminder status not implemented"),
+    };
+
+    return switch (response) {
+      ReminderResponse(payload: final payload, status: ReminderState.draft) ||
+      ReminderResponse(payload: final payload, status: ReminderState.edited) =>
+        LolaResult(
+          p.normalize((await voiceModel.synthesize(text: payload)).path),
+          payload,
+        ),
+      ReminderResponse(payload: final payload, status: ReminderState.filled) =>
+        await _askLola(payload, voiceModel),
+      ReminderResponse(payload: final payload) when payload.isEmpty =>
+        throw LolaResponseException('Empty response'),
+      _ => throw LolaResponseException('Unexpected response'),
     };
   }
 
-  // TODO: look for flutter feedback loop implementations
   static Future<LolaResult> _setReminder(
     String userQuery,
     VoiceLola voiceModel,
@@ -115,7 +162,6 @@ class LolaResponse {
   ) async {
     AppStatus.instance.lolaStatus = LolaState.running;
     // TODO: remover classifier?
-    AppStatus.instance.lolaStatus = LolaState.running;
     final userIntent = await StructuredAgent.classification.query(userQuery);
     print('agentKind: $userIntent');
 

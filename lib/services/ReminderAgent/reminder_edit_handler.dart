@@ -5,6 +5,8 @@ import 'package:openai_dart/openai_dart.dart';
 
 import '../llm_utils.dart';
 
+const llm = LLM.openaiStructuredOutput;
+
 const reminderEditSchema = ResponseFormat.jsonSchema(
   jsonSchema: JsonSchemaObject(
     name: 'transient_answer',
@@ -67,7 +69,7 @@ const reminderEditSchema = ResponseFormat.jsonSchema(
             {"type": "null"}
           ]
         },
-       "time": {
+        "time": {
           "anyOf": [
             {
               // "items": {"type": "string", "format": "time"} // NOT PERMITTED
@@ -102,7 +104,7 @@ const reminderEditSchema = ResponseFormat.jsonSchema(
             {"type": "null"}
           ]
         },
-       "dayTime": {
+        "dayTime": {
           "anyOf": [
             {
               // "items": {"type": "string", "format": "time"} // NOT PERMITTED
@@ -186,8 +188,6 @@ const reminderEditSchema = ResponseFormat.jsonSchema(
     },
   ),
 );
-
-const llm = LLM.openaiStructuredOutput;
 
 class ReminderEditHandler {
   static Future<Map<String, dynamic>> query(resultInput) async {

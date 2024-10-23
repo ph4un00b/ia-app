@@ -17,9 +17,11 @@ class LolaAudioException implements Exception {
 }
 
 class LolaResponseException implements Exception {
-  final String? message;
-
+  final String message;
   LolaResponseException(this.message);
+
+  @override
+  String toString() => 'LolaResponseException: $message';
 }
 
 class LolaResult {

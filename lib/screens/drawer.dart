@@ -356,6 +356,7 @@ class AppDrawer extends StatelessWidget {
     OpenAI.showResponsesLogs = true;
 
     OpenAIFileModel? uploadedFile;
+
     try {
       Directory appDocumentsDirectory =
           await getApplicationDocumentsDirectory();
