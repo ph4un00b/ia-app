@@ -51,9 +51,16 @@ class LolaResponse {
       LolaState.running ||
       LolaState.remindersCreated ||
       LolaState.creatingReminder =>
-        userIntent == IntentKind.createReminder
-            ? _setReminder(userQuery, voiceModel)
-            : _askLola(userQuery, voiceModel),
+        () {
+          if (AppStatus.instance.reminderStatus == ReminderState.idle) {
+            return _askLola(userQuery, voiceModel);
+          }
+
+          return userIntent == IntentKind.createReminder ||
+                  userIntent == IntentKind.reminder
+              ? _setReminder(userQuery, voiceModel)
+              : _askLola(userQuery, voiceModel);
+        }(),
     };
   }
 
@@ -174,6 +181,23 @@ class LolaResponse {
     // TODO: remover classifier?
     final userIntent = await StructuredAgent.classification.query(userQuery);
     print('agentKind: $userIntent');
+
+    if (userIntent == IntentKind.createReminder &&
+        AppStatus.instance.reminderStatus == ReminderState.idle) {
+      final response = await Agent.text.query(userQuery);
+
+      AppStatus.instance.reminderStatus = ReminderState.create;
+      AppStatus.instance.lolaStatus = LolaState.creatingReminder;
+
+      if (response.payload.isEmpty) {
+        throw LolaResponseException('empty response');
+      }
+
+      File speechFile = await voiceModel.synthesize(text: response.payload);
+      String path = p.normalize(speechFile.path);
+
+      return LolaResult(path, response.payload);
+    }
 
     LLMResponse response = switch (userIntent) {
       IntentKind.none => const NoneResponse(),
