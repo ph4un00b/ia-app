@@ -4,3 +4,7 @@
 # commands
 
 - regenerate types: `$ dart run build_runner build --delete-conflicting-outputs`
+
+# tests
+
+- reminders: `clear; flutter test lib/features/Reminders`

@@ -150,7 +150,12 @@ final class LolaController with QueryContent {
     final appDocumentsDirectory = await getApplicationDocumentsDirectory();
     final remindersFile = File('${appDocumentsDirectory.path}/jamon.md');
 
-    if (remindersFile.existsSync()) {
+    // TODO: verificar que exista al menos un recortatorio
+    // y no solo que exista el archvito
+    AppStatus.instance.currentStatus =
+        remindersFile.existsSync() ? AppState.active : AppState.onboarding;
+
+    if (AppStatus.instance.currentStatus case AppState.active) {
       await _handleExistingReminders(debug);
     } else {
       await _handleFirstTimeReminders(debug);
@@ -202,7 +207,6 @@ final class LolaController with QueryContent {
     }
 
     try {
-      AppStatus.instance.lolaStatus = LolaState.onboarding;
       final onboardingResponse = await ReminderOnboardingHandler.query('hola');
 
       if (onboardingResponse.payload.isEmpty) {

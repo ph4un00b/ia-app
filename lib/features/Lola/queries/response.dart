@@ -6,64 +6,101 @@ import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/main.dart';
 import 'package:lola_ai_app/services/ReminderAgent/reminder_draft_handler.dart';
 import 'package:lola_ai_app/services/ReminderAgent/reminder_edit_handler.dart';
-import 'package:lola_ai_app/services/ReminderAgent/reminder_agent.dart';
+import 'package:lola_ai_app/services/ReminderAgent/reminder_edited_handler.dart';
+import 'package:lola_ai_app/services/ReminderAgent/reminder_filled_handler.dart';
 import 'package:lola_ai_app/services/ReminderAgent/reminder_input_checker.dart';
 import 'package:path/path.dart' as p;
 
+// TODO: checar que hacer cuando la intention es none
 class LolaResponse {
   static Future<LolaResult> query({
+    required bool debug,
     required String userQuery,
     required VoiceLola voiceModel,
-    required bool debug,
   }) async {
     final userIntent = await StructuredAgent.classification.query(userQuery);
-    final lolaStatus = AppStatus.instance.lolaStatus;
 
-    if (lolaStatus == LolaState.creatingReminder ||
-        lolaStatus == LolaState.remindersCreated) {
+    if (_midReminderInterruption()) {
       final _ = switch (userIntent) {
         IntentKind.text ||
         IntentKind.none ||
         IntentKind.greeting =>
           await ReminderAgent.updateReminders(),
+        // TODO: mecionar en algun lado que se guardo el recordatorio
         IntentKind.createReminder || IntentKind.reminder => {},
       };
     }
 
-    if (lolaStatus == LolaState.onboarding &&
+    if (AppStatus.instance.currentStatus == AppState.onboarding &&
         userIntent != IntentKind.createReminder &&
         userIntent != IntentKind.reminder) {
-      const message = "Hola! Necesitas crear un recordatorio primero.";
-      return LolaResult(
-        p.normalize((await voiceModel.synthesize(text: message)).path),
-        message,
-      );
+      return AppStatus.instance.reminderStatus == ReminderState.idle
+          ? await _reminderExampleResponse(voiceModel)
+          : await _handleOnboarding(userQuery, voiceModel);
     }
 
-    return switch (AppStatus.instance.lolaStatus) {
-      LolaState.auth => throw StateError("Lola authentication not implemented"),
-      LolaState.onboarding => () {
-          final result = _handleOnboarding(userQuery, voiceModel);
-          AppStatus.instance.lolaStatus = LolaState.remindersCreated;
-          return result;
-        }(),
-      LolaState.idle ||
-      LolaState.running ||
-      LolaState.remindersCreated ||
-      LolaState.creatingReminder =>
-        () {
-          if (AppStatus.instance.reminderStatus == ReminderState.idle) {
-            return _askLola(userQuery, voiceModel);
-          }
-
-          return userIntent == IntentKind.createReminder ||
-                  userIntent == IntentKind.reminder
-              ? _setReminder(userQuery, voiceModel)
-              : _askLola(userQuery, voiceModel);
-        }(),
+    return switch (AppStatus.instance.currentStatus) {
+      AppState.active => _runLola(userQuery, voiceModel, userIntent),
+      AppState.onboarding => _handleOnboarding(userQuery, voiceModel),
+      AppState.idle || AppState.auth => throw StateError(
+          "${AppStatus.instance.currentStatus} state not implmented"),
     };
   }
 
+  static Future<LolaResult> _reminderExampleResponse(
+      VoiceLola voiceModel) async {
+    const message = "Hola! Necesitas crear un recordatorio primero. "
+        "Puedes mencionar algo como: 'Recuerdame preparar yogurt los sabados por la mañana.'";
+    final speechFile = await voiceModel.synthesize(text: message);
+    return LolaResult(
+      p.normalize(speechFile.path),
+      message,
+    );
+  }
+
+  static bool _midReminderInterruption() {
+    return AppStatus.instance.lolaStatus == LolaState.creatingReminder &&
+        AppStatus.instance.reminderStatus != ReminderState.filled;
+  }
+
+  static Future<LolaResult> _runLola(
+    String userQuery,
+    VoiceLola voiceModel,
+    IntentKind userIntent,
+  ) async {
+    final lolaStatus = AppStatus.instance.lolaStatus;
+    final isReminderIntent = userIntent == IntentKind.createReminder ||
+        userIntent == IntentKind.reminder;
+
+    return switch (lolaStatus) {
+      LolaState.idle ||
+      LolaState.running when isReminderIntent =>
+        await _setReminder(userQuery, voiceModel),
+      LolaState.idle ||
+      LolaState.running =>
+        await _askLola(userQuery, voiceModel),
+      LolaState.creatingReminder => await _setReminder(userQuery, voiceModel),
+    };
+  }
+
+  /**
+   * CASO 1. Onboarding:
+   * 1. user: recuerdame beber soda lunes en la noche
+   * 2. user: cambia a viernes
+   * 3. user: todo perfecto
+   *  - guarda el recordatorio
+   * 4. user: quien es el presidente de argentina?
+   *
+   * CASO 2. Onboarding:
+   * 1. user: recuerdame beber soda lunes en la noche
+   * 2. user: todo perfecto
+   *  - guarda el recordatorio
+   * 3. user: quien es el presidente de argentina?
+   *
+   * CASO 3. Onboarding: te lleva hasta llegar a status "filled"
+   * 1. user: recuerdame beber soda lunes en la noche
+   * 2. user: quien es el presidente de argentina?
+   */
   static Future<LolaResult> _handleOnboarding(
     String userQuery,
     VoiceLola voiceModel,
@@ -89,21 +126,49 @@ class LolaResponse {
             status: ReminderState.draft,
           );
         }(userQuery),
-      ReminderState.draft => await (String resultInput) async {
-          final editResult = await ReminderEditHandler.query(resultInput);
-          final botReply = editResult['bot_reply'];
+      ReminderState.draft => await () async {
+          final reminderIntent = await ReminderInputChecker.query(userQuery);
+          print('Input type: $reminderIntent');
+
+          return switch (reminderIntent) {
+            UserInputIntent.change => () async {
+                final editResult = await ReminderEditHandler.query(userQuery);
+                final botReply = editResult['bot_reply'];
+
+                AppStatus.instance.reminderStatus = ReminderState.edited;
+                return ReminderResponse(
+                  payload: botReply,
+                  status: ReminderState.edited,
+                );
+              }(),
+            UserInputIntent.approved || UserInputIntent.other => () async {
+                final filledResult =
+                    await ReminderFilledHandler.query(userQuery);
+                print('Reminder change result: $filledResult');
+                final botReply = filledResult['bot_reply'];
+
+                AppStatus.instance.reminderStatus = ReminderState.filled;
+                return ReminderResponse(
+                  payload: botReply,
+                  status: ReminderState.filled,
+                );
+              }(),
+          };
+        }(),
+      ReminderState.edited => await editedReminder(userQuery),
+      ReminderState.filled => await () async {
+          await ReminderAgent.updateReminders();
 
           return ReminderResponse(
-            payload: botReply,
-            status: ReminderState.edited,
+            payload: userQuery,
+            status: ReminderState.idle,
           );
-        }(userQuery),
-      ReminderState.edited => await editedReminder(userQuery),
-      ReminderState.filled =>
-        throw StateError("filled reminder status not implemented"),
+        }(),
+      // throw StateError("filled reminder status not implemented"),
     };
 
     return switch (response) {
+      ReminderResponse(payload: final payload, status: ReminderState.idle) ||
       ReminderResponse(payload: final payload, status: ReminderState.draft) ||
       ReminderResponse(payload: final payload, status: ReminderState.edited) =>
         LolaResult(
@@ -111,13 +176,38 @@ class LolaResponse {
           payload,
         ),
       ReminderResponse(payload: final payload, status: ReminderState.filled) =>
-        await _askLola(payload, voiceModel),
+        _handleOnboarding(payload, voiceModel),
       ReminderResponse(payload: final payload) when payload.isEmpty =>
         throw LolaResponseException('Empty response'),
       _ => throw LolaResponseException('Unexpected response'),
     };
   }
 
+  /**
+   * CASO 1. Active:
+   * 1. user: recuerdame beber soda lunes en la noche
+   * 2. user: cambia a viernes
+   * 3. user: quien es el presidente de argentina?
+   *  - guarda el recordatorio
+   *
+   * CASO 2. Active:
+   * 1. user: recuerdame beber soda lunes en la noche
+   * 2. user: que es el presidente de argentina?
+   *  - guarda el recordatorio
+   *
+   * CASO 3. Active: todo
+   * 1. user: recuerdame beber soda lunes en la noche
+   * 2. user: cambia a viernes
+   * 3. user: todo perfecto
+   *  - guarda el recordatorio
+   * 3. user: quien es el presidente de argentina?
+   *
+   * CASO 4. Active:
+   * 1. user: recuerdame beber soda lunes en la noche
+   * 2. user: todo perfecto
+   *  - guarda el recordatorio
+   * 3. user: que es el presidente de argentina?
+   */
   static Future<LolaResult> _setReminder(
     String userQuery,
     VoiceLola voiceModel,
@@ -144,15 +234,35 @@ class LolaResponse {
             status: ReminderState.draft,
           );
         }(userQuery),
-      ReminderState.draft => await (String resultInput) async {
-          final editResult = await ReminderEditHandler.query(resultInput);
-          final botReply = editResult['bot_reply'];
+      ReminderState.draft => await () async {
+          final reminderIntent = await ReminderInputChecker.query(userQuery);
+          print('Input type: $reminderIntent');
 
-          return ReminderResponse(
-            payload: botReply,
-            status: ReminderState.edited,
-          );
-        }(userQuery),
+          return switch (reminderIntent) {
+            UserInputIntent.change => () async {
+                final editResult = await ReminderEditHandler.query(userQuery);
+                final botReply = editResult['bot_reply'];
+
+                AppStatus.instance.reminderStatus = ReminderState.edited;
+                return ReminderResponse(
+                  payload: botReply,
+                  status: ReminderState.edited,
+                );
+              }(),
+            UserInputIntent.approved || UserInputIntent.other => () async {
+                final filledResult =
+                    await ReminderFilledHandler.query(userQuery);
+                print('Reminder change result: $filledResult');
+                final botReply = filledResult['bot_reply'];
+
+                AppStatus.instance.reminderStatus = ReminderState.filled;
+                return ReminderResponse(
+                  payload: botReply,
+                  status: ReminderState.filled,
+                );
+              }(),
+          };
+        }(),
       ReminderState.edited => await editedReminder(userQuery),
       ReminderState.filled =>
         throw StateError("filled reminder status not implemented"),
@@ -160,13 +270,12 @@ class LolaResponse {
 
     return switch (response) {
       ReminderResponse(payload: final payload, status: ReminderState.draft) ||
-      ReminderResponse(payload: final payload, status: ReminderState.edited) =>
+      ReminderResponse(payload: final payload, status: ReminderState.edited) ||
+      ReminderResponse(payload: final payload, status: ReminderState.filled) =>
         LolaResult(
           p.normalize((await voiceModel.synthesize(text: payload)).path),
           payload,
         ),
-      ReminderResponse(payload: final payload, status: ReminderState.filled) =>
-        await _askLola(payload, voiceModel),
       ReminderResponse(payload: final payload) when payload.isEmpty =>
         throw LolaResponseException('Empty response'),
       _ => throw LolaResponseException('Unexpected response'),
@@ -239,10 +348,14 @@ class LolaResponse {
             status: ReminderState.edited,
           );
         }(),
-      UserInputIntent.approved || UserInputIntent.other => () {
+      UserInputIntent.approved || UserInputIntent.other => () async {
+          final filledResult = await ReminderFilledHandler.query(userInput);
+          print('Reminder change result: $filledResult');
+          final botReply = filledResult['bot_reply'];
+
           AppStatus.instance.reminderStatus = ReminderState.filled;
           return ReminderResponse(
-            payload: userInput,
+            payload: botReply,
             status: ReminderState.filled,
           );
         }(),

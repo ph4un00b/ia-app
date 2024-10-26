@@ -1,10 +1,36 @@
 import 'package:lola_ai_app/config/env.dart';
-import 'package:lola_ai_app/features/Agents/llm.dart';
 import 'package:lola_ai_app/main.dart';
-import 'package:lola_ai_app/services/llm_utils.dart';
 import 'package:openai_dart/openai_dart.dart';
 
+import '../../features/Agents/llm.dart';
+import '../llm_utils.dart';
+
 const llm = LLM.openaiStructuredOutput;
+
+const filledPrompt = """# Role: Reminder Assistant
+
+You are a helpful reminder assistant designed to create clear, specific, and actionable reminders for users. Your goal is to ensure each reminder is comprehensive and easy to understand when reviewed later.
+
+## Current State: DRAFT_REMINDER
+
+In the FILLED state, your main task is to politely inquire if the user would like to continue to NEW_REMINDER state or to FILLED state if the user uses some kind of approved or exit sentence .
+
+## Instructions:
+
+1. Ask the user if they want to:
+   a) Add a new reminder
+   b) Finish the reminder creation process
+
+2. Based on the user's response, transition to one of the following states:
+   - NEW_REMINDER: If the user expresses interest in creating a new reminder
+   - FILLED: If the user approves or uses a exit sentence
+
+3. Use clear, concise language and maintain a friendly, helpful tone throughout the interaction.
+
+## Example Response:
+
+- Great! I've added your reminder. would you like to continue and add a new reminder? or you can ask me about anything you want"
+""";
 
 const schema = ResponseFormat.jsonSchema(
   jsonSchema: JsonSchemaObject(
@@ -154,12 +180,7 @@ const schema = ResponseFormat.jsonSchema(
           "anyOf": [
             {
               "type": "string",
-              "enum": [
-                "DRAFT_REMINDER",
-                "EDIT_REMINDER",
-                "NEW_REMINDER",
-                "FILLED"
-              ]
+              "enum": ["NEW_REMINDER", "FILLED"]
             }
           ]
         }
@@ -188,14 +209,15 @@ const schema = ResponseFormat.jsonSchema(
   ),
 );
 
-class ReminderEditedHandler {
+class ReminderFilledHandler {
   static Future<Map<String, dynamic>> query(String input) async {
-    var messages = AppStatus.instance.currentReminderChat;
-    messages.add(llm.user(message: input));
+    var currentReminderMessages = AppStatus.instance.currentReminderChat;
+    currentReminderMessages.add(llm.system(message: filledPrompt));
+    currentReminderMessages.add(llm.user(message: input));
 
     Map<String, dynamic> resultContent = {
       "bot_reply": "",
-      "next_state_key": "DRAFT_REMINDER"
+      "next_state_key": "FILLED"
     };
 
     final client = OpenAIClient(apiKey: Env.openAiKey);
@@ -205,7 +227,7 @@ class ReminderEditedHandler {
     final response = await client.createChatCompletion(
       request: CreateChatCompletionRequest(
         model: const ChatCompletionModel.model(ChatCompletionModels.gpt4oMini),
-        messages: messages,
+        messages: currentReminderMessages,
         temperature: 0,
         responseFormat: schema,
       ),
@@ -213,9 +235,10 @@ class ReminderEditedHandler {
 
     resultContent = await LLMUtils.parseResponseContent(response);
 
-    messages.add(llm.assistant(message: resultContent["bot_reply"]));
-    AppStatus.instance.currentReminderChat = messages;
-    AppStatus.instance.currentReminder = resultContent;
+    currentReminderMessages
+        .add(llm.assistant(message: resultContent["bot_reply"]));
+    AppStatus.instance.currentReminderChat = currentReminderMessages;
+    // AppStatus.instance.currentReminder = resultContent;
 
     return resultContent;
   }

@@ -108,6 +108,9 @@ class ReminderAgent {
 
     AppStatus.instance.reminderStatus = ReminderState.idle;
     AppStatus.instance.currentReminder = {};
+    AppStatus.instance.currentReminderChat = [];
+    AppStatus.instance.currentStatus = AppState.active;
+    AppStatus.instance.lolaStatus = LolaState.idle;
   }
 
   static Future<OpenAIFileModel> uploadLocalRemindersFile() async {
