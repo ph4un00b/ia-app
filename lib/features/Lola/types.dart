@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/config/env.dart';
-import 'package:lola_ai_app/features/core/components/action_btn.dart';
 import 'package:lola_ai_app/features/core/time.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -97,79 +96,6 @@ enum VoiceLola {
       default:
         return throw UnimplementedError();
     }
-  }
-}
-
-sealed class LolaAudioState$ {}
-
-final class NonePath implements LolaAudioState$ {
-  Widget actionDisabled({required double scale}) {
-    return ActionButton(
-      icon: const Icon(Icons.play_arrow_rounded),
-      text: 'Repetir',
-      scale: scale,
-      color: Colors.grey,
-    );
-  }
-}
-
-final class PlayingAudio implements LolaAudioState$ {
-  Widget stop(
-      {required double scale, required Future<void> Function() action}) {
-    return ActionButton(
-      icon: const Icon(Icons.stop),
-      text: 'Parar',
-      scale: scale,
-      onPressed: () => action(),
-    );
-  }
-}
-
-final class PlayingAudioErr implements LolaAudioState$ {
-  Widget replay(
-      {required double scale, required Future<void> Function() action}) {
-    return ActionButton(
-      icon: const Icon(Icons.play_arrow_rounded),
-      text: 'Repetir',
-      scale: scale,
-      color: Colors.green,
-      onPressed: () => action(),
-    );
-  }
-}
-
-final class PlayingAudioOk implements LolaAudioState$ {
-  Widget replay(
-      {required double scale, required Future<void> Function() action}) {
-    return ActionButton(
-      icon: const Icon(Icons.play_arrow_rounded),
-      text: 'Repetir',
-      scale: scale,
-      color: Colors.green,
-      onPressed: () => action(),
-    );
-  }
-}
-
-final class Stopped implements LolaAudioState$ {
-  Widget play(double scale, {required Future<void> Function() action}) {
-    return ActionButton(
-      icon: const Icon(Icons.play_arrow_rounded),
-      text: 'Repetir',
-      scale: scale,
-      onPressed: () => action(),
-    );
-  }
-}
-
-final class StoppedErr implements LolaAudioState$ {
-  Widget play(double scale, {required Future<void> Function() action}) {
-    return ActionButton(
-      icon: const Icon(Icons.play_arrow_rounded),
-      text: 'Repetir',
-      scale: scale,
-      onPressed: () => action(),
-    );
   }
 }
 

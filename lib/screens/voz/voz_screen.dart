@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/App/components/setting_text.dart';
+import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_control_audio.dart';
+import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_control_message.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
 import 'package:lola_ai_app/features/Memory/components/debug.dart';
@@ -53,34 +54,33 @@ class VozBody extends StatefulWidget {
 }
 
 class _VozBodyState extends State<VozBody> {
-
   bool debug = !true;
   var debugLolaState = '';
   var debugLolaAudioState = '';
   final $phau = Voz();
   final lola$ = LolaController();
   Stream<LolaServiceState>? lolaServiceState;
-  Stream<LolaAudioState$>? lolaAudioState$;
+  Stream<AudioState>? audioStream;
   var scale = Constants.scale;
   final messageFormKey = GlobalKey<FormState>();
 
   @override
   void initState() {
+    debugPrint('👀 initializing voz screen');
     super.initState();
     _loadUserPrefereces();
 
-
-    lola$.loadReminders(debug: debug);
+    // lola$.loadReminders(debug: debug);
     // lola$.loadInitialSummary(debug: debug);
     lolaServiceState = lola$.serviceState.stream.asBroadcastStream();
-    lolaAudioState$ = lola$.audioState.stream.asBroadcastStream();
+    audioStream = lola$.audioState.stream.asBroadcastStream();
 
     if (debug) {
       lolaServiceState?.listen((state) {
         debugLolaState = state.toString();
       });
 
-      lolaAudioState$?.listen((state) {
+      audioStream?.listen((state) {
         debugLolaAudioState = state.toString();
       });
     }
@@ -88,9 +88,10 @@ class _VozBodyState extends State<VozBody> {
 
   @override
   void dispose() {
-    super.dispose();
     $phau.dispose();
     lola$.dispose();
+    super.dispose();
+    debugPrint('disposing voz screen');
   }
 
   Future<void> _loadUserPrefereces() async {
@@ -136,9 +137,9 @@ class _VozBodyState extends State<VozBody> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: LolaControlAudio(
-                    stream: lolaAudioState$,
-                    lola: lola$,
+                  child: AudioHandler(
+                    stream: audioStream,
+                    controller: lola$,
                     scale: scale,
                   ),
                 ),
@@ -164,7 +165,7 @@ class _VozBodyState extends State<VozBody> {
           if (debug)
             DebugWidget(
               children: StreamBuilder(
-                stream: lolaAudioState$,
+                stream: audioStream,
                 builder: (_, __) => Center(child: Text(debugLolaAudioState)),
               ),
             ),

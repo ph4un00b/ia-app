@@ -9,7 +9,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Lola App',
       theme: themeProvider(),
-      initialRoute: '/voz',
+      initialRoute: '/initial',
       // todo: search on github
       onGenerateRoute: routesProvider,
     );

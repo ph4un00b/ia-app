@@ -23,13 +23,7 @@ void main() async {
   runApp(const MyApp());
 }
 
-
-enum AppState {
-  idle,
-  auth,
-  onboarding,
-  active
-}
+enum AppState { idle, auth, onboarding, active }
 
 // TODO:
 // enum AppState {
@@ -44,11 +38,14 @@ enum LolaState { idle, running, creatingReminder }
 
 enum ReminderState { idle, create, draft, edited, filled }
 
+enum InitialState { idle, loadingReminders, loadingSummary }
+
 class AppStatus {
   bool _initialized = false;
 
   AppState currentStatus = AppState.idle;
   LolaState lolaStatus = LolaState.idle;
+  InitialState currentInitialState = InitialState.idle;
 
   ReminderState reminderStatus = ReminderState.idle;
   List<ChatCompletionMessage> currentReminderChat = [];

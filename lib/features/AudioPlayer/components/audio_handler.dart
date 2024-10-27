@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Lola/lola_controller.dart';
-import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 
-class LolaControlAudio extends StatelessWidget {
-  const LolaControlAudio({
+class AudioHandler extends StatelessWidget {
+  const AudioHandler({
     super.key,
     required this.stream,
     required this.scale,
-    required this.lola,
+    required this.controller,
   });
 
-  final Stream<LolaAudioState$>? stream;
+  final Stream<AudioState>? stream;
   final double scale;
-  final LolaController lola;
+  final AudioPlayerHandlers controller;
 
   @override
   Widget build(BuildContext context) {
@@ -22,26 +21,26 @@ class LolaControlAudio extends StatelessWidget {
         final ui = snap.data;
         return switch (ui) {
           null => Container(),
-          NonePath() => ui.actionDisabled(scale: scale),
+          NoAudioPath() => ui.actionDisabled(scale: scale),
           PlayingAudio() => ui.stop(
               scale: scale,
-              action: () => lola.stopSpeech(),
+              onStop: controller.stopAudio,
             ),
           PlayingAudioErr() => ui.replay(
               scale: scale,
-              action: () => lola.playSpeech(),
+              onRetry: controller.playAudio,
             ),
           PlayingAudioOk() => ui.replay(
               scale: scale,
-              action: () => lola.playSpeech(),
+              onReplay: controller.playAudio,
             ),
           Stopped() => ui.play(
               scale,
-              action: () => lola.playSpeech(),
+              onPlay: controller.playAudio,
             ),
           StoppedErr() => ui.play(
               scale,
-              action: () => lola.playSpeech(),
+              onPlay: controller.playAudio,
             ),
         };
       },

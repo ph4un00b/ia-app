@@ -7,4 +7,8 @@
 
 # tests
 
-- reminders: `clear; flutter test lib/features/Reminders`
+- reminders: `clear; flutter test lib/features/Reminders
+
+# todo
+
+- [ ] router observing for logging https://scribe.rip/@atefelsaid3/mastering-navigation-tracking-in-flutter-a-complete-guide-to-routeobserver-with-riverpod-ea23a12fb80c

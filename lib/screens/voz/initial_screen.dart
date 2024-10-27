@@ -1,0 +1,207 @@
+import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lola_ai_app/config/constants.dart';
+import 'package:lola_ai_app/features/App/components/setting_text.dart';
+import 'package:lola_ai_app/features/AudioPlayer/types.dart';
+import 'package:lola_ai_app/features/InitialVoz/initial_voz_controller.dart';
+import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_control_message.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
+import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/core/components/action_btn.dart';
+import 'package:lola_ai_app/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+class InitialVozScreen extends StatefulWidget {
+  const InitialVozScreen({super.key});
+
+  @override
+  State<InitialVozScreen> createState() => _InitialVozScreenState();
+}
+
+class _InitialVozScreenState extends State<InitialVozScreen> {
+  @override
+  void initState() {
+    super.initState();
+    debugPrint('👀 initializing initial voz screen');
+  }
+
+  @override
+  void dispose() {
+    debugPrint('🫡 disposing initial voz screen');
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Voz',
+          style: GoogleFonts.satisfy(
+            textStyle: Theme.of(context).textTheme.displayLarge,
+            fontSize: 28,
+            fontWeight: FontWeight.w200,
+            fontStyle: FontStyle.italic,
+          ),
+        ),
+      ),
+      body: const InitialVozBody(),
+    );
+  }
+}
+
+class InitialVozBody extends StatefulWidget {
+  const InitialVozBody({
+    super.key,
+  });
+
+  @override
+  State<InitialVozBody> createState() => _InitialVozBodyState();
+}
+
+class _InitialVozBodyState extends State<InitialVozBody> {
+  bool debug = !true;
+  String _debugServiceState = '';
+  String _debugAudioState = '';
+  final _initialCtrl = InitialVozController();
+  Stream<LolaServiceState>? _serviceStream;
+  Stream<AudioState>? _audioStream;
+  double _scale = Constants.scale;
+
+  @override
+  void initState() {
+    debugPrint('👀 initializing initial voz body screen');
+    super.initState();
+    _loadUserPreferences();
+
+    _serviceStream = _initialCtrl.serviceState.stream.asBroadcastStream();
+    _audioStream = _initialCtrl.audioState.stream.asBroadcastStream();
+
+    if (debug) {
+      _serviceStream?.listen((state) {
+        _debugServiceState = state.toString();
+      });
+
+      _audioStream?.listen((state) {
+        _debugAudioState = state.toString();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _initialCtrl.dispose();
+    super.dispose();
+    debugPrint('🫡 disposing initial voz body screen');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        children: [
+          Expanded(
+            flex: 1,
+            child: SettingAppText(
+              scale: _scale,
+              onChangedValue: (value) async {
+                setState(() => _scale = value);
+                final prefs = await SharedPreferences.getInstance();
+                prefs.setDouble('app-setting-text', value);
+              },
+            ),
+          ),
+          Expanded(
+            flex: 4,
+            child: LolaServerMessagePad(stream: _serviceStream, scale: _scale),
+          ),
+          Expanded(
+            flex: 1,
+            child: Column(
+              children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: AudioHandler(
+                            stream: _audioStream,
+                            controller: _initialCtrl,
+                            scale: _scale,
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: LolaControlMessage(
+                            scale: _scale,
+                            stream: _serviceStream,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(4.0),
+                          child: ActionButton(
+                            icon: const Icon(Icons.check),
+                            text: 'Continuar',
+                            scale: _scale,
+                            onPressed: () async {
+                              final action = switch (
+                                  AppStatus.instance.currentInitialState) {
+                                InitialState.idle => () async {
+                                    _initialCtrl.loadInitialSummary(
+                                        debug: debug);
+                                  },
+                                InitialState.loadingReminders => () async {
+                                    Navigator.popAndPushNamed(context, '/voz');
+                                  },
+                                InitialState.loadingSummary => () async {
+                                    _initialCtrl.loadReminders(debug: debug);
+                                  }
+                              };
+
+                              await action();
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Center(
+          //   child: ElevatedButton(
+          //     onPressed: () => Navigator.popAndPushNamed(context, '/voz'),
+          //     child: const Text('Go to Voz Screen'),
+          //   ),
+          // ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _loadUserPreferences() async {
+    final prefs = await SharedPreferences.getInstance();
+    String voz = prefs.getString('lola-voice') ?? 'nova';
+
+    setState(() {
+      _initialCtrl.currentVoice =
+          VoiceLola.values.firstWhere((v) => v.name == voz);
+
+      _scale = prefs.getDouble('app-setting-text') ?? Constants.scale;
+    });
+  }
+}

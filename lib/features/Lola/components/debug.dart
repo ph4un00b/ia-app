@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/core/components/debug_widget.dart';
 
@@ -9,7 +10,7 @@ class DebugLolaAudioState extends StatelessWidget {
     required this.state,
   });
 
-  final Stream<LolaAudioState$>? stream;
+  final Stream<AudioState>? stream;
   final String state;
 
   @override

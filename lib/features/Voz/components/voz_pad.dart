@@ -40,7 +40,7 @@ class VozPad extends StatelessWidget {
                       VozState.stopRecordingError ||
                       VozState.playingError ||
                       VozState.playingCompleted) {
-                await lola$.stopSpeech();
+                await lola$.stopAudio();
                 await user.notifyStartRecording();
               } else if (user.state case VozState.recording) {
                 await user.notifyStopRecording();
