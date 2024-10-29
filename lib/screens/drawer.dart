@@ -24,12 +24,11 @@ class AppDrawer extends StatelessWidget {
       onDestinationSelected: (index) async {
         debugPrint("$index");
         var args = {'subroute': '/otros'};
+        // TODO: loguear drawer links
         if (index case 0) {
-          Navigator.pushNamed(context, '/opciones',
-              arguments: ("/mensajes", "luis"));
+          Navigator.of(context).pushNamed('/opciones/mensajes');
         } else if (index case 1) {
-          Navigator.pushNamed(context, '/opciones',
-              arguments: ProfileArgs(city: "jamon", country: "bolivia"));
+          Navigator.of(context).pushNamed('/opciones/profile', arguments: "jamon");
         } else if (index case 2) {
           Navigator.pushNamed(context, '/opciones', arguments: args);
         } else if (index case 3) {

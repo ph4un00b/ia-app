@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/core/app_state_observer.dart';
 import 'routes.dart';
 
 class MyApp extends StatelessWidget {
@@ -7,10 +8,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorObservers: [AppStateObserver()],
       title: 'Lola App',
       theme: themeProvider(),
       initialRoute: '/initial',
       // todo: search on github
+      routes: appRoutes,
       onGenerateRoute: routesProvider,
     );
   }

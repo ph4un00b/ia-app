@@ -13,6 +13,7 @@ import 'package:lola_ai_app/services/ReminderAgent/reminder_onboarding_handler.d
 import 'package:path_provider/path_provider.dart';
 
 final class InitialVozController with AudioPlayerHandlers {
+  bool _httpToken = false;
   final audio.AudioPlayer _audioplayer = audio.AudioPlayer();
   final serviceState = StreamController<LolaServiceState>()
     ..add(const IdleService());
@@ -58,6 +59,11 @@ final class InitialVozController with AudioPlayerHandlers {
       serviceState.add(Data(payload: result.reply));
       await _playAudio(result.path);
     } catch (e, st) {
+      if (_httpToken) {
+        debugPrint('😡 Summary request was cancelled');
+        return;
+      }
+
       if (debug) {
         serviceState.add(Error(payload: e.toString()));
       } else {
@@ -114,6 +120,11 @@ final class InitialVozController with AudioPlayerHandlers {
 
       await _processAndPlayResponse(reminderResponse.payload);
     } catch (e, st) {
+      if (_httpToken) {
+        debugPrint('😡 reminders request was cancelled');
+        return;
+      }
+
       if (debug) {
         serviceState.add(Error(payload: e.toString()));
       } else {
@@ -195,6 +206,7 @@ final class InitialVozController with AudioPlayerHandlers {
   }
 
   void dispose() {
+    _httpToken = true;
     _audioplayer.dispose();
     audioState.close();
     serviceState.close();

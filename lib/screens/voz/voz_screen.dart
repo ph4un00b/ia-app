@@ -70,8 +70,6 @@ class _VozBodyState extends State<VozBody> {
     super.initState();
     _loadUserPrefereces();
 
-    // lola$.loadReminders(debug: debug);
-    // lola$.loadInitialSummary(debug: debug);
     lolaServiceState = lola$.serviceState.stream.asBroadcastStream();
     audioStream = lola$.audioState.stream.asBroadcastStream();
 
