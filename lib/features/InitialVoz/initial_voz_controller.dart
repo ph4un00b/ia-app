@@ -12,6 +12,12 @@ import 'package:lola_ai_app/main.dart';
 import 'package:lola_ai_app/services/ReminderAgent/reminder_onboarding_handler.dart';
 import 'package:path_provider/path_provider.dart';
 
+extension StreamControllerX<TEvent> on StreamController<TEvent> {
+  void addIfStreamOpen(TEvent event) {
+    if (!isClosed) add(event);
+  }
+}
+
 final class InitialVozController with AudioPlayerHandlers {
   bool _httpToken = false;
   final audio.AudioPlayer _audioplayer = audio.AudioPlayer();
@@ -37,7 +43,7 @@ final class InitialVozController with AudioPlayerHandlers {
 
       if (event.processingState == audio.ProcessingState.completed) {
         debugPrint('play INITIAL completed!');
-        audioState.add(newState);
+        audioState.addIfStreamOpen(newState);
       }
     }, onError: (error, stackTrace) {
       debugPrint('>>>> play INITIAL error: $error\n$stackTrace');

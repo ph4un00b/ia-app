@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
     );
   }
 
+  // TODO: global theme?
   ThemeData themeProvider() {
     return ThemeData(
       // brightness: Brightness.dark,
