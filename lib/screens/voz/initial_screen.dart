@@ -115,7 +115,8 @@ class _InitialVozBodyState extends State<InitialVozBody> {
           ),
           Expanded(
             flex: 4,
-            child: LolaServerMessagePad(stream: _serviceStream, scale: _scale),
+            child: LolaServerMessagePad(
+                stream: _serviceStream, scale: _scale, maxLines: 10),
           ),
           Expanded(
             flex: 1,

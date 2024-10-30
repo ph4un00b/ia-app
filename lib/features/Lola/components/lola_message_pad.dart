@@ -1,15 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 
+extension MessageText on Widget {
+  Widget messageText(String message, double scale, int maxLines,
+      {TextOverflow? overflow}) {
+    return Center(
+      child: Column(
+        children: [
+          Expanded(
+            child: Text(
+              message,
+              textScaler: TextScaler.linear(2.6 * scale),
+              maxLines: maxLines,
+              softWrap: true,
+              overflow: overflow ?? TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class LolaServerMessagePad extends StatelessWidget {
   const LolaServerMessagePad({
     super.key,
     required this.stream,
     required this.scale,
+    this.maxLines = 4,
   });
 
   final Stream<LolaServiceState>? stream;
   final double scale;
+  final int maxLines;
 
   @override
   Widget build(BuildContext context) {
@@ -22,67 +45,14 @@ class LolaServerMessagePad extends StatelessWidget {
           builder: (context, snap) {
             final service = snap.data;
             return switch (service) {
-              null => Container(),
-              IdleService(payload: String message) => Center(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          message,
-                          textScaler: TextScaler.linear(2.6 * scale),
-                          maxLines: 4,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              Loading() => Center(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Lola está escribiendo un mensaje...',
-                          textScaler: TextScaler.linear(2.6 * scale),
-                          maxLines: 4,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              Data(payload: String message) => Center(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          message,
-                          textScaler: TextScaler.linear(2.6 * scale),
-                          maxLines: 4,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              Error() => Center(
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          '',
-                          textScaler: TextScaler.linear(2.6 * scale),
-                          maxLines: 4,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              null => const SizedBox.shrink(),
+              IdleService(payload: final message) =>
+                Container().messageText(message, scale, maxLines),
+              Loading() => Container().messageText(
+                  'Lola está escribiendo un mensaje...', scale, maxLines),
+              Data(payload: final message) =>
+                Container().messageText(message, scale, maxLines),
+              Error() => Container().messageText('', scale, maxLines),
             };
           },
         ),
