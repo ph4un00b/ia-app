@@ -12,14 +12,41 @@ import 'package:lola_ai_app/main.dart';
 import 'package:lola_ai_app/services/ReminderAgent/reminder_onboarding_handler.dart';
 import 'package:path_provider/path_provider.dart';
 
+extension ProcessingStateX on audio.ProcessingState {
+  AudioState toAudioState() => switch (this) {
+        audio.ProcessingState.completed => PlayingAudioOk(),
+        audio.ProcessingState.idle ||
+        audio.ProcessingState.ready ||
+        audio.ProcessingState.loading ||
+        audio.ProcessingState.buffering =>
+          NoAudioPath(),
+      };
+}
+
 extension StreamControllerX<TEvent> on StreamController<TEvent> {
   void addIfStreamOpen(TEvent event) {
     if (!isClosed) add(event);
   }
 }
 
+extension DateTimeX on DateTime {
+  String get dayName => switch (weekday) {
+        1 => 'Lunes',
+        2 => 'Martes',
+        3 => 'Miercoles',
+        4 => 'Jueves',
+        5 => 'Viernes',
+        6 => 'Sabado',
+        7 => 'Domingo',
+        _ => throw ArgumentError('Invalid weekday: $weekday'),
+      };
+}
+
+enum InitialState { idle, loadingReminders, loadingSummary }
+
 final class InitialVozController with AudioPlayerHandlers {
-  bool _httpToken = false;
+  InitialState currentState = InitialState.idle;
+  bool _isHttpCancelled = false;
   final audio.AudioPlayer _audioplayer = audio.AudioPlayer();
   final serviceState = StreamController<LolaServiceState>()
     ..add(const IdleService());
@@ -32,18 +59,9 @@ final class InitialVozController with AudioPlayerHandlers {
     _audioplayer.playbackEventStream.listen((event) {
       debugPrint('== INITIAL PLAYER >> ${event.processingState}');
 
-      final newState = switch (event.processingState) {
-        audio.ProcessingState.completed => PlayingAudioOk(),
-        audio.ProcessingState.idle ||
-        audio.ProcessingState.ready ||
-        audio.ProcessingState.loading ||
-        audio.ProcessingState.buffering =>
-          NoAudioPath(),
-      };
-
       if (event.processingState == audio.ProcessingState.completed) {
         debugPrint('play INITIAL completed!');
-        audioState.addIfStreamOpen(newState);
+        audioState.addIfStreamOpen(event.processingState.toAudioState());
       }
     }, onError: (error, stackTrace) {
       debugPrint('>>>> play INITIAL error: $error\n$stackTrace');
@@ -54,18 +72,21 @@ final class InitialVozController with AudioPlayerHandlers {
   // se muestra el error en pad y en
   // la vista de "Ver Mensaje"
   Future<void> loadInitialSummary({bool debug = false}) async {
-    AppStatus.instance.currentInitialState = InitialState.loadingSummary;
+    currentState = InitialState.loadingSummary;
+
     if (debug) serviceState.add(const IdleService(payload: 'loading summary'));
 
     try {
       serviceState.add(Loading());
       final result = await LolaSummary.query(voice: currentVoice, debug: debug);
+      if (currentState != InitialState.loadingSummary) return;
+
       _currentAudioPath = result.path;
       _currentOutput = result.reply;
       serviceState.add(Data(payload: result.reply));
       await _playAudio(result.path);
     } catch (e, st) {
-      if (_httpToken) {
+      if (_isHttpCancelled) {
         debugPrint('😡 Summary request was cancelled');
         return;
       }
@@ -80,7 +101,7 @@ final class InitialVozController with AudioPlayerHandlers {
   }
 
   Future<void> loadReminders({required bool debug}) async {
-    AppStatus.instance.currentInitialState = InitialState.loadingReminders;
+    currentState = InitialState.loadingReminders;
     final appDocumentsDirectory = await getApplicationDocumentsDirectory();
     final remindersFile = File('${appDocumentsDirectory.path}/jamon.md');
 
@@ -106,27 +127,18 @@ final class InitialVozController with AudioPlayerHandlers {
 
       final now = DateTime.now();
       final today = now.toIso8601String().split('T').first;
-      final dayName = const {
-        1: 'Monday',
-        2: 'Tuesday',
-        3: 'Wednesday',
-        4: 'Thursday',
-        5: 'Friday',
-        6: 'Saturday',
-        7: 'Sunday',
-      }[now.weekday];
-
       final reminderResponse = await ReminderAgent.query(
-        'hoy es $dayName $today, cuales son mis recordatorios para hoy?',
+        'hoy es ${now.dayName} $today, cuales son mis recordatorios para hoy?',
       );
 
+      if (currentState != InitialState.loadingReminders) return;
       if (reminderResponse.payload.isEmpty) {
         throw LolaResponseException('Empty response from ReminderAgent');
       }
 
       await _processAndPlayResponse(reminderResponse.payload);
     } catch (e, st) {
-      if (_httpToken) {
+      if (_isHttpCancelled) {
         debugPrint('😡 reminders request was cancelled');
         return;
       }
@@ -212,7 +224,7 @@ final class InitialVozController with AudioPlayerHandlers {
   }
 
   void dispose() {
-    _httpToken = true;
+    _isHttpCancelled = true;
     _audioplayer.dispose();
     audioState.close();
     serviceState.close();

@@ -9,7 +9,6 @@ import 'package:lola_ai_app/features/Lola/components/lola_control_message.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/core/components/action_btn.dart';
-import 'package:lola_ai_app/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class InitialVozScreen extends StatefulWidget {
@@ -158,8 +157,8 @@ class _InitialVozBodyState extends State<InitialVozBody> {
                             text: 'Continuar',
                             scale: _scale,
                             onPressed: () async {
-                              final action = switch (
-                                  AppStatus.instance.currentInitialState) {
+                              final action =
+                                  switch (_initialCtrl.currentState) {
                                 InitialState.idle => () async {
                                     _initialCtrl.loadInitialSummary(
                                         debug: debug);
