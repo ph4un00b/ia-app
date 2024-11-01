@@ -1,5 +1,6 @@
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Agents/llm.dart';
 import 'package:lola_ai_app/features/Agents/text_agent.prompt.dart';
@@ -39,7 +40,7 @@ class TextAgent {
 
     OpenAI.apiKey = Env.openAiKey;
     OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-    OpenAI.requestsTimeOut = const Duration(seconds: 10);
+    OpenAI.requestsTimeOut = const Duration(seconds: Constants.maxTimeout);
     OpenAI.showLogs = true;
     OpenAI.showResponsesLogs = true;
 
@@ -75,7 +76,7 @@ class TextAgent {
   static Future<String?> _openaiCompletion(String input, LLM llm) async {
     OpenAI.apiKey = Env.openAiKey;
     OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-    OpenAI.requestsTimeOut = const Duration(seconds: 10); // 60 seconds.
+    OpenAI.requestsTimeOut = const Duration(seconds: Constants.maxTimeout); // 60 seconds.
     OpenAI.showLogs = true;
     OpenAI.showResponsesLogs = true;
     OpenAICompletionModel? completion;

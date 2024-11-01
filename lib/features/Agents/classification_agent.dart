@@ -1,4 +1,5 @@
 import 'package:dart_openai/dart_openai.dart';
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Agents/llm.dart';
 import 'package:lola_ai_app/services/llm_utils.dart';
@@ -105,7 +106,7 @@ class ClassifyAgent {
     // TODO: retries, logs
     // OpenAI.apiKey = Env.openAiKey;
     // OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-    // OpenAI.requestsTimeOut = const Duration(seconds: 10);
+    // OpenAI.requestsTimeOut = const Duration(seconds: Constants.maxTimeout);
     // OpenAI.showLogs = true;
     // OpenAI.showResponsesLogs = true;
 
@@ -136,7 +137,7 @@ class ClassifyAgent {
   ) async {
     OpenAI.apiKey = Env.openAiKey;
     OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-    OpenAI.requestsTimeOut = const Duration(seconds: 10);
+    OpenAI.requestsTimeOut = const Duration(seconds: Constants.maxTimeout);
     OpenAI.showLogs = true;
     OpenAI.showResponsesLogs = true;
 

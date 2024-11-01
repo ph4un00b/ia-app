@@ -14,6 +14,7 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/core/elevenlabs/types.dart';
 import 'package:lola_ai_app/features/core/time.dart';
 import 'package:path_provider/path_provider.dart';
@@ -47,8 +48,8 @@ class ElevenLabsAPI {
   }) async {
     _dio
       ..options.baseUrl = config.baseUrl
-      ..options.connectTimeout = const Duration(seconds: 10)
-      ..options.receiveTimeout = const Duration(seconds: 20)
+      ..options.connectTimeout = const Duration(seconds: Constants.maxTimeout)
+      ..options.receiveTimeout = const Duration(seconds: Constants.maxTimeout)
       ..options.headers = {
         'Content-Type': 'application/json',
         'xi-api-key': config.apiKey,

@@ -1,4 +1,5 @@
 import 'package:dart_openai/dart_openai.dart';
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/config/env.dart';
 
 import '../Agents/llm.dart';
@@ -7,7 +8,7 @@ class PromptGetUserQuestions {
   static query({required LLM llm, required String messages}) async {
     OpenAI.apiKey = Env.openAiKey;
     OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-    OpenAI.requestsTimeOut = const Duration(seconds: 10);
+    OpenAI.requestsTimeOut = const Duration(seconds: Constants.maxTimeout);
     OpenAI.showLogs = true;
     OpenAI.showResponsesLogs = true;
 
