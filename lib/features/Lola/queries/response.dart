@@ -25,7 +25,7 @@ class LolaResponse {
         IntentKind.text ||
         IntentKind.none ||
         IntentKind.greeting =>
-          await ReminderAgent.updateReminders(),
+          _handleReminderCreation(userQuery, voiceModel),
         // TODO: mecionar en algun lado que se guardo el recordatorio
         IntentKind.createReminder || IntentKind.reminder => {},
       };
@@ -40,7 +40,7 @@ class LolaResponse {
     }
 
     return switch (AppStatus.instance.currentStatus) {
-      AppState.active => _runLola(userQuery, voiceModel, userIntent),
+      AppState.active => _handleUserQuery(userQuery, voiceModel, userIntent),
       AppState.onboarding => _handleOnboarding(userQuery, voiceModel),
       AppState.idle || AppState.auth => throw StateError(
           "${AppStatus.instance.currentStatus} state not implmented"),
@@ -63,23 +63,26 @@ class LolaResponse {
         AppStatus.instance.reminderStatus != ReminderState.filled;
   }
 
-  static Future<LolaResult> _runLola(
+  static Future<LolaResult> _handleUserQuery(
     String userQuery,
     VoiceLola voiceModel,
     IntentKind userIntent,
   ) async {
     final lolaStatus = AppStatus.instance.lolaStatus;
-    final isReminderIntent = userIntent == IntentKind.createReminder ||
-        userIntent == IntentKind.reminder;
+    final isCreateReminder = userIntent == IntentKind.createReminder;
+    final isAskReminder = userIntent == IntentKind.reminder;
 
     return switch (lolaStatus) {
       LolaState.idle ||
-      LolaState.running when isReminderIntent =>
-        await _setReminder(userQuery, voiceModel),
+      LolaState.running when isCreateReminder =>
+        await _handleReminderCreation(userQuery, voiceModel),
+      LolaState.idle ||
+      LolaState.running when isAskReminder =>
+        await _askLola(userQuery, voiceModel),
       LolaState.idle ||
       LolaState.running =>
         await _askLola(userQuery, voiceModel),
-      LolaState.creatingReminder => await _setReminder(userQuery, voiceModel),
+      LolaState.creatingReminder => await _handleReminderCreation(userQuery, voiceModel),
     };
   }
 
@@ -164,7 +167,7 @@ class LolaResponse {
             status: ReminderState.idle,
           );
         }(),
-      // throw StateError("filled reminder status not implemented"),
+      // throw StateError("filled reminder status not imp%lemented"),
     };
 
     return switch (response) {
@@ -208,7 +211,7 @@ class LolaResponse {
    *  - guarda el recordatorio
    * 3. user: que es el presidente de argentina?
    */
-  static Future<LolaResult> _setReminder(
+  static Future<LolaResult> _handleReminderCreation(
     String userQuery,
     VoiceLola voiceModel,
   ) async {
@@ -264,18 +267,26 @@ class LolaResponse {
           };
         }(),
       ReminderState.edited => await editedReminder(userQuery),
-      ReminderState.filled =>
-        throw StateError("filled reminder status not implemented"),
+      ReminderState.filled => await () async {
+          await ReminderAgent.updateReminders();
+
+          return ReminderResponse(
+            payload: userQuery,
+            status: ReminderState.idle,
+          );
+        }(),
     };
 
     return switch (response) {
+      ReminderResponse(payload: final payload, status: ReminderState.idle) ||
       ReminderResponse(payload: final payload, status: ReminderState.draft) ||
-      ReminderResponse(payload: final payload, status: ReminderState.edited) ||
-      ReminderResponse(payload: final payload, status: ReminderState.filled) =>
+      ReminderResponse(payload: final payload, status: ReminderState.edited)  =>
         LolaResult(
           p.normalize((await voiceModel.synthesize(text: payload)).path),
           payload,
         ),
+       ReminderResponse(payload: final payload, status: ReminderState.filled) =>
+        _handleReminderCreation(payload, voiceModel),
       ReminderResponse(payload: final payload) when payload.isEmpty =>
         throw LolaResponseException('Empty response'),
       _ => throw LolaResponseException('Unexpected response'),
