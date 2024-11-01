@@ -132,9 +132,9 @@ final class InitialVozController with AudioPlayerHandlers {
       }
 
       if (debug) {
-        serviceState.add(Error(payload: e.toString()));
+        serviceState.addIfStreamOpen(Error(payload: e.toString()));
       } else {
-        serviceState.add(Data(payload: _currentOutput));
+        serviceState.addIfStreamOpen(Data(payload: _currentOutput));
       }
       debugPrint('loadReminders: error: $e, $st');
     }
@@ -156,9 +156,9 @@ final class InitialVozController with AudioPlayerHandlers {
       await _processAndPlayResponse(onboardingResponse.payload);
     } catch (e, st) {
       if (debug) {
-        serviceState.add(Error(payload: e.toString()));
+        serviceState.addIfStreamOpen(Error(payload: e.toString()));
       } else {
-        serviceState.add(Data(payload: _currentOutput));
+        serviceState.addIfStreamOpen(Data(payload: _currentOutput));
       }
       debugPrint('create reminders: error: $e, $st');
     }
