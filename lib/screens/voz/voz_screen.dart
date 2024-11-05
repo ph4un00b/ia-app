@@ -54,7 +54,7 @@ class VozBody extends StatefulWidget {
 }
 
 class _VozBodyState extends State<VozBody> {
-  bool debug = !true;
+  bool debug = true;
   var debugLolaState = '';
   var debugLolaAudioState = '';
   final $phau = Voz();
