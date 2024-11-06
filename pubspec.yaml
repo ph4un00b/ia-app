@@ -66,6 +66,7 @@ dev_dependencies:
   json_serializable: ^6.8.0
   integration_test:
     sdk: flutter
+  flutter_launcher_icons: 0.14.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -110,3 +111,14 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+
+flutter_launcher_icons:
+  ios: true
+  # web: false
+  android: false
+  image_path_ios: "assets/common/app-icon.png"
+  image_path_ios_dark_transparent: "assets/common/app-icon-transparent.png"
+  # image_path_android: "assets/android/app-icon-android.png"
+  # adaptive_icon_background: "assets/android/app-icon-background.png"
+  # adaptive_icon_foreground: "assets/android/app-icon-foreground.png"
+  remove_alpha_ios: true #  icons with an alpha channel are not allowed in the Apple App Store.
