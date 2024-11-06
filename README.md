@@ -4,6 +4,8 @@
 # commands
 
 - regenerate types: `$ dart run build_runner build --delete-conflicting-outputs`
+- create icons: `$ dart run flutter_launcher_icons`
+- create splash: `$ dart run flutter_native_splash:create`
 
 # tests
 
