@@ -5,7 +5,7 @@ import 'package:openai_dart/openai_dart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/root.dart';
 
-void main() async {
+Future<void> runMainApp() async {
   await dotenv.load(fileName: ".env");
   assert(Env.openAiKey.isNotEmpty, "OPENAI_API_KEY not defined");
   assert(Env.openAiBaseUrl.isNotEmpty, "OPENAI_API_BASE not defined");

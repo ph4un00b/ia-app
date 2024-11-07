@@ -68,6 +68,7 @@ dev_dependencies:
     sdk: flutter
   flutter_launcher_icons: 0.14.1
   flutter_native_splash: 2.4.1
+  flutter_flavorizr: 2.2.3
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -135,4 +136,38 @@ flutter_native_splash:
   image: "assets/common/app-icon-transparent.png"
   web: false
   android: false
+
+flavorizr:
+  ide: "vscode"
+  # app:
+  #   android:
+  #     flavorDimensions: "flavor-type"
+
+  # TODO: setup the production bundle id
+  flavors:
+    dev:
+      app:
+        name: "Lola AI App Dev"
+      # android:
+      #   applicationId: "com.example.lola_ai_app.dev"
+      #   icon: "assets/dev/app-icon.png"
+      #   adaptiveIcon:
+      #     foreground: "assets/dev/app-icon-foreground.png"
+      #     background: "assets/android/app-icon-background.png"
+      ios:
+        bundleId: "com.example.lolaAiApp.dev"
+        icon: "assets/dev/app-icon.png"
+
+    prod:
+      app:
+        name: "Lola AI App"
+      # android:
+      #   applicationId: "com.example.lola_ai_app"
+      #   icon: "assets/prod/app-icon.png"
+      #   adaptiveIcon:
+      #     foreground: "assets/prod/app-icon-foreground.png"
+      #     background: "assets/android/app-icon-background.png"
+      ios:
+        bundleId: "com.example.lolaAiApp"
+        icon: "assets/prod/app-icon.png"
 
