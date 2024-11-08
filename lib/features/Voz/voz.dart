@@ -6,6 +6,7 @@ import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/config/env.dart';
+import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 import 'package:record/record.dart' as rec;
@@ -113,10 +114,10 @@ final class Voz with ChangeNotifier, ContentHandler {
         model: "whisper-1",
         responseFormat: OpenAIAudioResponseFormat.json,
       );
-    } catch (e) {
+    } catch (e, st) {
+      ErrorLogger.logException(e, st);
       aiState = VozAI.transcribingError;
       notifyListeners();
-      debugPrint('transcribing err: ${e.toString()}');
       return '';
     }
 
@@ -146,11 +147,10 @@ final class Voz with ChangeNotifier, ContentHandler {
 
       state = VozState.playing;
       notifyListeners();
-    } catch (e) {
+    } catch (e, st) {
+      ErrorLogger.logException(e, st);
       state = VozState.playingError;
       notifyListeners();
-
-      debugPrint(e.toString());
     }
   }
 
@@ -162,11 +162,10 @@ final class Voz with ChangeNotifier, ContentHandler {
       notifyListeners();
 
       await _player.stop();
-    } catch (e) {
+    } catch (e, st) {
+      ErrorLogger.logException(e, st);
       state = VozState.stopPlayingError;
       notifyListeners();
-
-      debugPrint(e.toString());
     }
   }
 
@@ -198,10 +197,10 @@ final class Voz with ChangeNotifier, ContentHandler {
 
         await _recorder.start(config, path: path);
       }
-    } catch (e) {
+    } catch (e, st) {
+      ErrorLogger.logException(e, st);
       state = VozState.recordingError;
       notifyListeners();
-      debugPrint(e.toString());
     }
   }
 
@@ -215,12 +214,10 @@ final class Voz with ChangeNotifier, ContentHandler {
       assert(path == _path);
 
       updateContent(await _fetchAITranscription());
-    } catch (e) {
+    } catch (e, st) {
+      ErrorLogger.logException(e, st);
       state = VozState.stopRecordingError;
       notifyListeners();
-
-      debugPrint('stop-recording err: ${e.toString()}');
-      debugPrint(e.toString());
     }
   }
 

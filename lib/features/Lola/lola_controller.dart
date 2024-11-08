@@ -5,6 +5,7 @@ import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/queries/response.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Mensajes/mutations/save_conversation.dart';
+import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 
@@ -70,12 +71,14 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
       );
       await _playAudio(result.path);
     } catch (e, st) {
+
+      ErrorLogger.logException(e, st);
+
       if (debug) {
         serviceState.add(Error(payload: e.toString()));
       } else {
         serviceState.add(Data(payload: _currentOutput));
       }
-      debugPrint('loadReply: error: $e, $st');
     }
   }
 
@@ -97,7 +100,7 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
       await _audioplayer.stop();
       audioState.add(Stopped());
     } catch (e, st) {
-      debugPrint("stopSpeech: error: $e, $st");
+      ErrorLogger.logException(e, st);
       audioState.add(StoppedErr());
     }
   }
@@ -109,7 +112,7 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
       await _audioplayer.setFilePath(_currentAudioPath);
       await _audioplayer.play();
     } catch (e, st) {
-      debugPrint("playSpeech: error: $e, $st");
+      ErrorLogger.logException(e, st);
       audioState.add(PlayingAudioErr());
     }
   }

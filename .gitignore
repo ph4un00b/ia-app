@@ -46,7 +46,10 @@ app.*.map.json
 /web
 /windows
 
-.env*
+*.env
+*.env.dev
+*.env.stg
+*.env.prod
 !.env.example
 ios/Runner/GoogleService-Info.plist
 ios/firebase_app_id_file.json

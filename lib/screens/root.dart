@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/core/app_state_observer.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'routes.dart';
 
 class MyApp extends StatelessWidget {
@@ -8,7 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      navigatorObservers: [AppStateObserver()],
+      navigatorObservers: [AppStateObserver(), SentryNavigatorObserver()],
       title: 'Lola App',
       theme: themeProvider(),
       initialRoute: '/initial',

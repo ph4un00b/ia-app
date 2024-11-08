@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Mensajes/types.dart';
+import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 
@@ -41,8 +42,8 @@ final class MessagesController {
 
       messagesState
           .add(Success(text: 'Success', messages: _messagesFrom(result)));
-    } catch (e) {
-      // TODO: handle PostgrestException
+    } catch (e, st) {
+      ErrorLogger.logException(e, st);
       messagesState.add(Error(err: e));
     }
   }
@@ -96,7 +97,8 @@ final class MessagesController {
         messagesState
             .add(Success(text: 'Success', messages: _messagesFrom(result)));
       }
-    } catch (e) {
+    } catch (e, st) {
+      ErrorLogger.logException(e, st);
       messagesState.add(Error(err: e));
     }
   }

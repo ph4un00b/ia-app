@@ -15,6 +15,7 @@ import 'package:lola_ai_app/features/core/components/debug_widget.dart';
 import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/core/components/test_error_logger.dart';
 import 'package:lola_ai_app/screens/drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -201,6 +202,7 @@ class _VozBodyState extends State<VozBody> {
               ],
             ),
           ),
+          if (debug) const TestErrorLogger(),
           if (debug) const DebugClassificationAgent(),
           if (debug) DebugMemory(lola: lola$),
           if (debug) const DebugMemorySaveFile(),

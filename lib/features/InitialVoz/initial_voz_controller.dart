@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
+import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:lola_ai_app/features/Agents/reminder_agent.dart';
 import 'package:lola_ai_app/features/Lola/queries/summary.dart';
@@ -91,12 +92,13 @@ final class InitialVozController with AudioPlayerHandlers {
         return;
       }
 
+      ErrorLogger.logException(e, st);
+
       if (debug) {
         serviceState.add(Error(payload: e.toString()));
       } else {
         serviceState.add(Data(payload: _currentOutput));
       }
-      debugPrint('loadShortMemory: error: $e, $st');
     }
   }
 
@@ -143,12 +145,13 @@ final class InitialVozController with AudioPlayerHandlers {
         return;
       }
 
+      ErrorLogger.logException(e, st);
+
       if (debug) {
         serviceState.addIfStreamOpen(Error(payload: e.toString()));
       } else {
         serviceState.addIfStreamOpen(Data(payload: _currentOutput));
       }
-      debugPrint('loadReminders: error: $e, $st');
     }
   }
 
@@ -167,12 +170,14 @@ final class InitialVozController with AudioPlayerHandlers {
 
       await _processAndPlayResponse(onboardingResponse.payload);
     } catch (e, st) {
+
+      ErrorLogger.logException(e, st);
+
       if (debug) {
         serviceState.addIfStreamOpen(Error(payload: e.toString()));
       } else {
         serviceState.addIfStreamOpen(Data(payload: _currentOutput));
       }
-      debugPrint('create reminders: error: $e, $st');
     }
   }
 
@@ -206,7 +211,7 @@ final class InitialVozController with AudioPlayerHandlers {
       await _audioplayer.stop();
       audioState.add(Stopped());
     } catch (e, st) {
-      debugPrint("stopSpeech: error: $e, $st");
+      ErrorLogger.logException(e, st);
       audioState.add(StoppedErr());
     }
   }
@@ -218,7 +223,7 @@ final class InitialVozController with AudioPlayerHandlers {
       await _audioplayer.setFilePath(_currentAudioPath);
       await _audioplayer.play();
     } catch (e, st) {
-      debugPrint("playSpeech: error: $e, $st");
+      ErrorLogger.logException(e, st);
       audioState.add(PlayingAudioErr());
     }
   }

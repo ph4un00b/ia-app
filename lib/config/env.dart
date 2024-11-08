@@ -6,4 +6,5 @@ class Env {
   static String get elevenApiKey => dotenv.env['ELEVEN_API_KEY'] ?? '';
   static String get dbUrl => dotenv.env['DB_URL'] ?? '';
   static String get dbKey => dotenv.env['DB_KEY'] ?? '';
+  static String get sentryDsn => dotenv.env['SENTRY_DSN'] ?? '';
 }

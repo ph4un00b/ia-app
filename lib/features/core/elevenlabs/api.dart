@@ -16,8 +16,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/core/elevenlabs/types.dart';
+import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/time.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sentry_dio/sentry_dio.dart';
 
 import './generated/types.dart' as T;
 
@@ -47,6 +49,7 @@ class ElevenLabsAPI {
     required ElevenLabsConfig config,
   }) async {
     _dio
+      ..addSentry()
       ..options.baseUrl = config.baseUrl
       ..options.connectTimeout = const Duration(seconds: Constants.maxTimeout)
       ..options.receiveTimeout = const Duration(seconds: Constants.maxTimeout)
@@ -68,7 +71,8 @@ class ElevenLabsAPI {
     try {
       final response = await _dio.get('/v1/voices');
       return T.Voices.fromJson(response.data);
-    } catch (error) {
+    } catch (error, stackTrace) {
+      ErrorLogger.logException(error, stackTrace);
       throw _handleError(error);
     }
   }
@@ -110,7 +114,8 @@ class ElevenLabsAPI {
       debugPrint('>> $fileName');
       final responseFile = await File(fileName).writeAsBytes(response.data);
       return responseFile;
-    } catch (error) {
+    } catch (error, stackTrace) {
+      ErrorLogger.logException(error, stackTrace);
       throw _handleError(error);
     }
   }

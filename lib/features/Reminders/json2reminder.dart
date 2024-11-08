@@ -44,6 +44,7 @@ class ReminderParser {
     // try {
     //   return DateTime.parse('1970-01-01 $timeStr');
     // } catch (e, st) {
+    //   ErrorLogger.logException(e, st);
     //   print('Error parsing time string: $timeStr, $st');
     //   return null;
     // }
