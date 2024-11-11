@@ -21,25 +21,26 @@ class AudioHandler extends StatelessWidget {
         final ui = snap.data;
         return switch (ui) {
           null => Container(),
-          NoAudioPath() => ui.actionDisabled(scale: scale),
-          PlayingAudio() => ui.stop(
+          NoAudioPath() => ui.build(scale: scale),
+          PlayingAudio() => ui.build(
               scale: scale,
               onStop: controller.stopAudio,
             ),
-          PlayingAudioErr() => ui.replay(
+          PlayingAudioErr() => ui.build(
               scale: scale,
               onRetry: controller.playAudio,
             ),
-          PlayingAudioOk() => ui.replay(
+          PlayingAudioOk() => ui.build(
+              from: controller.toString(),
               scale: scale,
               onReplay: controller.playAudio,
             ),
-          Stopped() => ui.play(
-              scale,
+          Stopped() => ui.build(
+              scale: scale,
               onPlay: controller.playAudio,
             ),
-          StoppedErr() => ui.play(
-              scale,
+          StoppedErr() => ui.build(
+              scale: scale,
               onPlay: controller.playAudio,
             ),
         };

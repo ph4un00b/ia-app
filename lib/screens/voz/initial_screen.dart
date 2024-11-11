@@ -22,12 +22,10 @@ class _InitialVozScreenState extends State<InitialVozScreen> {
   @override
   void initState() {
     super.initState();
-    debugPrint('👀 initializing initial voz screen');
   }
 
   @override
   void dispose() {
-    debugPrint('🫡 disposing initial voz screen');
     super.dispose();
   }
 
@@ -60,9 +58,7 @@ class InitialVozBody extends StatefulWidget {
 }
 
 class _InitialVozBodyState extends State<InitialVozBody> {
-  bool debug = !true;
-  String _debugServiceState = '';
-  String _debugAudioState = '';
+  final _debug = !true;
   final _initialCtrl = InitialVozController();
   Stream<LolaServiceState>? _serviceStream;
   Stream<AudioState>? _audioStream;
@@ -77,15 +73,15 @@ class _InitialVozBodyState extends State<InitialVozBody> {
     _serviceStream = _initialCtrl.serviceState.stream.asBroadcastStream();
     _audioStream = _initialCtrl.audioState.stream.asBroadcastStream();
 
-    if (debug) {
-      _serviceStream?.listen((state) {
-        _debugServiceState = state.toString();
-      });
+    // if (_debug) {
+    //   _serviceStream?.listen((state) {
+    //     _debugServiceState = state.toString();
+    //   });
 
-      _audioStream?.listen((state) {
-        _debugAudioState = state.toString();
-      });
-    }
+    //   _audioStream?.listen((state) {
+    //     _debugAudioState = state.toString();
+    //   });
+    // }
   }
 
   @override
@@ -138,6 +134,7 @@ class _InitialVozBodyState extends State<InitialVozBody> {
                         child: Padding(
                           padding: const EdgeInsets.all(4.0),
                           child: LolaControlMessage(
+                            from: widget.toString(),
                             scale: _scale,
                             stream: _serviceStream,
                           ),
@@ -161,13 +158,13 @@ class _InitialVozBodyState extends State<InitialVozBody> {
                                   switch (_initialCtrl.currentState) {
                                 InitialState.idle => () async {
                                     _initialCtrl.loadInitialSummary(
-                                        debug: debug);
+                                        debug: _debug);
                                   },
                                 InitialState.loadingReminders => () async {
                                     Navigator.popAndPushNamed(context, '/voz');
                                   },
                                 InitialState.loadingSummary => () async {
-                                    _initialCtrl.loadReminders(debug: debug);
+                                    _initialCtrl.loadReminders(debug: _debug);
                                   }
                               };
 
@@ -182,12 +179,6 @@ class _InitialVozBodyState extends State<InitialVozBody> {
               ],
             ),
           ),
-          // Center(
-          //   child: ElevatedButton(
-          //     onPressed: () => Navigator.popAndPushNamed(context, '/voz'),
-          //     child: const Text('Go to Voz Screen'),
-          //   ),
-          // ),
         ],
       ),
     );

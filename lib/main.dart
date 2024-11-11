@@ -1,7 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lola_ai_app/config/env.dart';
+import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:openai_dart/openai_dart.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -13,43 +13,26 @@ Future<void> runMainApp() async {
     anonKey: Env.dbKey,
   );
 
-  AppStatus.initialize();
+  await AppStatus.initialize();
 
   await SentryFlutter.init(
-    (options) {
-      options.dsn = Env.sentryDsn;
-      options.environment = AppStatus.flavor().name;
-      //! for screenshot use code below
+    (options) => options
+      ..dsn = Env.sentryDsn
+      ..environment = AppStatus.flavor().name
       //! @see https://docs.sentry.io/platforms/flutter/enriching-events/screenshots/
-      // runApp(const SentryWidget(child: MyApp()));
-      options
-        ..attachScreenshot = false
-        ..attachViewHierarchy = false;
+      ..attachScreenshot = false
+      ..attachViewHierarchy = false
       // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-      // We recommend adjusting this value in production.
-      options.tracesSampleRate = 1.0;
-      // The sampling rate for profiling is relative to tracesSampleRate
+      ..tracesSampleRate = 1.0
       // Setting to 1.0 will profile 100% of sampled transactions:
-      options.profilesSampleRate = 1.0;
+      ..profilesSampleRate = 1.0
       //! better stack traces in the dashboard
-      options
-        ..considerInAppFramesByDefault = false
-        ..addInAppInclude('lola_ai_app');
+      ..considerInAppFramesByDefault = false
+      ..addInAppInclude('lola_ai_app')
       //! Use the beforeSend callback to filter which events are sent
-      options.beforeSend = (SentryEvent event, Hint hint) async {
-        //! Ignore events that are not from release builds
-        // if (!kReleaseMode) {
-        //   return null;
-        // }
-        // TODO: add your custom event filtering logic here
-        // For all other events, return the event as is
-        return event;
-      };
-    },
+      ..beforeSend = (event, hint) async => event,
     appRunner: () => runApp(const MyApp()),
   );
-
-  // runApp(const MyApp());
 }
 
 enum AppState { idle, auth, onboarding, active }
@@ -69,28 +52,38 @@ enum ReminderState { idle, create, draft, edited, filled }
 
 enum Flavor { dev, stg, prod }
 
+typedef ReminderData = Map<String, dynamic>;
+
 class AppStatus {
   bool _initialized = false;
+  Mixpanel? mixpanel;
 
-  AppState currentStatus = AppState.idle;
-  LolaState lolaStatus = LolaState.idle;
+  var lolaStatus = LolaState.idle;
+  var currentStatus = AppState.idle;
+  var reminderStatus = ReminderState.idle;
+  var currentReminder = ReminderData();
+  var currentReminderChat = <ChatCompletionMessage>[];
 
-  ReminderState reminderStatus = ReminderState.idle;
-  List<ChatCompletionMessage> currentReminderChat = [];
-  Map<String, dynamic> currentReminder = {};
-
-  // Private constructor
   AppStatus._();
   static final AppStatus _instance = AppStatus._();
   static AppStatus get instance => _instance;
 
-  static void initialize() {
+  static Future<void> initialize() async {
     assert(
       !_instance._initialized,
       'This instance is already initialized',
     );
 
+    await _instance._initMixpanel();
     _instance._initialized = true;
+  }
+
+  Future<void> _initMixpanel() async {
+    mixpanel = await Mixpanel.init(
+      Env.mixpanelToken,
+      trackAutomaticEvents: true,
+    )
+      ..setLoggingEnabled(false);
   }
 
   static Flavor flavor() {

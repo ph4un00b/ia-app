@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -8,6 +9,7 @@ import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/LocalStore/local_store.dart';
 import 'package:lola_ai_app/features/Reminders/json2reminder.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/main.dart';
 import 'package:openai_dart/openai_dart.dart';
 import 'package:path_provider/path_provider.dart';
@@ -32,6 +34,16 @@ class UserMetadata {
   }
 }
 
+extension AppStatusExtension on AppStatus {
+  void resetToIdle() {
+    reminderStatus = ReminderState.idle;
+    currentStatus = AppState.active;
+    lolaStatus = LolaState.idle;
+    currentReminderChat = [];
+    currentReminder = {};
+  }
+}
+
 class ReminderAgent {
   static Future<LLMResponse> query(String userQuery) async {
     final client = OpenAIClient(apiKey: Env.openAiKey);
@@ -48,9 +60,7 @@ class ReminderAgent {
       order: 'desc',
     );
 
-    for (var message in messages.data) {
-      debugPrint(message.content.first.text);
-    }
+    messages.data.forEach((message) => debugPrint(message.content.first.text));
 
     return messages.data.isEmpty
         ? const NoneResponse()
@@ -77,11 +87,13 @@ class ReminderAgent {
     final userMetadata = await fetchUserMetadata();
     final reminderJson = jsonEncode(AppStatus.instance.currentReminder);
 
-    await LocalStore.append("jamon.md", ReminderParser.parseJsonToReminderText(reminderJson));
-    final updatedRemindersFile = await ReminderAgent.uploadLocalRemindersFile();
+    final updatedRemindersFile = await LocalStore.append(
+      "jamon.md",
+      ReminderParser.parseJsonToReminderText(reminderJson),
+    ).then((_) => uploadLocalRemindersFile());
 
     // attach new file to vector store
-    OpenAIClient client = OpenAIClient(apiKey: Env.openAiKey);
+    final client = OpenAIClient(apiKey: Env.openAiKey);
     VectorStoreFileObject addedFile = await client.createVectorStoreFile(
       vectorStoreId: userMetadata.vectorId,
       request: CreateVectorStoreFileRequest(
@@ -96,22 +108,18 @@ class ReminderAgent {
       {'reminder_file_id': updatedRemindersFile.id},
     ).eq('id', 1);
 
+    await _tryDeleteOldFile(userMetadata.reminderFileId);
+
+    unawaited(AppEvent.reminderCreated.track());
+    AppStatus.instance.resetToIdle();
+  }
+
+  static Future<void> _tryDeleteOldFile(String fileId) async {
     try {
-      // TODO: por ahora si hay problemas, comemos el error
-      // possiblemente checar si existemas más de un archivo y borrarlos
-      // en la siguiente interacion, sí y sólo sí, vemos que no afecta
-      // en las queries siguientes.
-      await OpenAI.instance.file.delete(userMetadata.reminderFileId);
-      debugPrint('Successfully deleted file: ${userMetadata.reminderFileId}');
+      await OpenAI.instance.file.delete(fileId);
     } catch (e, st) {
       ErrorLogger.logException(e, st);
     }
-
-    AppStatus.instance.reminderStatus = ReminderState.idle;
-    AppStatus.instance.currentReminder = {};
-    AppStatus.instance.currentReminderChat = [];
-    AppStatus.instance.currentStatus = AppState.active;
-    AppStatus.instance.lolaStatus = LolaState.idle;
   }
 
   static Future<OpenAIFileModel> uploadLocalRemindersFile() async {
@@ -132,7 +140,7 @@ class ReminderAgent {
 
   static Future<ThreadObject> _createThread(
     OpenAIClient client,
-    String pregunta,
+    String userQuery,
     UserMetadata userMetadata,
   ) async {
     ThreadObject hilo = await client.createThread(
@@ -146,7 +154,7 @@ class ReminderAgent {
       request: CreateMessageRequest(
         role: MessageRole.user,
         content: CreateMessageRequestContent.text(
-          pregunta,
+          userQuery,
         ),
         attachments: [
           MessageAttachment(
@@ -221,14 +229,14 @@ class ReminderAgent {
     return store;
   }
 
-  static _waitForRunCompletion(
+  static Future<RunObject> _waitForRunCompletion(
     RunObject run,
-    ThreadObject hilo,
+    ThreadObject thread,
     OpenAIClient client,
   ) async {
     while (
         run.status == RunStatus.queued || run.status == RunStatus.inProgress) {
-      run = await client.getThreadRun(threadId: hilo.id, runId: run.id);
+      run = await client.getThreadRun(threadId: thread.id, runId: run.id);
       debugPrint(run.status.toString());
     }
     return run;

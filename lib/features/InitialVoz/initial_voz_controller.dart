@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:path/path.dart' as p;
 import 'package:lola_ai_app/features/Agents/reminder_agent.dart';
 import 'package:lola_ai_app/features/Lola/queries/summary.dart';
@@ -14,6 +15,8 @@ import 'package:lola_ai_app/services/ReminderAgent/reminder_onboarding_handler.d
 import 'package:path_provider/path_provider.dart';
 
 extension ProcessingStateX on audio.ProcessingState {
+  bool get isCompleted => this == audio.ProcessingState.completed;
+
   AudioState toAudioState() => switch (this) {
         audio.ProcessingState.completed => PlayingAudioOk(),
         audio.ProcessingState.idle ||
@@ -46,32 +49,38 @@ extension DateTimeX on DateTime {
 enum InitialState { idle, loadingReminders, loadingSummary }
 
 final class InitialVozController with AudioPlayerHandlers {
-  InitialState currentState = InitialState.idle;
-  bool _isHttpCancelled = false;
-  final audio.AudioPlayer _audioplayer = audio.AudioPlayer();
+  final _audioplayer = audio.AudioPlayer();
   final serviceState = StreamController<LolaServiceState>()
     ..add(const IdleService());
   final audioState = StreamController<AudioState>()..add(NoAudioPath());
+
   VoiceLola currentVoice = VoiceLola.nova;
+  InitialState currentState = InitialState.idle;
+  bool _isHttpCancelled = false;
   String _currentOutput = '';
   String _currentAudioPath = '';
 
   InitialVozController() {
     _audioplayer.playbackEventStream.listen((event) {
-      debugPrint('== INITIAL PLAYER >> ${event.processingState}');
+      if (event.processingState.isCompleted) {
+        final appEvent = switch (currentState) {
+          InitialState.loadingSummary => AppEvent.summaryFinished,
+          InitialState.loadingReminders => AppEvent.remindersFinished,
+          InitialState.idle => null,
+        };
 
-      if (event.processingState == audio.ProcessingState.completed) {
-        debugPrint('play INITIAL completed!');
+        if (appEvent != null) {
+          unawaited(appEvent.track());
+        }
+
         audioState.addIfStreamOpen(event.processingState.toAudioState());
       }
-    }, onError: (error, stackTrace) {
-      debugPrint('>>>> play INITIAL error: $error\n$stackTrace');
+    }, onError: (e, st) {
+      ErrorLogger.logException(e, st);
       audioState.add(PlayingAudioErr());
     });
   }
-  // en debug:
-  // se muestra el error en pad y en
-  // la vista de "Ver Mensaje"
+
   Future<void> loadInitialSummary({bool debug = false}) async {
     currentState = InitialState.loadingSummary;
 
@@ -82,6 +91,7 @@ final class InitialVozController with AudioPlayerHandlers {
       final result = await LolaSummary.query(voice: currentVoice, debug: debug);
       if (currentState != InitialState.loadingSummary) return;
 
+      unawaited(AppEvent.summaryFetched.track());
       _currentAudioPath = result.path;
       _currentOutput = result.reply;
       serviceState.add(Data(payload: result.reply));
@@ -138,6 +148,7 @@ final class InitialVozController with AudioPlayerHandlers {
         throw LolaResponseException('Empty response from ReminderAgent');
       }
 
+      unawaited(AppEvent.remindersFetched.track());
       await _processAndPlayResponse(reminderResponse.payload);
     } catch (e, st) {
       if (_isHttpCancelled) {
@@ -168,9 +179,10 @@ final class InitialVozController with AudioPlayerHandlers {
             'Empty response from ReminderOnboardingHandler');
       }
 
+      // TODO: test first time reminders skipping
+      unawaited(AppEvent.remindersFirstTime.track());
       await _processAndPlayResponse(onboardingResponse.payload);
     } catch (e, st) {
-
       ErrorLogger.logException(e, st);
 
       if (debug) {
@@ -194,7 +206,6 @@ final class InitialVozController with AudioPlayerHandlers {
   }
 
   Future<void> _playAudio(String audioPath) async {
-    debugPrint('play lola from path: $audioPath');
     // await _player.setAudioSource(audio.AudioSource.file(path));
     await _audioplayer.setFilePath(audioPath);
     audioState.add(PlayingAudio());

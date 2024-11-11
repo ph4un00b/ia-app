@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/screens/voz/user_message/user_message_screen.dart';
 
 class VozControlDisplayMessage extends StatelessWidget {
@@ -10,8 +13,10 @@ class VozControlDisplayMessage extends StatelessWidget {
     required this.user,
     required this.scale,
     required this.lola,
+    required this.from,
   });
 
+  final String from;
   final Voz user;
   final double scale;
   final LolaController lola;
@@ -22,37 +27,28 @@ class VozControlDisplayMessage extends StatelessWidget {
       listenable: user,
       builder: (_, __) {
         return switch (user.messageState) {
-          VozMessageState.empty => VozOpenMessageDisabled(
+          VozMessageState.empty ||
+          VozMessageState.editing =>
+            VozOpenMessageDisabled(scale: scale),
+          VozMessageState.edited ||
+          VozMessageState.loaded =>
+            VozOpenMessageAction(
               scale: scale,
-            ),
-          VozMessageState.editing => VozOpenMessageDisabled(
-              scale: scale,
-            ),
-          VozMessageState.edited => VozOpenMessageAction(
-              scale: scale,
-              onPressed: () => showModalBottomSheet(
-                isScrollControlled: true,
-                context: context,
-                builder: (ctx) => UserMessageScreen(
-                  lolaController: lola,
-                  controller: user,
-                  parentContext: context,
-                  scale: scale,
-                ),
-              ),
-            ),
-          VozMessageState.loaded => VozOpenMessageAction(
-              scale: scale,
-              onPressed: () => showModalBottomSheet(
-                isScrollControlled: true,
-                context: context,
-                builder: (ctx) => UserMessageScreen(
-                  lolaController: lola,
-                  controller: user,
-                  parentContext: context,
-                  scale: scale,
-                ),
-              ),
+              onPressed: () {
+                unawaited(AppEvent.userMessageDisplayed
+                    .track(params: {'from': from}));
+
+                return showModalBottomSheet(
+                  isScrollControlled: true,
+                  context: context,
+                  builder: (ctx) => UserMessageScreen(
+                    lolaController: lola,
+                    controller: user,
+                    parentContext: context,
+                    scale: scale,
+                  ),
+                );
+              },
             ),
         };
       },

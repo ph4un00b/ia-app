@@ -55,51 +55,51 @@ class VozBody extends StatefulWidget {
 }
 
 class _VozBodyState extends State<VozBody> {
-  bool debug = true;
-  var debugLolaState = '';
-  var debugLolaAudioState = '';
-  final $phau = Voz();
-  final lola$ = LolaController();
-  Stream<LolaServiceState>? lolaServiceState;
-  Stream<AudioState>? audioStream;
-  var scale = Constants.scale;
-  final messageFormKey = GlobalKey<FormState>();
+  final _debug = !true;
+  final _phau = Voz();
+  final _lola = LolaController();
+  final _messageFormKey = GlobalKey<FormState>();
+  Stream<LolaServiceState>? _lolaServiceState;
+  Stream<AudioState>? _audioStream;
+
+  var _debugLolaState = '';
+  var _debugLolaAudioState = '';
+  var _scale = Constants.scale;
 
   @override
   void initState() {
-    debugPrint('👀 initializing voz screen');
     super.initState();
-    _loadUserPrefereces();
+    _loadUserPreferences();
 
-    lolaServiceState = lola$.serviceState.stream.asBroadcastStream();
-    audioStream = lola$.audioState.stream.asBroadcastStream();
+    _lolaServiceState = _lola.serviceState.stream.asBroadcastStream();
+    _audioStream = _lola.audioState.stream.asBroadcastStream();
 
-    if (debug) {
-      lolaServiceState?.listen((state) {
-        debugLolaState = state.toString();
+    if (_debug) {
+      _lolaServiceState?.listen((state) {
+        _debugLolaState = state.toString();
       });
 
-      audioStream?.listen((state) {
-        debugLolaAudioState = state.toString();
+      _audioStream?.listen((state) {
+        _debugLolaAudioState = state.toString();
       });
     }
   }
 
   @override
   void dispose() {
-    $phau.dispose();
-    lola$.dispose();
+    _phau.dispose();
+    _lola.dispose();
     super.dispose();
     debugPrint('disposing voz screen');
   }
 
-  Future<void> _loadUserPrefereces() async {
+  Future<void> _loadUserPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     String voz = prefs.getString('lola-voice') ?? 'nova';
 
     setState(() {
-      lola$.currentVoice = VoiceLola.values.firstWhere((v) => v.name == voz);
-      scale = prefs.getDouble('app-setting-text') ?? Constants.scale;
+      _lola.currentVoice = VoiceLola.values.firstWhere((v) => v.name == voz);
+      _scale = prefs.getDouble('app-setting-text') ?? Constants.scale;
     });
   }
 
@@ -112,9 +112,9 @@ class _VozBodyState extends State<VozBody> {
           Expanded(
             flex: 1,
             child: SettingAppText(
-              scale: scale,
+              scale: _scale,
               onChangedValue: (value) async {
-                setState(() => scale = value);
+                setState(() => _scale = value);
                 final prefs = await SharedPreferences.getInstance();
                 prefs.setDouble(
                   'app-setting-text',
@@ -126,8 +126,8 @@ class _VozBodyState extends State<VozBody> {
           Expanded(
             flex: 4,
             child: LolaServerMessagePad(
-              stream: lolaServiceState,
-              scale: scale,
+              stream: _lolaServiceState,
+              scale: _scale,
             ),
           ),
           Expanded(
@@ -137,44 +137,45 @@ class _VozBodyState extends State<VozBody> {
                 Expanded(
                   flex: 1,
                   child: AudioHandler(
-                    stream: audioStream,
-                    controller: lola$,
-                    scale: scale,
+                    stream: _audioStream,
+                    controller: _lola,
+                    scale: _scale,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   flex: 1,
                   child: LolaControlMessage(
-                    scale: scale,
-                    stream: lolaServiceState,
+                    from: widget.toString(),
+                    scale: _scale,
+                    stream: _lolaServiceState,
                   ),
                 ),
               ],
             ),
           ),
-          if (debug)
+          if (_debug)
             DebugWidget(
               children: StreamBuilder(
-                stream: lolaServiceState,
+                stream: _lolaServiceState,
                 builder: (_, __) =>
-                    Center(child: Text(debugLolaState.toString())),
+                    Center(child: Text(_debugLolaState.toString())),
               ),
             ),
-          if (debug)
+          if (_debug)
             DebugWidget(
               children: StreamBuilder(
-                stream: audioStream,
-                builder: (_, __) => Center(child: Text(debugLolaAudioState)),
+                stream: _audioStream,
+                builder: (_, __) => Center(child: Text(_debugLolaAudioState)),
               ),
             ),
           Expanded(
             flex: 4,
             child: VozPad(
-              formKey: messageFormKey,
-              user: $phau,
-              lola$: lola$,
-              scale: scale,
+              formKey: _messageFormKey,
+              user: _phau,
+              lola$: _lola,
+              scale: _scale,
             ),
           ),
           Expanded(
@@ -184,33 +185,34 @@ class _VozBodyState extends State<VozBody> {
                 Expanded(
                   flex: 1,
                   child: VozControlFormMessage(
-                    formKey: messageFormKey,
+                    formKey: _messageFormKey,
                     setState: setState,
-                    user: $phau,
-                    scale: scale,
+                    user: _phau,
+                    scale: _scale,
                   ),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
                   flex: 1,
                   child: VozControlDisplayMessage(
-                    user: $phau,
-                    lola: lola$,
-                    scale: scale,
+                    from: widget.toString(),
+                    user: _phau,
+                    lola: _lola,
+                    scale: _scale,
                   ),
                 ),
               ],
             ),
           ),
-          if (debug) const TestErrorLogger(),
-          if (debug) const DebugClassificationAgent(),
-          if (debug) DebugMemory(lola: lola$),
-          if (debug) const DebugMemorySaveFile(),
-          if (debug) const DebugMemoryReadFile(),
-          if (debug) DebugVozMessageState(user: $phau),
-          if (debug) DebugVozAiState(user: $phau),
-          if (debug) DebugVozState(user: $phau),
-          if (debug) DebugLolaVoice(lola: lola$),
+          if (_debug) const TestErrorLogger(),
+          if (_debug) const DebugClassificationAgent(),
+          if (_debug) DebugMemory(lola: _lola),
+          if (_debug) const DebugMemorySaveFile(),
+          if (_debug) const DebugMemoryReadFile(),
+          if (_debug) DebugVozMessageState(user: _phau),
+          if (_debug) DebugVozAiState(user: _phau),
+          if (_debug) DebugVozState(user: _phau),
+          if (_debug) DebugLolaVoice(lola: _lola),
         ],
       ),
     );

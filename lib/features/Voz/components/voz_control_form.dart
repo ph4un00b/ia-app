@@ -1,9 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 
 class VozControlFormMessage extends StatelessWidget {
-
   const VozControlFormMessage({
     super.key,
     required this.user,
@@ -23,38 +25,22 @@ class VozControlFormMessage extends StatelessWidget {
       listenable: user,
       builder: (_, __) {
         return switch (user.messageState) {
-          VozMessageState.empty => VozEditAction(
+          VozMessageState.empty ||
+          VozMessageState.edited ||
+          VozMessageState.loaded =>
+            VozEditAction(
               scale: scale,
-              onPressed: () {
-                setState(() {
-                  user.messageState = VozMessageState.editing;
-                });
-              },
+              onPressed: () =>
+                  setState(() => user.messageState = VozMessageState.editing),
             ),
           VozMessageState.editing => VozRequestAction(
               scale: scale,
               onPressed: () {
+                unawaited(AppEvent.questionByTyping.track());
                 setState(() {
                   user.messageState = VozMessageState.edited;
                 });
-
                 formKey.currentState?.save();
-              },
-            ),
-          VozMessageState.edited => VozEditAction(
-              scale: scale,
-              onPressed: () {
-                setState(() {
-                  user.messageState = VozMessageState.editing;
-                });
-              },
-            ),
-          VozMessageState.loaded => VozEditAction(
-              scale: scale,
-              onPressed: () {
-                setState(() {
-                  user.messageState = VozMessageState.editing;
-                });
               },
             ),
         };

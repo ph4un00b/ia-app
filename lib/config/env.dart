@@ -7,4 +7,5 @@ class Env {
   static String get dbUrl => dotenv.env['DB_URL'] ?? '';
   static String get dbKey => dotenv.env['DB_KEY'] ?? '';
   static String get sentryDsn => dotenv.env['SENTRY_DSN'] ?? '';
+  static String get mixpanelToken => dotenv.env['MIXPANEL_TOKEN'] ?? '';
 }

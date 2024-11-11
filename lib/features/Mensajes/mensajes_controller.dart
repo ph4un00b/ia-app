@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Mensajes/types.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 
@@ -25,14 +25,13 @@ final class Error implements MessagesScreenState {
 }
 
 final class MessagesController {
-  final audio.AudioPlayer _player = audio.AudioPlayer();
+  final _player = audio.AudioPlayer();
   final messagesState = StreamController<MessagesScreenState>()..add(Initial());
 
-  // Future<PostgrestTransformBuilder<List<Map<String, dynamic>>>> loadData() async {
-  void loadInitialMessages() async {
+  Future<void> loadInitialMessages() async {
+    unawaited(AppEvent.messagesDisplayed.track());
+
     messagesState.add(Fetching());
-    await Future<void>.delayed(
-        const Duration(seconds: 2)); // Fake 1 second delay
 
     try {
       List<Map<String, dynamic>> result = await Supabase.instance.client
@@ -51,11 +50,10 @@ final class MessagesController {
   Future<void> playSpeech({required String path}) async {
     File file = File(path);
     if (await file.exists()) {
-      debugPrint('play lola: $path');
       _player.setFilePath(path);
       _player.play();
     } else {
-      debugPrint('audio file not found: $path');
+      throw StateError('audio file not found: $path');
     }
   }
 
@@ -63,19 +61,26 @@ final class MessagesController {
     List<Map<String, dynamic>> data,
   ) {
     return List<SingleMessage>.generate(data.length, (i) {
-      final country = data[i];
-      final title = country['title'];
-      final content = country['content'];
-      final from = country['system'];
-      final String? path = country['path'];
+      final msg = data[i];
+      final title = msg['title'];
+      final content = msg['content'];
+      final from = msg['system'];
+      final String? path = msg['path'];
       // TODO(app.messages): manage timezones.
-      final createdAt = DateTime.parse(country['created_at']);
+      final createdAt = DateTime.parse(msg['created_at']);
       return SingleMessage(title, content, from, path, createdAt);
     });
   }
 
   void search(String query) async {
+    unawaited(AppEvent.searchMessageUsed.track());
     messagesState.add(Fetching());
+
+    if (query.isEmpty) {
+      await loadInitialMessages();
+      return;
+    }
+
     try {
       List<Map<String, dynamic>> result = await Supabase.instance.client
           .from("conversation")
@@ -90,13 +95,8 @@ final class MessagesController {
           )
           .order('created_at', ascending: false);
 
-      // print(result.toString());
-      if (query.isEmpty) {
-        loadInitialMessages();
-      } else {
-        messagesState
-            .add(Success(text: 'Success', messages: _messagesFrom(result)));
-      }
+      messagesState
+          .add(Success(text: 'Success', messages: _messagesFrom(result)));
     } catch (e, st) {
       ErrorLogger.logException(e, st);
       messagesState.add(Error(err: e));
@@ -104,6 +104,7 @@ final class MessagesController {
   }
 
   void dispose() {
+    _player.dispose();
     messagesState.close();
   }
 }

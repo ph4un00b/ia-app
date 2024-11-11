@@ -1,5 +1,4 @@
-// do not resolve late variables in contructors
-
+import 'dart:async';
 import 'dart:io';
 
 import 'package:dart_openai/dart_openai.dart';
@@ -48,36 +47,26 @@ final class Voz with ChangeNotifier, ContentHandler {
 
   Voz() {
     _recorder.onStateChanged().listen((event) async {
-      debugPrint('>> recorder-st-machine: $state');
       if (event case rec.RecordState.stop) {
-        // state = VozState.recordingOk;
         notifyListeners();
-      } else if (event case _) {
-        debugPrint('>>  recorder-st-machine EVENTS : $event');
-      }
+      } else if (event case _) {}
     });
 
     _player.playbackEventStream.listen((event) async {
       switch (event.processingState) {
         case audio.ProcessingState.idle:
-          // debugPrint('>> $event');
           state = VozState.idle;
           notifyListeners();
           break;
         case audio.ProcessingState.loading:
-          // debugPrint('>> $event');
           break;
         case audio.ProcessingState.buffering:
-          // debugPrint('>> $event');
           break;
         case audio.ProcessingState.ready:
-          // debugPrint('>> $event');
           break;
         case audio.ProcessingState.completed:
-          // debugPrint('>> $event');
           state = VozState.playingCompleted;
           notifyListeners();
-          debugPrint('play completed!');
       }
     });
   }
@@ -98,12 +87,12 @@ final class Voz with ChangeNotifier, ContentHandler {
       return '';
     }
 
-    debugPrint('init voz fetchAITranscription');
     OpenAI.apiKey = Env.openAiKey;
     OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-    OpenAI.requestsTimeOut = const Duration(seconds: Constants.maxTimeout); // 60 seconds.
+    OpenAI.requestsTimeOut =
+        const Duration(seconds: Constants.maxTimeout); // 60 seconds.
     OpenAI.showLogs = true;
-    OpenAI.showResponsesLogs = !true;
+    OpenAI.showResponsesLogs = true;
 
     OpenAIAudioModel transcription;
     try {
@@ -121,11 +110,6 @@ final class Voz with ChangeNotifier, ContentHandler {
       return '';
     }
 
-    // print the transcription.
-    debugPrint('voz done:transcription: ${transcription.text}');
-    // debugPrint(transcription.language);
-    // debugPrint(transcription.duration.toString());
-    // debugPrint(transcription.task);
     aiState = VozAI.transcribingOk;
     messageState = VozMessageState.loaded;
     notifyListeners();
@@ -136,12 +120,10 @@ final class Voz with ChangeNotifier, ContentHandler {
 
   Future<void> notifyPlayAudio() async {
     if (_path.isEmpty) {
-      debugPrint('no path');
       return;
     }
 
     try {
-      debugPrint('play');
       _player.setFilePath(_path);
       await _player.play();
 
@@ -156,8 +138,6 @@ final class Voz with ChangeNotifier, ContentHandler {
 
   Future<void> notifyStopAudio() async {
     try {
-      debugPrint('stop play');
-
       state = VozState.stopPlaying;
       notifyListeners();
 
@@ -170,26 +150,24 @@ final class Voz with ChangeNotifier, ContentHandler {
   }
 
   Future<void> notifyStartRecording() async {
+    unawaited(AppEvent.questionByVoice.track());
+
     try {
       var hasPermission = await _recorder.hasPermission();
-      debugPrint('recording tiene permisos?: $hasPermission');
 
       if (hasPermission) {
-        debugPrint('se tiene permiso');
-
         var encoder = rec.AudioEncoder.aacLc;
         bool isSupported = await _isEncoderSupportted(encoder);
         if (!isSupported) {
           return;
         }
 
-        final devices = await _recorder.listInputDevices();
-        debugPrint(">> devices: $devices");
+        // final devices = await _recorder.listInputDevices();
+        // debugPrint(">> devices: $devices");
 
         var config = rec.RecordConfig(encoder: encoder, numChannels: 2);
         String path =
             await buildPath(encoder: encoder, folder: FolderKind.temp);
-        debugPrint(">> path: $path");
         _path = path;
 
         state = VozState.recording;
@@ -208,9 +186,7 @@ final class Voz with ChangeNotifier, ContentHandler {
     state = VozState.stopRecording;
     notifyListeners();
     try {
-      debugPrint('stop');
       var path = await _recorder.stop() ?? '';
-      debugPrint('path: $path == $_path');
       assert(path == _path);
 
       updateContent(await _fetchAITranscription());

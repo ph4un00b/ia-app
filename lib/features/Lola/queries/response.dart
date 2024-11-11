@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:lola_ai_app/features/Agents/reminder_agent.dart';
 import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/main.dart';
 import 'package:lola_ai_app/services/ReminderAgent/reminder_draft_handler.dart';
 import 'package:lola_ai_app/services/ReminderAgent/reminder_edit_handler.dart';
@@ -82,7 +84,8 @@ class LolaResponse {
       LolaState.idle ||
       LolaState.running =>
         await _askLola(userQuery, voiceModel),
-      LolaState.creatingReminder => await _handleReminderCreation(userQuery, voiceModel),
+      LolaState.creatingReminder =>
+        await _handleReminderCreation(userQuery, voiceModel),
     };
   }
 
@@ -115,6 +118,7 @@ class LolaResponse {
           final draftResult = await ReminderDraftHandler.query(userInput);
           final botReply = draftResult['bot_reply'];
 
+          unawaited(AppEvent.reminderDraft.track(params: {"from": "idle"}));
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.draft,
@@ -124,6 +128,7 @@ class LolaResponse {
           final draftResult = await ReminderDraftHandler.query(userInput);
           final botReply = draftResult['bot_reply'];
 
+          unawaited(AppEvent.reminderDraft.track(params: {"from": "create"}));
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.draft,
@@ -131,7 +136,6 @@ class LolaResponse {
         }(userQuery),
       ReminderState.draft => await () async {
           final reminderIntent = await ReminderInputChecker.query(userQuery);
-          print('Input type: $reminderIntent');
 
           return switch (reminderIntent) {
             UserInputIntent.change => () async {
@@ -139,6 +143,7 @@ class LolaResponse {
                 final botReply = editResult['bot_reply'];
 
                 AppStatus.instance.reminderStatus = ReminderState.edited;
+                unawaited(AppEvent.reminderEdited.track());
                 return ReminderResponse(
                   payload: botReply,
                   status: ReminderState.edited,
@@ -147,10 +152,10 @@ class LolaResponse {
             UserInputIntent.approved || UserInputIntent.other => () async {
                 final filledResult =
                     await ReminderFilledHandler.query(userQuery);
-                print('Reminder change result: $filledResult');
                 final botReply = filledResult['bot_reply'];
 
                 AppStatus.instance.reminderStatus = ReminderState.filled;
+                unawaited(AppEvent.reminderFilled.track());
                 return ReminderResponse(
                   payload: botReply,
                   status: ReminderState.filled,
@@ -167,7 +172,6 @@ class LolaResponse {
             status: ReminderState.idle,
           );
         }(),
-      // throw StateError("filled reminder status not imp%lemented"),
     };
 
     return switch (response) {
@@ -223,6 +227,7 @@ class LolaResponse {
           final draftResult = await ReminderDraftHandler.query(userInput);
           final botReply = draftResult['bot_reply'];
 
+          unawaited(AppEvent.reminderDraft.track(params: {"from": "idle"}));
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.draft,
@@ -232,6 +237,7 @@ class LolaResponse {
           final draftResult = await ReminderDraftHandler.query(userInput);
           final botReply = draftResult['bot_reply'];
 
+          unawaited(AppEvent.reminderDraft.track(params: {"from": "create"}));
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.draft,
@@ -239,7 +245,6 @@ class LolaResponse {
         }(userQuery),
       ReminderState.draft => await () async {
           final reminderIntent = await ReminderInputChecker.query(userQuery);
-          print('Input type: $reminderIntent');
 
           return switch (reminderIntent) {
             UserInputIntent.change => () async {
@@ -247,6 +252,7 @@ class LolaResponse {
                 final botReply = editResult['bot_reply'];
 
                 AppStatus.instance.reminderStatus = ReminderState.edited;
+                unawaited(AppEvent.reminderEdited.track());
                 return ReminderResponse(
                   payload: botReply,
                   status: ReminderState.edited,
@@ -255,10 +261,10 @@ class LolaResponse {
             UserInputIntent.approved || UserInputIntent.other => () async {
                 final filledResult =
                     await ReminderFilledHandler.query(userQuery);
-                print('Reminder change result: $filledResult');
                 final botReply = filledResult['bot_reply'];
 
                 AppStatus.instance.reminderStatus = ReminderState.filled;
+                unawaited(AppEvent.reminderFilled.track());
                 return ReminderResponse(
                   payload: botReply,
                   status: ReminderState.filled,
@@ -270,6 +276,7 @@ class LolaResponse {
       ReminderState.filled => await () async {
           await ReminderAgent.updateReminders();
 
+          unawaited(AppEvent.reminderIdle.track());
           return ReminderResponse(
             payload: userQuery,
             status: ReminderState.idle,
@@ -280,12 +287,12 @@ class LolaResponse {
     return switch (response) {
       ReminderResponse(payload: final payload, status: ReminderState.idle) ||
       ReminderResponse(payload: final payload, status: ReminderState.draft) ||
-      ReminderResponse(payload: final payload, status: ReminderState.edited)  =>
+      ReminderResponse(payload: final payload, status: ReminderState.edited) =>
         LolaResult(
           p.normalize((await voiceModel.synthesize(text: payload)).path),
           payload,
         ),
-       ReminderResponse(payload: final payload, status: ReminderState.filled) =>
+      ReminderResponse(payload: final payload, status: ReminderState.filled) =>
         _handleReminderCreation(payload, voiceModel),
       ReminderResponse(payload: final payload) when payload.isEmpty =>
         throw LolaResponseException('Empty response'),
@@ -300,7 +307,6 @@ class LolaResponse {
     AppStatus.instance.lolaStatus = LolaState.running;
     // TODO: remover classifier?
     final userIntent = await StructuredAgent.classification.query(userQuery);
-    print('agentKind: $userIntent');
 
     if (userIntent == IntentKind.createReminder &&
         AppStatus.instance.reminderStatus == ReminderState.idle) {
@@ -324,7 +330,7 @@ class LolaResponse {
       IntentKind.createReminder => await (userQuery) async {
           AppStatus.instance.lolaStatus = LolaState.creatingReminder;
           AppStatus.instance.reminderStatus = ReminderState.create;
-          print('reminder: currentState: ${AppStatus.instance.lolaStatus}');
+
           return Agent.reminder.query(userQuery);
         }(userQuery),
       IntentKind.reminder => await Agent.reminder.query(userQuery),
@@ -345,15 +351,14 @@ class LolaResponse {
 
   static Future<ReminderResponse> editedReminder(String userInput) async {
     final reminderIntent = await ReminderInputChecker.query(userInput);
-    print('Input type: $reminderIntent');
 
     return switch (reminderIntent) {
       UserInputIntent.change => () async {
           final editedResult = await ReminderEditedHandler.query(userInput);
-          print('Reminder change result: $editedResult');
           final botReply = editedResult['bot_reply'];
 
           AppStatus.instance.reminderStatus = ReminderState.edited;
+          unawaited(AppEvent.reminderEdited.track());
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.edited,
@@ -361,10 +366,10 @@ class LolaResponse {
         }(),
       UserInputIntent.approved || UserInputIntent.other => () async {
           final filledResult = await ReminderFilledHandler.query(userInput);
-          print('Reminder change result: $filledResult');
           final botReply = filledResult['bot_reply'];
 
           AppStatus.instance.reminderStatus = ReminderState.filled;
+          unawaited(AppEvent.reminderFilled.track());
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.filled,

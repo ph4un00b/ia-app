@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
@@ -93,12 +95,14 @@ class _UserMessageScreenState extends State<UserMessageScreen> {
                         controller: widget.controller,
                         message: messageController,
                         screenScale: screenScale,
-                        onSaved: () async => {
+                        onSaved: () async {
+                          unawaited(AppEvent.userMessageDisplayed.track());
+
                           // TODO: handle debug
                           await widget.lolaController.loadReply(
                             userQuestion: widget.controller.content(),
                             debug: false,
-                          )
+                          );
                         },
                       ),
                     VozMessageState.edited => MessageForm(
