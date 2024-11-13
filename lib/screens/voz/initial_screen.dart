@@ -66,7 +66,6 @@ class _InitialVozBodyState extends State<InitialVozBody> {
 
   @override
   void initState() {
-    debugPrint('👀 initializing initial voz body screen');
     super.initState();
     _loadUserPreferences();
 

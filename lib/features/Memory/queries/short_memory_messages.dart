@@ -1,5 +1,7 @@
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/Memory/types.dart';
+import 'package:lola_ai_app/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ShortMemoryMessages {
@@ -13,10 +15,11 @@ class ShortMemoryMessages {
     List<Map<String, dynamic>> result = await Supabase.instance.client
         .from('conversation')
         .select()
+        .eq('user_id', AppStatus.instance.userId)
         .not('intent', 'eq', IntentKind.greeting.name)
         .not('system', 'eq', 'lola')
         .order('created_at', ascending: false)
-        .limit(36);
+        .limit(Constants.maxMemoryMessages);
 
     var messages = _messagesFrom(result);
     return _prepare(messages);
@@ -26,10 +29,10 @@ class ShortMemoryMessages {
     List<Map<String, dynamic>> result = await Supabase.instance.client
         .from('conversation')
         .select()
+        .eq('user_id', AppStatus.instance.userId)
         .not('intent', 'eq', IntentKind.greeting.name)
         .order('created_at', ascending: false)
-        // TODO: constant
-        .limit(36);
+        .limit(Constants.maxMemoryMessages);
 
     var messages = _messagesFrom(result);
     return messages;
@@ -59,7 +62,6 @@ class ShortMemoryMessages {
 
   static String _prepare(List<MemoryEntry> list) {
     List<String> msgs = [];
-    // XXX: list can be reversed. depending on the query order.
     for (var msg in list.reversed) {
       if (msg.role == 'user') {
         msgs.add('<USER>\n${msg.content}\n</USER>\n');

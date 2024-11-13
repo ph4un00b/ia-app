@@ -4,4 +4,6 @@ abstract class Constants {
 
   /// Default UI scale factor
   static const double scale = 0.75;
+
+  static const int maxMemoryMessages = 36;
 }

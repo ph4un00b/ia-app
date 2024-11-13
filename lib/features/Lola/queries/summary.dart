@@ -21,10 +21,12 @@ class LolaSummary {
       );
     }
 
-    String summary = await PromptMicroSummary.query(
-      llm: LLM.openaiChat,
-      text: userQuestions,
-    );
+    final summary = userQuestions.isEmpty
+        ? 'Lo siento, no tienes ninguna conversación guardada'
+        : await PromptMicroSummary.query(
+            llm: LLM.openaiChat,
+            text: userQuestions,
+          );
 
     if (summary.isEmpty) {
       throw LolaResponseException('empty response');

@@ -69,11 +69,10 @@ class ReminderAgent {
   }
 
   static Future<UserMetadata> fetchUserMetadata() async {
-    const userId = '1'; // TODO: Replace with actual user ID from auth
     final result = await Supabase.instance.client
         .from('person_metadata')
         .select('id, assistant_id, reminder_file_id, vector_id')
-        .eq('id', userId)
+        .eq('user_id', AppStatus.instance.userId)
         .limit(1)
         .single();
 
@@ -82,9 +81,9 @@ class ReminderAgent {
   }
 
   // TODO: crear reminder en la base de datos hasta definir bien la structura
-  // TODO: remover jsonEncode? usando Map<String, dynamic> en lugar de String ??
   static Future<void> updateReminders() async {
     final userMetadata = await fetchUserMetadata();
+    // TODO: remover jsonEncode? usando Map<String, dynamic> en lugar de String ??
     final reminderJson = jsonEncode(AppStatus.instance.currentReminder);
 
     final updatedRemindersFile = await LocalStore.append(
@@ -106,7 +105,7 @@ class ReminderAgent {
     // TODO: Replace '1' with actual user ID from auth
     await Supabase.instance.client.from('person_metadata').update(
       {'reminder_file_id': updatedRemindersFile.id},
-    ).eq('id', 1);
+    ).eq('user_id', AppStatus.instance.userId);
 
     await _tryDeleteOldFile(userMetadata.reminderFileId);
 

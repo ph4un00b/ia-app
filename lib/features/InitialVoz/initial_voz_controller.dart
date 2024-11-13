@@ -13,6 +13,7 @@ import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/main.dart';
 import 'package:lola_ai_app/services/ReminderAgent/reminder_onboarding_handler.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 extension ProcessingStateX on audio.ProcessingState {
   bool get isCompleted => this == audio.ProcessingState.completed;
@@ -84,18 +85,25 @@ final class InitialVozController with AudioPlayerHandlers {
   Future<void> loadInitialSummary({bool debug = false}) async {
     currentState = InitialState.loadingSummary;
 
-    if (debug) serviceState.add(const IdleService(payload: 'loading summary'));
+    if (debug) {
+      serviceState.add(const IdleService(payload: 'loading summary'));
+    } else {
+      serviceState.add(Loading());
+    }
 
     try {
-      serviceState.add(Loading());
       final result = await LolaSummary.query(voice: currentVoice, debug: debug);
       if (currentState != InitialState.loadingSummary) return;
 
       unawaited(AppEvent.summaryFetched.track());
+
       _currentAudioPath = result.path;
       _currentOutput = result.reply;
+
       serviceState.add(Data(payload: result.reply));
       await _playAudio(result.path);
+    } on PostgrestException catch (e) {
+      _handleDbError(debug, e);
     } catch (e, st) {
       if (_isHttpCancelled) {
         debugPrint('😡 Summary request was cancelled');
@@ -110,6 +118,19 @@ final class InitialVozController with AudioPlayerHandlers {
         serviceState.add(Data(payload: _currentOutput));
       }
     }
+  }
+
+  void _handleDbError(bool debug, PostgrestException e) {
+    //! manejamos el error de PostgrestException de Supabase por que
+    //! se pierde el stacktrace de la excepcion en el logger
+    // TODO: buscar otra mejor opcion
+    if (debug) {
+      serviceState.addIfStreamOpen(Error(payload: e.toString()));
+    } else {
+      serviceState.addIfStreamOpen(const Data(payload: "Presiona Continuar"));
+    }
+    debugPrint('Error occurred: ${e.toJson().toString()}');
+    throw StateError(e.toJson().toString());
   }
 
   Future<void> loadReminders({required bool debug}) async {
@@ -149,7 +170,10 @@ final class InitialVozController with AudioPlayerHandlers {
       }
 
       unawaited(AppEvent.remindersFetched.track());
+
       await _processAndPlayResponse(reminderResponse.payload);
+    } on PostgrestException catch (e) {
+      _handleDbError(debug, e);
     } catch (e, st) {
       if (_isHttpCancelled) {
         debugPrint('😡 reminders request was cancelled');

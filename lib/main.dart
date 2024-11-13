@@ -8,11 +8,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'screens/root.dart';
 
 Future<void> runMainApp() async {
-  await Supabase.initialize(
-    url: Env.dbUrl,
-    anonKey: Env.dbKey,
-  );
-
   await AppStatus.initialize();
 
   await SentryFlutter.init(
@@ -57,6 +52,7 @@ typedef ReminderData = Map<String, dynamic>;
 class AppStatus {
   bool _initialized = false;
   Mixpanel? mixpanel;
+  SupabaseClient? db;
 
   var lolaStatus = LolaState.idle;
   var currentStatus = AppState.idle;
@@ -74,9 +70,23 @@ class AppStatus {
       'This instance is already initialized',
     );
 
+    await _instance._initSupabase();
     await _instance._initMixpanel();
     _instance._initialized = true;
   }
+
+  Future<void> _initSupabase() async {
+    final supabase = await Supabase.initialize(
+      url: Env.dbUrl,
+      anonKey: Env.dbKey,
+    );
+
+    db = supabase.client;
+  }
+
+  String get userId => db!.auth.currentUser!.id;
+
+  User? get user => db?.auth.currentUser;
 
   Future<void> _initMixpanel() async {
     mixpanel = await Mixpanel.init(

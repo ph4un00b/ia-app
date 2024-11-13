@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
       navigatorObservers: [AppStateObserver(), SentryNavigatorObserver()],
       title: 'Lola App',
       theme: themeProvider(),
-      initialRoute: '/initial',
+      initialRoute: '/',
       // todo: search on github
       routes: appRoutes,
       onGenerateRoute: routesProvider,

@@ -49,5 +49,10 @@
     <string>We need to access to the microphone to record</string>
     <key>UIStatusBarHidden</key>
     <false/>
+    <key>CFBundleURLSchemes</key>
+    <array>
+        <!-- TODO:Add your custom URL scheme here -->
+        <string>myjamon</string>
+    </array>
   </dict>
 </plist>

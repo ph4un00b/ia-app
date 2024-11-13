@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Mensajes/types.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
+import 'package:lola_ai_app/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 
@@ -29,18 +31,28 @@ final class MessagesController {
   final messagesState = StreamController<MessagesScreenState>()..add(Initial());
 
   Future<void> loadInitialMessages() async {
-    unawaited(AppEvent.messagesDisplayed.track());
-
     messagesState.add(Fetching());
 
     try {
       List<Map<String, dynamic>> result = await Supabase.instance.client
           .from('conversation')
           .select()
+          .eq('user_id', AppStatus.instance.userId)
           .order('created_at', ascending: false);
 
       messagesState
           .add(Success(text: 'Success', messages: _messagesFrom(result)));
+
+      unawaited(
+          AppEvent.messagesDisplayed.track(params: {"count": result.length}));
+    } on PostgrestException catch (e) {
+      //! manejamos el error de PostgrestException de Supabase por que
+      //! se pierde el stacktrace de la excepcion en el logger
+      // TODO: buscar otra mejor opcion
+      messagesState.add(Error(err: e.toString()));
+
+      debugPrint('Error occurred: ${e.toJson().toString()}');
+      ErrorLogger.logException(e, StackTrace.current);
     } catch (e, st) {
       ErrorLogger.logException(e, st);
       messagesState.add(Error(err: e));
@@ -85,6 +97,7 @@ final class MessagesController {
       List<Map<String, dynamic>> result = await Supabase.instance.client
           .from("conversation")
           .select()
+          .eq('user_id', AppStatus.instance.userId)
           // TODO(app.message): find an strategy for accents.
           // .textSearch("content", "'eggs' & 'ham'", config: "english");
           .textSearch(
@@ -97,6 +110,14 @@ final class MessagesController {
 
       messagesState
           .add(Success(text: 'Success', messages: _messagesFrom(result)));
+    } on PostgrestException catch (e) {
+      //! manejamos el error de PostgrestException de Supabase por que
+      //! se pierde el stacktrace de la excepcion en el logger
+      // TODO: buscar otra mejor opcion
+      messagesState.add(Error(err: e.toString()));
+
+      debugPrint('Error occurred: ${e.toJson().toString()}');
+      ErrorLogger.logException(e, StackTrace.current);
     } catch (e, st) {
       ErrorLogger.logException(e, st);
       messagesState.add(Error(err: e));

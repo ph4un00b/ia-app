@@ -54,6 +54,7 @@ dependencies:
   sentry_flutter: 8.9.0
   sentry_dio: 8.9.0
   mixpanel_flutter: 2.3.3
+  supabase_auth_ui: ^0.5.4
 
 dev_dependencies:
   flutter_test:

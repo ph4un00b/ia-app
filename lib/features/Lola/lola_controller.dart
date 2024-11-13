@@ -8,6 +8,7 @@ import 'package:lola_ai_app/features/Mensajes/mutations/save_conversation.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:just_audio/just_audio.dart' as audio;
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 final class LolaController with QueryContent, AudioPlayerHandlers {
   final audio.AudioPlayer _audioplayer = audio.AudioPlayer();
@@ -64,14 +65,26 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
       _currentOutput = result.reply;
 
       serviceState.add(Data(payload: result.reply));
+
       await Conversation.save(
         user: userQuestion,
         lola: result.reply,
         audioPath: result.path,
       );
       await _playAudio(result.path);
-    } catch (e, st) {
+    } on PostgrestException catch (e) {
+      //! manejamos el error de PostgrestException de Supabase por que
+      //! se pierde el stacktrace de la excepcion en el logger
+      // TODO: buscar otra mejor opcion
+      if (debug) {
+        serviceState.add(Error(payload: e.toString()));
+      } else {
+        serviceState.add(Data(payload: _currentOutput));
+      }
 
+      debugPrint('Error occurred: ${e.toJson().toString()}');
+      ErrorLogger.logException(e, StackTrace.current);
+    } catch (e, st) {
       ErrorLogger.logException(e, st);
 
       if (debug) {

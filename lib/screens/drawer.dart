@@ -8,6 +8,7 @@ import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Agents/reminder_agent.dart';
 import 'package:lola_ai_app/features/LocalStore/local_store.dart';
 import 'package:lola_ai_app/features/Reminders/json2reminder.dart';
+import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/routes.dart';
 import 'package:lola_ai_app/main.dart';
 import 'package:openai_dart/openai_dart.dart';
@@ -29,11 +30,25 @@ class AppDrawer extends StatelessWidget {
         if (index case 0) {
           Navigator.of(context).pushNamed('/opciones/mensajes');
         } else if (index case 1) {
-          Navigator.of(context).pushNamed('/opciones/profile', arguments: "jamon");
+          Navigator.of(context)
+              .pushNamed('/opciones/profile', arguments: "jamon");
         } else if (index case 2) {
           Navigator.pushNamed(context, '/opciones', arguments: args);
         } else if (index case 3) {
-          Navigator.of(context).pop();
+          try {
+            debugPrint(AppStatus.instance.user.toString());
+            await Supabase.instance.client.auth.signOut();
+          } catch (e) {
+            debugPrint('Error signing out: $e');
+            ErrorLogger.logException(e, StackTrace.current);
+          } finally {
+            if (AppStatus.instance.user == null) {
+              Navigator.of(context).pop();
+              // Navigate to login screen and clear navigation stack
+              Navigator.of(context)
+                  .pushNamedAndRemoveUntil('/', (route) => false);
+            }
+          }
         } else if (index case 4) {
           await searchAndDestroyOpenAiFiles();
         } else if (index case 5) {
@@ -44,6 +59,12 @@ class AppDrawer extends StatelessWidget {
         } else if (index case 7) {
           try {
             await ReminderAgent.query("cuando debo beber leche?");
+          } on PostgrestException catch (e) {
+            //! manejamos el error de PostgrestException de Supabase por que
+            //! se pierde el stacktrace de la excepcion en el logger
+            // TODO: buscar otra mejor opcion
+            debugPrint('Error occurred: ${e.toJson().toString()}');
+            throw StateError(e.toJson().toString());
           } catch (e, st) {
             debugPrint('Error occurred: $e, $st');
           }
@@ -115,6 +136,12 @@ class AppDrawer extends StatelessWidget {
             await ReminderAgent.updateReminders();
             // find new reminder
             await ReminderAgent.query("cuando debo beber yogurt?");
+          } on PostgrestException catch (e) {
+            //! manejamos el error de PostgrestException de Supabase por que
+            //! se pierde el stacktrace de la excepcion en el logger
+            // TODO: buscar otra mejor opcion
+            debugPrint('Error occurred: ${e.toJson().toString()}');
+            ErrorLogger.logException(e, StackTrace.current);
           } catch (e, st) {
             debugPrint('Error occurred: $e, $st');
           }
@@ -156,7 +183,7 @@ class AppDrawer extends StatelessWidget {
           child: Divider(),
         ),
         const NavigationDrawerDestination(
-          label: Text("Cerrar"),
+          label: Text("Cerrar Sesión"),
           icon: Icon(Icons.clear),
           selectedIcon: Icon(Icons.clear),
         ),
@@ -355,12 +382,10 @@ class AppDrawer extends StatelessWidget {
   }
 
   Future<void> createStoreWithFile() async {
-    // TODO: Replace '1' with actual user ID from auth
-    const userId = '1';
     List<Map<String, dynamic>> result = await Supabase.instance.client
         .from('person_metadata')
         .select('id, reminder_file_id')
-        .eq('id', userId)
+        .eq('user_id', AppStatus.instance.userId)
         .limit(1);
 
     if (result.isEmpty) {
