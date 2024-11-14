@@ -136,7 +136,7 @@ class _VozBodyState extends State<VozBody> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: AudioHandler(
+                  child: LolaAudioHandler(
                     stream: _audioStream,
                     controller: _lola,
                     scale: _scale,
@@ -171,7 +171,7 @@ class _VozBodyState extends State<VozBody> {
             ),
           Expanded(
             flex: 4,
-            child: VozPad(
+            child: UserVozPad(
               formKey: _messageFormKey,
               user: _phau,
               lola$: _lola,
@@ -184,7 +184,7 @@ class _VozBodyState extends State<VozBody> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: VozControlFormMessage(
+                  child: UserVozControlFormMessage(
                     formKey: _messageFormKey,
                     setState: setState,
                     user: _phau,
@@ -194,7 +194,7 @@ class _VozBodyState extends State<VozBody> {
                 const SizedBox(width: 12),
                 Expanded(
                   flex: 1,
-                  child: VozControlDisplayMessage(
+                  child: UserVozControlDisplayMessage(
                     from: widget.toString(),
                     user: _phau,
                     lola: _lola,

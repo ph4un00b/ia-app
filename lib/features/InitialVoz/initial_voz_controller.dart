@@ -123,14 +123,13 @@ final class InitialVozController with AudioPlayerHandlers {
   void _handleDbError(bool debug, PostgrestException e) {
     //! manejamos el error de PostgrestException de Supabase por que
     //! se pierde el stacktrace de la excepcion en el logger
-    // TODO: buscar otra mejor opcion
     if (debug) {
       serviceState.addIfStreamOpen(Error(payload: e.toString()));
     } else {
       serviceState.addIfStreamOpen(const Data(payload: "Presiona Continuar"));
     }
     debugPrint('Error occurred: ${e.toJson().toString()}');
-    throw StateError(e.toJson().toString());
+    ErrorLogger.logException(e, StackTrace.current);
   }
 
   Future<void> loadReminders({required bool debug}) async {

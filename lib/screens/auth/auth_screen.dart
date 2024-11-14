@@ -11,6 +11,7 @@ extension _BuildContextExtensions on BuildContext {
 }
 
 abstract class _AuthConfig {
+  // TODO: change url scheme
   static const redirectUrl = "myjamon://com.example.lola_ai_app";
 
   static const emailLocalization = SupaEmailAuthLocalization(
@@ -21,7 +22,7 @@ abstract class _AuthConfig {
     signIn: 'Inicia sesión',
     signUp: 'Crear cuenta',
     forgotPassword: '¿Olvidaste tu contraseña?',
-    dontHaveAccount: 'Si no tienes una cuenta, ¡cree una aquí!',
+    dontHaveAccount: 'Si no tienes una cuenta, ¡crea una aquí!',
     haveAccount: '¿Ya tienes una cuenta? Inicia sesión',
     sendPasswordReset: 'Mandar un correo para restablecer la contraseña',
     backToSignIn: 'Regresar a iniciar sesión',

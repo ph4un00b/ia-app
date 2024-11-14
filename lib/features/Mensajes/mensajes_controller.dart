@@ -48,7 +48,6 @@ final class MessagesController {
     } on PostgrestException catch (e) {
       //! manejamos el error de PostgrestException de Supabase por que
       //! se pierde el stacktrace de la excepcion en el logger
-      // TODO: buscar otra mejor opcion
       messagesState.add(Error(err: e.toString()));
 
       debugPrint('Error occurred: ${e.toJson().toString()}');
@@ -113,7 +112,6 @@ final class MessagesController {
     } on PostgrestException catch (e) {
       //! manejamos el error de PostgrestException de Supabase por que
       //! se pierde el stacktrace de la excepcion en el logger
-      // TODO: buscar otra mejor opcion
       messagesState.add(Error(err: e.toString()));
 
       debugPrint('Error occurred: ${e.toJson().toString()}');

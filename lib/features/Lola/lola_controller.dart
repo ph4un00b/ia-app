@@ -75,7 +75,6 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
     } on PostgrestException catch (e) {
       //! manejamos el error de PostgrestException de Supabase por que
       //! se pierde el stacktrace de la excepcion en el logger
-      // TODO: buscar otra mejor opcion
       if (debug) {
         serviceState.add(Error(payload: e.toString()));
       } else {

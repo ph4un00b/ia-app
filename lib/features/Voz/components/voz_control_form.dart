@@ -5,8 +5,8 @@ import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 
-class VozControlFormMessage extends StatelessWidget {
-  const VozControlFormMessage({
+class UserVozControlFormMessage extends StatelessWidget {
+  const UserVozControlFormMessage({
     super.key,
     required this.user,
     required this.scale,

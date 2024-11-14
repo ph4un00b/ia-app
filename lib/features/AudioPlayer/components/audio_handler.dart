@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 
-class AudioHandler extends StatelessWidget {
-  const AudioHandler({
+class LolaAudioHandler extends StatelessWidget {
+  const LolaAudioHandler({
     super.key,
     required this.stream,
     required this.scale,

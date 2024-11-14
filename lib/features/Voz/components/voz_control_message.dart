@@ -7,8 +7,8 @@ import 'package:lola_ai_app/features/Voz/voz.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/screens/voz/user_message/user_message_screen.dart';
 
-class VozControlDisplayMessage extends StatelessWidget {
-  const VozControlDisplayMessage({
+class UserVozControlDisplayMessage extends StatelessWidget {
+  const UserVozControlDisplayMessage({
     super.key,
     required this.user,
     required this.scale,
