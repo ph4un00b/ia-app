@@ -8,6 +8,8 @@ import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/LocalStore/local_store.dart';
 import 'package:lola_ai_app/features/Reminders/json2reminder.dart';
+import 'package:lola_ai_app/features/User/types.dart';
+import 'package:lola_ai_app/features/User/user_settings.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/main.dart';
@@ -15,29 +17,9 @@ import 'package:openai_dart/openai_dart.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class UserMetadata {
-  final String reminderFileId;
-  final String vectorId;
-  final String assistantId;
-
-  UserMetadata({
-    required this.reminderFileId,
-    required this.vectorId,
-    required this.assistantId,
-  });
-
-  factory UserMetadata.fromJson(Map<String, dynamic> json) {
-    return UserMetadata(
-        reminderFileId: json['reminder_file_id'],
-        vectorId: json['vector_id'],
-        assistantId: json['assistant_id']);
-  }
-}
-
 extension AppStatusExtension on AppStatus {
   void resetToIdle() {
     reminderStatus = ReminderState.idle;
-    currentStatus = AppState.active;
     lolaStatus = LolaState.idle;
     currentReminderChat = [];
     currentReminder = {};
@@ -71,7 +53,7 @@ class ReminderAgent {
   static Future<UserMetadata> fetchUserMetadata() async {
     final result = await Supabase.instance.client
         .from('person_metadata')
-        .select('id, assistant_id, reminder_file_id, vector_id')
+        .select('assistant_id, reminder_file_id, vector_id, app_status')
         .eq('user_id', AppStatus.instance.userId)
         .limit(1)
         .single();
@@ -102,14 +84,32 @@ class ReminderAgent {
 
     debugPrint('File attached to vector store: ${addedFile.toString()}');
 
-    // TODO: Replace '1' with actual user ID from auth
-    await Supabase.instance.client.from('person_metadata').update(
-      {'reminder_file_id': updatedRemindersFile.id},
-    ).eq('user_id', AppStatus.instance.userId);
+    await Supabase.instance.client
+        .from('person_metadata')
+        .update({'reminder_file_id': updatedRemindersFile.id}).eq(
+            'user_id', AppStatus.instance.userId);
 
     await _tryDeleteOldFile(userMetadata.reminderFileId);
 
-    unawaited(AppEvent.reminderCreated.track());
+    final linesCount = await LocalStore.read("jamon.md");
+    final reminderCount = switch (linesCount) {
+      1 => 0,
+      _ => linesCount - 1,
+    };
+    if (reminderCount > 0 &&
+        AppStatus.instance.currentStatus == AppUserState.onboarding) {
+      await AppStatus.instance.activateUser();
+    }
+
+    unawaited(
+      AppEvent.reminderCreated.track(
+        params: {
+          'count': reminderCount,
+          'userStatus': AppStatus.instance.currentStatus,
+        },
+      ),
+    );
+
     AppStatus.instance.resetToIdle();
   }
 
@@ -196,36 +196,6 @@ class ReminderAgent {
     );
 
     debugPrint('File added to vector store: ${addedFile.toString()}');
-  }
-
-  static Future<OpenAIFileModel?> uploadRemindersFile() async {
-    OpenAIFileModel? uploadedFile;
-
-    Directory appDocumentsDirectory = await getApplicationDocumentsDirectory();
-    String appDocumentsPath = appDocumentsDirectory.path;
-    String filePath = '$appDocumentsPath/jamon.md';
-
-    uploadedFile = await OpenAI.instance.file.upload(
-      file: File(filePath),
-      purpose: "assistants",
-    );
-
-    return uploadedFile;
-  }
-
-  static Future<VectorStoreObject?> createVectorStore(
-    OpenAIClient client,
-  ) async {
-    VectorStoreObject? store;
-
-    store = await client.createVectorStore(
-      request: const CreateVectorStoreRequest(
-        name: 'reminders store',
-      ),
-    );
-    debugPrint(store.toString());
-
-    return store;
   }
 
   static Future<RunObject> _waitForRunCompletion(

@@ -27,7 +27,7 @@ final class LocalStore {
     }
   }
 
-  static Future<void> save(String filename) async {
+  static Future<void> saveTestReminders(String filename) async {
     Directory appDocumentsDirectory = await getApplicationDocumentsDirectory();
     String appDocumentsPath = appDocumentsDirectory.path;
     String filePath = '$appDocumentsPath/$filename';
@@ -47,21 +47,28 @@ final class LocalStore {
 ''');
   }
 
+  static Future<void> save(String filename) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/$filename');
+    await file.writeAsString("# User's reminders");
+  }
+
 // todo: security
-  static Future<void> read(String filename) async {
-    Directory appDocumentsDirectory = await getApplicationDocumentsDirectory();
-    String appDocumentsPath = appDocumentsDirectory.path;
-    String filePath = '$appDocumentsPath/$filename';
+  static Future<int> read(String filename) async {
+    final file = File(
+      '${(await getApplicationDocumentsDirectory()).path}/$filename',
+    );
 
-    File file = File(filePath);
-    String fileContent = await file.readAsString();
-    List<String> lines = fileContent.split('\n');
-    int lineCount = lines.length;
+    final content = await file.readAsString();
 
-    debugPrint(filePath);
-    debugPrint('============= FILE CONTENT ===============');
-    debugPrint('Total lines: $lineCount');
-    debugPrint(fileContent.trim());
-    debugPrint('============= END FILE CONTENT ===========');
+    debugPrint('''
+============= FILE CONTENT ===============
+Total lines: ${content.split('\n').length}
+$content
+============= END FILE CONTENT ===========
+'''
+        .trim());
+
+    return content.split('\n').length;
   }
 }

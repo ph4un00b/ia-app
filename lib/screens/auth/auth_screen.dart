@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 extension _BuildContextExtensions on BuildContext {
-  void navigateToInitial() => Navigator.pushNamed(this, '/initial');
+  void navigateToInitialScreen() => Navigator.pushNamed(this, '/initial');
 
   void showErrorSnackBar(Object error) =>
       ScaffoldMessenger.of(this).showSnackBar(
@@ -52,8 +52,8 @@ class AuthScreen extends StatelessWidget {
               SupaEmailAuth(
                 redirectTo: _AuthConfig.redirectUrl,
                 localization: _AuthConfig.emailLocalization,
-                onSignInComplete: (_) => context.navigateToInitial(),
-                onSignUpComplete: (_) => context.navigateToInitial(),
+                onSignInComplete: (_) => context.navigateToInitialScreen(),
+                onSignUpComplete: (_) => context.navigateToInitialScreen(),
                 onError: (error) => context.showErrorSnackBar(error),
               ),
               // SupaSocialsAuth(

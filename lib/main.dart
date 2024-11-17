@@ -1,6 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lola_ai_app/config/env.dart';
+import 'package:lola_ai_app/features/User/types.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:mixpanel_flutter/mixpanel_flutter.dart';
 import 'package:openai_dart/openai_dart.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -30,17 +34,6 @@ Future<void> runMainApp() async {
   );
 }
 
-enum AppState { idle, auth, onboarding, active }
-
-// TODO:
-// enum AppState {
-//   idle,
-//   active,
-//   authenticating,
-//   onboarding,
-//   creatingReminder,
-//   remindersCreated,
-// }
 enum LolaState { idle, running, creatingReminder }
 
 enum ReminderState { idle, create, draft, edited, filled }
@@ -55,7 +48,7 @@ class AppStatus {
   SupabaseClient? db;
 
   var lolaStatus = LolaState.idle;
-  var currentStatus = AppState.idle;
+  var currentStatus = AppUserState.idle;
   var reminderStatus = ReminderState.idle;
   var currentReminder = ReminderData();
   var currentReminderChat = <ChatCompletionMessage>[];
@@ -87,6 +80,17 @@ class AppStatus {
   String get userId => db!.auth.currentUser!.id;
 
   User? get user => db?.auth.currentUser;
+
+  Future<void> activateUser() async {
+    if (AppStatus.instance.currentStatus == AppUserState.active) return;
+
+    AppStatus.instance.currentStatus = AppUserState.active;
+    await Supabase.instance.client
+        .from('person_metadata')
+        .update({'app_status': AppUserState.active.name}).eq('user_id', userId);
+
+    unawaited(AppEvent.userActivated.track());
+  }
 
   Future<void> _initMixpanel() async {
     mixpanel = await Mixpanel.init(

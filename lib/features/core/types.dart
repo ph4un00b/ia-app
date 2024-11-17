@@ -29,7 +29,8 @@ enum AppEvent {
   searchMessageUsed,
   lolaMessageDisplayed,
   lolaMessageReplayed,
-  userMessageDisplayed;
+  userMessageDisplayed,
+  userActivated;
 
   Future<void> track({
     Map<String, dynamic> params = const {},

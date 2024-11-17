@@ -1,10 +1,8 @@
 import 'dart:developer';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/main.dart';
-import 'package:path_provider/path_provider.dart';
 
 enum NavigationAction {
   push,
@@ -25,13 +23,6 @@ class AppStateObserver extends NavigatorObserver {
   @override
   Future<void> didPush(
       Route<dynamic> route, Route<dynamic>? previousRoute) async {
-    if (route.settings.name == '/voz') {
-      final directory = await getApplicationDocumentsDirectory();
-      final remindersFile = File('${directory.path}/jamon.md');
-
-      AppStatus.instance.currentStatus =
-          remindersFile.existsSync() ? AppState.active : AppState.onboarding;
-    }
     _logNavigation(route: route, action: NavigationAction.push);
   }
 

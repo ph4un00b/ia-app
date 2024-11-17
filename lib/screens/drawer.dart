@@ -8,6 +8,8 @@ import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Agents/reminder_agent.dart';
 import 'package:lola_ai_app/features/LocalStore/local_store.dart';
 import 'package:lola_ai_app/features/Reminders/json2reminder.dart';
+import 'package:lola_ai_app/features/User/types.dart';
+import 'package:lola_ai_app/features/User/user_settings.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/routes.dart';
 import 'package:lola_ai_app/main.dart';
@@ -43,10 +45,16 @@ class AppDrawer extends StatelessWidget {
             ErrorLogger.logException(e, StackTrace.current);
           } finally {
             if (AppStatus.instance.user == null) {
+              debugPrint(
+                  '>> session? ${Supabase.instance.client.auth.currentSession}');
+              AppStatus.instance.reminderStatus = ReminderState.idle;
+              AppStatus.instance.currentStatus = AppUserState.idle;
+              AppStatus.instance.lolaStatus = LolaState.idle;
+              AppStatus.instance.currentReminderChat = [];
+              AppStatus.instance.currentReminder = {};
+
               Navigator.of(context).pop();
-              // Navigate to login screen and clear navigation stack
-              Navigator.of(context)
-                  .pushNamedAndRemoveUntil('/', (route) => false);
+              Navigator.of(context).pushNamed('/');
             }
           }
         } else if (index case 4) {
@@ -54,7 +62,7 @@ class AppDrawer extends StatelessWidget {
         } else if (index case 5) {
           LocalStore.read("jamon.md");
         } else if (index case 6) {
-          LocalStore.save("jamon.md");
+          LocalStore.saveTestReminders("jamon.md");
           debugPrint('>> jamon.md created');
         } else if (index case 7) {
           try {
@@ -72,7 +80,7 @@ class AppDrawer extends StatelessWidget {
         else if (index == 8) {
           await modifyAssistant();
         } else if (index == 9) {
-          await createOpenAiAssistant();
+          await UserSettings.initialize();
         } else if (index == 10) {
           const reminderJson = '''
        {
@@ -156,6 +164,8 @@ class AppDrawer extends StatelessWidget {
           } else {
             debugPrint('File not found: $filePath');
           }
+        } else if (index == 15) {
+          ReminderAgent.uploadLocalRemindersFile();
         }
       },
       selectedIndex: 0,
@@ -221,7 +231,7 @@ class AppDrawer extends StatelessWidget {
           selectedIcon: Icon(Icons.clear),
         ),
         const NavigationDrawerDestination(
-          label: Text("11. Create Store with file"),
+          label: Text("11. Create Embeddings"),
           icon: Icon(Icons.list),
           selectedIcon: Icon(Icons.clear),
         ),
@@ -237,6 +247,11 @@ class AppDrawer extends StatelessWidget {
         ),
         const NavigationDrawerDestination(
           label: Text("14 delete reminders file"),
+          icon: Icon(Icons.list),
+          selectedIcon: Icon(Icons.clear),
+        ),
+        const NavigationDrawerDestination(
+          label: Text("15 upload reminders file"),
           icon: Icon(Icons.list),
           selectedIcon: Icon(Icons.clear),
         )
@@ -334,25 +349,6 @@ class AppDrawer extends StatelessWidget {
             vectorStoreIds: ["vs_Rl1fEIxdK2yaTzZv0kJnqOhK"],
           ),
         ),
-      ),
-    );
-
-    debugPrint(lola.toString());
-  }
-
-  Future<void> createOpenAiAssistant() async {
-    OpenAI.showLogs = true;
-    OpenAI.showResponsesLogs = true;
-    OpenAIClient client = OpenAIClient(apiKey: Env.openAiKey);
-
-    AssistantObject lola = await client.createAssistant(
-      request: const CreateAssistantRequest(
-        model: AssistantModel.model(AssistantModels.gpt35Turbo),
-        name: 'lola recuerdos',
-        // description: 'Help students with math homework',
-        instructions:
-            'respondes forma amable los pendientes basados en los archivos md, asegura que siempre me respondas en español, no tan formal, nunca menciones los archivos.',
-        // tools: [AssistantTools.codeInterpreter()],
       ),
     );
 

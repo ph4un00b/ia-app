@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:lola_ai_app/features/Agents/reminder_agent.dart';
 import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/User/types.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/main.dart';
 import 'package:lola_ai_app/services/ReminderAgent/reminder_draft_handler.dart';
@@ -33,7 +34,7 @@ class LolaResponse {
       };
     }
 
-    if (AppStatus.instance.currentStatus == AppState.onboarding &&
+    if (AppStatus.instance.currentStatus == AppUserState.onboarding &&
         userIntent != IntentKind.createReminder &&
         userIntent != IntentKind.reminder) {
       return AppStatus.instance.reminderStatus == ReminderState.idle
@@ -42,17 +43,19 @@ class LolaResponse {
     }
 
     return switch (AppStatus.instance.currentStatus) {
-      AppState.active => _handleUserQuery(userQuery, voiceModel, userIntent),
-      AppState.onboarding => _handleOnboarding(userQuery, voiceModel),
-      AppState.idle || AppState.auth => throw StateError(
+      AppUserState.active =>
+        _handleUserQuery(userQuery, voiceModel, userIntent),
+      AppUserState.onboarding => _handleOnboarding(userQuery, voiceModel),
+      AppUserState.idle || AppUserState.auth => throw StateError(
           "${AppStatus.instance.currentStatus} state not implmented"),
     };
   }
 
   static Future<LolaResult> _reminderExampleResponse(
       VoiceLola voiceModel) async {
-    const message = "Hola! Necesitas crear un recordatorio primero. "
-        "Puedes mencionar algo como: 'Recuerdame preparar yogurt los sabados por la mañana.'";
+    const message =
+        "Hola! Para poder usar mi inteligencia primero debes crear un recordatorio."
+        " Cuando grabes un mensaje puedes mencionar algo como: 'Recuerdame preparar yogurt los sabados por la mañana.'";
     final speechFile = await voiceModel.synthesize(text: message);
     return LolaResult(
       p.normalize(speechFile.path),

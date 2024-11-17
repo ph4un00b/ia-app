@@ -35,7 +35,7 @@ class DebugMemorySaveFile extends StatelessWidget {
       child: Card(
         child: InkWell(
           splashColor: Colors.purple.withAlpha(30),
-          onTap: () => LocalStore.save("jamon.md"),
+          onTap: () => LocalStore.saveTestReminders("jamon.md"),
           child: const Center(child: Text('save memory file')),
         ),
       ),

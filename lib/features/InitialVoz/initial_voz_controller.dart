@@ -1,9 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart' as audio;
+import 'package:lola_ai_app/features/App/init.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
+import 'package:lola_ai_app/features/User/types.dart';
+import 'package:lola_ai_app/features/User/user_settings.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:path/path.dart' as p;
@@ -11,8 +13,6 @@ import 'package:lola_ai_app/features/Agents/reminder_agent.dart';
 import 'package:lola_ai_app/features/Lola/queries/summary.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/main.dart';
-import 'package:lola_ai_app/services/ReminderAgent/reminder_onboarding_handler.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 extension ProcessingStateX on audio.ProcessingState {
@@ -60,6 +60,7 @@ final class InitialVozController with AudioPlayerHandlers {
   bool _isHttpCancelled = false;
   String _currentOutput = '';
   String _currentAudioPath = '';
+  Map<String, dynamic>? result;
 
   InitialVozController() {
     _audioplayer.playbackEventStream.listen((event) {
@@ -82,7 +83,7 @@ final class InitialVozController with AudioPlayerHandlers {
     });
   }
 
-  Future<void> loadInitialSummary({bool debug = false}) async {
+  Future<void> loadSummary({bool debug = false}) async {
     currentState = InitialState.loadingSummary;
 
     if (debug) {
@@ -92,10 +93,11 @@ final class InitialVozController with AudioPlayerHandlers {
     }
 
     try {
-      final result = await LolaSummary.query(voice: currentVoice, debug: debug);
+      final result = await LolaSummaryGenerator.generate(voice: currentVoice, debug: debug);
       if (currentState != InitialState.loadingSummary) return;
 
-      unawaited(AppEvent.summaryFetched.track());
+      unawaited(AppEvent.summaryFetched
+          .track(params: {'userStatus': AppStatus.instance.currentStatus}));
 
       _currentAudioPath = result.path;
       _currentOutput = result.reply;
@@ -134,15 +136,8 @@ final class InitialVozController with AudioPlayerHandlers {
 
   Future<void> loadReminders({required bool debug}) async {
     currentState = InitialState.loadingReminders;
-    final appDocumentsDirectory = await getApplicationDocumentsDirectory();
-    final remindersFile = File('${appDocumentsDirectory.path}/jamon.md');
 
-    // TODO: verificar que exista al menos un recortatorio
-    // y no solo que exista el archvito
-    AppStatus.instance.currentStatus =
-        remindersFile.existsSync() ? AppState.active : AppState.onboarding;
-
-    if (AppStatus.instance.currentStatus case AppState.active) {
+    if (AppStatus.instance.currentStatus case AppUserState.active) {
       await _handleExistingReminders(debug);
     } else {
       await _handleFirstTimeReminders(debug);
@@ -168,7 +163,8 @@ final class InitialVozController with AudioPlayerHandlers {
         throw LolaResponseException('Empty response from ReminderAgent');
       }
 
-      unawaited(AppEvent.remindersFetched.track());
+      unawaited(AppEvent.remindersFetched
+          .track(params: {'userStatus': AppStatus.instance.currentStatus}));
 
       await _processAndPlayResponse(reminderResponse.payload);
     } on PostgrestException catch (e) {
@@ -195,16 +191,11 @@ final class InitialVozController with AudioPlayerHandlers {
     }
 
     try {
-      final onboardingResponse = await ReminderOnboardingHandler.query('hola');
-
-      if (onboardingResponse.payload.isEmpty) {
-        throw LolaResponseException(
-            'Empty response from ReminderOnboardingHandler');
-      }
-
       // TODO: test first time reminders skipping
       unawaited(AppEvent.remindersFirstTime.track());
-      await _processAndPlayResponse(onboardingResponse.payload);
+
+      await _processAndPlayResponse(
+          "Hola!, Soy Lola, tu asistente para recordatorios. Cuando tengas recordatorios aquí te ayudaré a recordarlos.");
     } catch (e, st) {
       ErrorLogger.logException(e, st);
 
@@ -259,6 +250,29 @@ final class InitialVozController with AudioPlayerHandlers {
     } catch (e, st) {
       ErrorLogger.logException(e, st);
       audioState.add(PlayingAudioErr());
+    }
+  }
+
+  Future<void> loadMetadata() async {
+    try {
+      final userMetadata = await UserSettings.metadata();
+
+      final decisionResult = AppInitDecision.from(
+          userState: AppStatus.instance.currentStatus,
+          userMetadata: userMetadata);
+
+      final _ = switch (decisionResult) {
+        AppInitDecision.createUserMetadata => await UserSettings.initialize(),
+        AppInitDecision.updateUserStatus => AppStatus.instance.currentStatus =
+            userMetadata!.appStatus,
+        AppInitDecision.none => {},
+      };
+    } on PostgrestException catch (e) {
+      //! manejamos el error de PostgrestException de Supabase por que
+      //! se pierde el stacktrace de la excepcion en el logger
+      ErrorLogger.logException(e, StackTrace.current);
+    } catch (e, st) {
+      ErrorLogger.logException(e, st);
     }
   }
 

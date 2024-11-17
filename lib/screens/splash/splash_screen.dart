@@ -16,6 +16,7 @@ class SplashScreen extends StatelessWidget {
           child: activeSession == null
               ? const AuthScreen()
               : const InitialVozScreen()),
+              // : const VozScreen()),
     );
   }
 }
