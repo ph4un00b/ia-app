@@ -153,7 +153,7 @@ class _InitialVozBodyState extends State<InitialVozBody> {
                             text: 'Continuar',
                             scale: _scale,
                             onPressed: () async {
-                              await _initialCtrl.loadMetadata();
+                              await _initialCtrl.loadUserMetadata();
 
                               await switch (_initialCtrl.currentState) {
                                 InitialState.idle =>

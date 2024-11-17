@@ -89,7 +89,8 @@ class AppStatus {
         .from('person_metadata')
         .update({'app_status': AppUserState.active.name}).eq('user_id', userId);
 
-    unawaited(AppEvent.userActivated.track());
+    unawaited(AppEvent.userActivated
+        .track(params: {'user': AppStatus.instance.userId}));
   }
 
   Future<void> _initMixpanel() async {

@@ -30,6 +30,8 @@ enum AppEvent {
   lolaMessageDisplayed,
   lolaMessageReplayed,
   userMessageDisplayed,
+  userIdentified,
+  userReset,
   userActivated;
 
   Future<void> track({

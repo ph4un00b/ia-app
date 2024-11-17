@@ -253,7 +253,7 @@ final class InitialVozController with AudioPlayerHandlers {
     }
   }
 
-  Future<void> loadMetadata() async {
+  Future<void> loadUserMetadata() async {
     try {
       final userMetadata = await UserSettings.metadata();
 

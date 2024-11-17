@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -12,6 +13,7 @@ import 'package:lola_ai_app/features/User/types.dart';
 import 'package:lola_ai_app/features/User/user_settings.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/routes.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/main.dart';
 import 'package:openai_dart/openai_dart.dart';
 import 'package:path_provider/path_provider.dart';
@@ -45,6 +47,7 @@ class AppDrawer extends StatelessWidget {
             ErrorLogger.logException(e, StackTrace.current);
           } finally {
             if (AppStatus.instance.user == null) {
+              unawaited(AppEvent.userReset.track());
               debugPrint(
                   '>> session? ${Supabase.instance.client.auth.currentSession}');
               AppStatus.instance.reminderStatus = ReminderState.idle;

@@ -1,8 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/core/types.dart';
+import 'package:lola_ai_app/main.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 extension _BuildContextExtensions on BuildContext {
-  void navigateToInitialScreen() => Navigator.pushNamed(this, '/initial');
+  void handleIdentifiedUser() {
+    unawaited(AppEvent.userIdentified
+        .track(params: {"user": AppStatus.instance.userId}));
+    Navigator.pushNamed(this, '/initial');
+  }
 
   void showErrorSnackBar(Object error) =>
       ScaffoldMessenger.of(this).showSnackBar(
@@ -52,8 +60,8 @@ class AuthScreen extends StatelessWidget {
               SupaEmailAuth(
                 redirectTo: _AuthConfig.redirectUrl,
                 localization: _AuthConfig.emailLocalization,
-                onSignInComplete: (_) => context.navigateToInitialScreen(),
-                onSignUpComplete: (_) => context.navigateToInitialScreen(),
+                onSignInComplete: (_) => context.handleIdentifiedUser(),
+                onSignUpComplete: (_) => context.handleIdentifiedUser(),
                 onError: (error) => context.showErrorSnackBar(error),
               ),
               // SupaSocialsAuth(
