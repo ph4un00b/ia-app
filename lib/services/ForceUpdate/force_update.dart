@@ -7,7 +7,6 @@ import 'components/adaptive_force_alert.dart';
 class ForceUpdate {
 
   static Future<String> minimumiOSVersion() async {
-    print('minimumiOSVersion');
     final result = await Supabase.instance.client
         .from('app_force_update')
         .select('minimum_ios_version')
