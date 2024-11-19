@@ -12,6 +12,8 @@ void main() async {
   assert(Env.dbUrl.isNotEmpty, "DB_URL not defined");
   assert(Env.dbKey.isNotEmpty, "DB_KEY not defined");
   assert(Env.sentryDsn.isNotEmpty, "SENTRY_DSN not defined");
+  assert(Env.mixpanelToken.isNotEmpty, "MIXPANEL_TOKEN not defined");
+  assert(Env.appStoreId.isNotEmpty, "APPSTORE_ID not defined");
 
   await runMainApp();
 }
