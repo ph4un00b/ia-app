@@ -57,6 +57,7 @@ dependencies:
   supabase_auth_ui: ^0.5.4
   force_update_helper: ^0.1.5
   url_launcher: ^6.3.1
+  flex_color_scheme: ^8.0.1
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:force_update_helper/force_update_helper.dart';
 import 'package:lola_ai_app/config/env.dart';
+import 'package:lola_ai_app/features/App/theme.dart';
 import 'package:lola_ai_app/features/core/app_state_observer.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/services/ForceUpdate/force_update.dart';
@@ -18,7 +19,9 @@ class MyApp extends StatelessWidget {
       navigatorKey: _rootNavigatorKey,
       navigatorObservers: [AppStateObserver(), SentryNavigatorObserver()],
       title: 'Lola App',
-      theme: themeProvider(),
+      theme: AppTheme.light,
+      darkTheme: AppTheme.dark,
+      themeMode: ThemeMode.dark,
       initialRoute: '/',
       routes: appRoutes,
       onGenerateRoute: routesProvider,
@@ -38,17 +41,6 @@ class MyApp extends StatelessWidget {
         onException: ErrorLogger.logException,
         child: child!,
       ),
-    );
-  }
-
-  // TODO: global theme?
-  ThemeData themeProvider() {
-    return ThemeData(
-      // brightness: Brightness.dark,
-      // colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueGrey),
-      brightness: Brightness.dark,
-      primaryColor: Colors.blueGrey,
-      useMaterial3: true,
     );
   }
 }
