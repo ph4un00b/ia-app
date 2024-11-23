@@ -1,11 +1,9 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:lola_ai_app/config/env.dart';
 
 import 'main.dart';
 
 // * Entry point for the prod flavor
 void main() async {
-  await dotenv.load(fileName: ".env.prod");
   assert(Env.openAiKey.isNotEmpty, "OPENAI_API_KEY not defined");
   assert(Env.openAiBaseUrl.isNotEmpty, "OPENAI_API_BASE not defined");
   assert(Env.elevenApiKey.isNotEmpty, "ELEVEN_API_KEY not defined");

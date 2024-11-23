@@ -1,5 +1,9 @@
 # app
-- format: `$ dart format --line-length 160 lib`
+
+When modifying the .env file, the generator might not pick up the change
+
+- clean cache: `$ dart run build_runner clean`
+- run generator: `$ dart run build_runner build --delete-conflicting-outputs`
 
 # commands
 
@@ -16,4 +20,4 @@
 
 # todo
 
-- [ ] router observing for logging https://scribe.rip/@atefelsaid3/mastering-navigation-tracking-in-flutter-a-complete-guide-to-routeobserver-with-riverpod-ea23a12fb80c
+- [ ] router observing for logging <https://scribe.rip/@atefelsaid3/mastering-navigation-tracking-in-flutter-a-complete-guide-to-routeobserver-with-riverpod-ea23a12fb80c>

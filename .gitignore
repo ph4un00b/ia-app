@@ -46,6 +46,7 @@ app.*.map.json
 /web
 /windows
 
+*.g.dart
 *.env
 *.env.dev
 *.env.stg
