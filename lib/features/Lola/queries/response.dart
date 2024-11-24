@@ -29,7 +29,6 @@ class LolaResponse {
         IntentKind.none ||
         IntentKind.greeting =>
           _handleReminderCreation(userQuery, voiceModel),
-        // TODO: mecionar en algun lado que se guardo el recordatorio
         IntentKind.createReminder || IntentKind.reminder => {},
       };
     }

@@ -21,7 +21,7 @@ import 'package:lola_ai_app/features/core/time.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sentry_dio/sentry_dio.dart';
 
-import './generated/types.dart' as T;
+import './generated/types.dart' as generated;
 
 @immutable
 class ElevenLabsConfig {
@@ -67,10 +67,10 @@ class ElevenLabsAPI {
 
   /// List available voices
   /// Returns a list of [Voice] objects
-  Future<T.Voices> listVoices() async {
+  Future<generated.Voices> listVoices() async {
     try {
       final response = await _dio.get('/v1/voices');
-      return T.Voices.fromJson(response.data);
+      return generated.Voices.fromJson(response.data);
     } catch (error, stackTrace) {
       ErrorLogger.logException(error, stackTrace);
       throw _handleError(error);

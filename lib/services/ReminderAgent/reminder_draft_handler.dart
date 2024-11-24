@@ -230,7 +230,7 @@ class ReminderDraftHandler {
 
     var messages = <ChatCompletionMessage>[
       llm.system(message: addReminderPrompt),
-      llm.assistant(message: ""), // TODO: intentionally left as blank!
+      llm.assistant(message: ""), // XXX: intentionally left as blank!
       llm.user(message: resultInput)
     ];
 
@@ -240,8 +240,6 @@ class ReminderDraftHandler {
       final response =
           await LLMUtils.requestAgent(messages, draftReminderSchema);
       resultContent = await LLMUtils.parseResponseContent(response);
-
-      print("$resultContent");
 
       messages.add(llm.assistant(message: resultContent["bot_reply"]));
 

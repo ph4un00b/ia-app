@@ -42,8 +42,6 @@ class ReminderAgent {
       order: 'desc',
     );
 
-    messages.data.forEach((message) => debugPrint(message.content.first.text));
-
     return messages.data.isEmpty
         ? const NoneResponse()
         : ReminderResponse(
@@ -58,14 +56,13 @@ class ReminderAgent {
         .limit(1)
         .single();
 
-    // TODO: cover empty
     return UserMetadata.fromJson(result);
   }
 
-  // TODO: crear reminder en la base de datos hasta definir bien la structura
+  // TODO: crear reminder en la base de datos hasta que este bien definida la structura.
   static Future<void> updateReminders() async {
     final userMetadata = await fetchUserMetadata();
-    // TODO: remover jsonEncode? usando Map<String, dynamic> en lugar de String ??
+
     final reminderJson = jsonEncode(AppStatus.instance.currentReminder);
 
     final updatedRemindersFile = await LocalStore.append(

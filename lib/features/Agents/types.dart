@@ -7,7 +7,7 @@ import 'llm.dart';
 
 enum IntentKind {
   text,
-  // TODO: add greeting agent
+  // TODO: add greeting agent?
   greeting,
   reminder,
   createReminder,

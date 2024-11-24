@@ -30,7 +30,6 @@ class AppDrawer extends StatelessWidget {
       onDestinationSelected: (index) async {
         debugPrint("$index");
         var args = {'subroute': '/otros'};
-        // TODO: loguear drawer links
         if (index case 0) {
           Navigator.of(context).pushNamed('/opciones/mensajes');
         } else if (index case 1) {
@@ -79,7 +78,6 @@ class AppDrawer extends StatelessWidget {
             debugPrint('Error occurred: $e, $st');
           }
         }
-        // TODO: crear modify assistant and update vectore store
         else if (index == 8) {
           await modifyAssistant();
         } else if (index == 9) {
@@ -266,31 +264,31 @@ class AppDrawer extends StatelessWidget {
     OpenAIClient client = OpenAIClient(apiKey: Env.openAiKey);
     ListAssistantsResponse secres = await client.listAssistants();
 
-    print(">>>> LISTA DE ASSISTENTES: ${secres.data.length} <<<< \n");
+    debugPrint(">>>> LISTA DE ASSISTENTES: ${secres.data.length} <<<< \n");
     for (var secre in secres.data) {
       // await client.deleteAssistant(assistantId: secre.id);
-      print(secre.name);
+      debugPrint(secre.name);
       final createdAt =
           DateTime.fromMillisecondsSinceEpoch(secre.createdAt * 1000);
-      print(createdAt.toLocal().toString());
-      print(secre.toolResources);
+      debugPrint(createdAt.toLocal().toString());
+      debugPrint(secre.toolResources.toString());
     }
 
     ListVectorStoresResponse res = await client.listVectorStores();
-    print(">>>> LISTA DE VECTORES STORES: ${res.data.length} <<<< \n");
+    debugPrint(">>>> LISTA DE VECTORES STORES: ${res.data.length} <<<< \n");
 
     for (var store in res.data) {
       debugPrint('${store.id} ${store.name}');
       final createdAt =
           DateTime.fromMillisecondsSinceEpoch(store.createdAt * 1000);
-      print(createdAt.toLocal().toString());
+      debugPrint(createdAt.toLocal().toString());
       final lastAt =
           DateTime.fromMillisecondsSinceEpoch((store.lastActiveAt ?? 1) * 1000);
-      print("last-active : ${lastAt.toLocal().toString()}");
+      debugPrint("last-active : ${lastAt.toLocal().toString()}");
     }
 
     //! https://platform.openai.com/docs/api-reference/files/list
-    print(">>>> LISTA DE FILES\n");
+    debugPrint(">>>> LISTA DE FILES\n");
     OpenAI.apiKey = Env.openAiKey;
     OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
     OpenAI.requestsTimeOut = const Duration(seconds: Constants.maxTimeout);
@@ -300,7 +298,7 @@ class AppDrawer extends StatelessWidget {
     List<OpenAIFileModel> files = await OpenAI.instance.file.list();
 
     for (var file in files) {
-      print(
+      debugPrint(
           'File ID: ${file.id}, Name: ${file.fileName}, Datetime: ${file.createdAt}');
       // await OpenAI.instance.file.delete(file.id);
     }
@@ -333,13 +331,13 @@ class AppDrawer extends StatelessWidget {
 
     for (var file in files) {
       await OpenAI.instance.file.delete(file.id);
-      print(">>>> DELETED FILE: file-${file.id}");
+      debugPrint(">>>> DELETED FILE: file-${file.id}");
     }
   }
 
   Future<void> modifyAssistant() async {
     const assistantId = "asst_XdqXSdTSvAE6S4Rdm9NB0yON";
-    // TODO: crear modify assistant and update vectore store
+
     OpenAI.showLogs = true;
     OpenAI.showResponsesLogs = true;
     OpenAIClient client = OpenAIClient(apiKey: Env.openAiKey);

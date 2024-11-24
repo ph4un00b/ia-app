@@ -44,7 +44,7 @@ class VozMessage extends StatelessWidget {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text('exit')),
+                  child: const Text('exit')),
             )
           ],
         ),

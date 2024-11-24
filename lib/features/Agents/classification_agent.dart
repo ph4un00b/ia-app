@@ -124,8 +124,6 @@ class ClassifyAgent {
       ),
     );
 
-    print(response.choices.first.message.content);
-
     result = await LLMUtils.parseResponseContent(response);
     String intent = result['user_intent'];
     return intentMap[intent.trim().toLowerCase()] ?? IntentKind.none;

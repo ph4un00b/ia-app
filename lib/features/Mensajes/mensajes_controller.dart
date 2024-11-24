@@ -97,7 +97,7 @@ final class MessagesController {
           .from("conversation")
           .select()
           .eq('user_id', AppStatus.instance.userId)
-          // TODO(app.message): find an strategy for accents.
+          // TODO(app.message): find out an strategy for accents.
           // .textSearch("content", "'eggs' & 'ham'", config: "english");
           .textSearch(
             "content",

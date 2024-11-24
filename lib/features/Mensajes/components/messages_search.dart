@@ -24,7 +24,7 @@ class _MessagesSearchState extends State<MessagesSearch> {
   String? _searchingWithQuery;
 
   // The most recent options received from the API.
-  late Iterable<Widget> _lastOptions = <Widget>[];
+  late final Iterable<Widget> _lastOptions = <Widget>[];
 
   final _debounce = Debounce(ms: 500);
 

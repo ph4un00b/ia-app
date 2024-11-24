@@ -28,7 +28,6 @@ class MyApp extends StatelessWidget {
       builder: (context, child) => ForceUpdateWidget(
         navigatorKey: _rootNavigatorKey,
         forceUpdateClient: ForceUpdateClient(
-          // TODO: fetch from an API endpoint or via Firebase Remote Config
           fetchRequiredVersion: ForceUpdate.minimumiOSVersion,
           // TODO: Set correct APP_STORE_ID in the .env files
           // we use another appid for testing purposes
