@@ -26,6 +26,8 @@ Future<void> runMainApp() async {
       // Setting to 1.0 will profile 100% of sampled transactions:
       ..profilesSampleRate = 1.0
       //! better stack traces in the dashboard
+      //! 3rd party code will be collapsed and greyed out when viewing stack traces on the Sentry dashboard
+      //! @see https://pub.dev/documentation/sentry_flutter/latest/sentry_flutter/SentryOptions/considerInAppFramesByDefault.html
       ..considerInAppFramesByDefault = false
       ..addInAppInclude('lola_ai_app')
       //! Use the beforeSend callback to filter which events are sent
