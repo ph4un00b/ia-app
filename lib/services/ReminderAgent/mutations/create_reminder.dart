@@ -31,7 +31,7 @@ final class CreateReminderHandler {
   /// 2. user: cambialo para domingo
   /// 3. user: todo bien
   ///  - guarda el recordatorio
-  /// 3. user: quien es el presidente de argentina?
+  /// 4. user: quien es el presidente de argentina?
   ///
   /// CASO 4. Active:
   /// 1. user: recuerdame beber cerveza el jueves a mediodía
