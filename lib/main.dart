@@ -7,6 +7,15 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'screens/root.dart';
 
 Future<void> runMainApp() async {
+  assert(Env.openAiKey.isNotEmpty, "OPENAI_API_KEY not defined");
+  assert(Env.openAiBaseUrl.isNotEmpty, "OPENAI_API_BASE not defined");
+  assert(Env.elevenApiKey.isNotEmpty, "ELEVEN_API_KEY not defined");
+  assert(Env.dbUrl.isNotEmpty, "DB_URL not defined");
+  assert(Env.dbKey.isNotEmpty, "DB_KEY not defined");
+  assert(Env.sentryDsn.isNotEmpty, "SENTRY_DSN not defined");
+  assert(Env.mixpanelToken.isNotEmpty, "MIXPANEL_TOKEN not defined");
+  assert(Env.appStoreId.isNotEmpty, "APPSTORE_ID not defined");
+
   await AppStatus.initialize();
 
   await SentryFlutter.init(
