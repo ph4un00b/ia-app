@@ -48,7 +48,7 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
     return _currentOutput;
   }
 
-  Future<void> loadReply({
+  Future<void> queryReply({
     required String userQuestion,
     bool debug = false,
   }) async {

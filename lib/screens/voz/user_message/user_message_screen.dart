@@ -13,12 +13,14 @@ class UserMessageScreen extends StatefulWidget {
     required this.controller,
     required this.parentContext,
     required this.lolaController,
+    required this.debug,
   });
 
   final double scale;
   final BuildContext parentContext;
   final ContentHandler controller;
   final LolaController lolaController;
+  final bool debug;
 
   @override
   State<UserMessageScreen> createState() => _UserMessageScreenState();
@@ -98,10 +100,9 @@ class _UserMessageScreenState extends State<UserMessageScreen> {
                         onSaved: () async {
                           unawaited(AppEvent.userMessageDisplayed.track());
 
-                          // TODO: handle debug
-                          await widget.lolaController.loadReply(
+                          await widget.lolaController.queryReply(
                             userQuestion: widget.controller.content(),
-                            debug: false,
+                            debug: debug,
                           );
                         },
                       ),

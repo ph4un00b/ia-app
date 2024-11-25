@@ -6,10 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class DebugLolaVoice extends StatefulWidget {
   const DebugLolaVoice({
     super.key,
-    required this.lola,
+    required this.lolaController,
   });
 
-  final LolaController lola;
+  final LolaController lolaController;
 
   @override
   State<DebugLolaVoice> createState() => _DebugLolaVoiceState();
@@ -21,7 +21,7 @@ class _DebugLolaVoiceState extends State<DebugLolaVoice> {
     return Expanded(
       flex: 2,
       child: DebugVoiceSelector(
-        $lolavoice: widget.lola.currentVoice,
+        $lolavoice: widget.lolaController.currentVoice,
         onSelected: (voz) async {
           if (voz != null) {
             final prefs = await SharedPreferences.getInstance();
@@ -31,7 +31,7 @@ class _DebugLolaVoiceState extends State<DebugLolaVoice> {
             );
 
             setState(() {
-              widget.lola.currentVoice = voz;
+              widget.lolaController.currentVoice = voz;
             });
           }
         },

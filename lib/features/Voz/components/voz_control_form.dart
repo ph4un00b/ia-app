@@ -8,13 +8,13 @@ import 'package:lola_ai_app/features/core/types.dart';
 class UserVozControlFormMessage extends StatelessWidget {
   const UserVozControlFormMessage({
     super.key,
-    required this.user,
+    required this.vozController,
     required this.scale,
     required this.formKey,
     required this.setState,
   });
 
-  final Voz user;
+  final VozController vozController;
   final double scale;
   final GlobalKey<FormState> formKey;
   final void Function(void Function()) setState;
@@ -22,23 +22,23 @@ class UserVozControlFormMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: user,
+      listenable: vozController,
       builder: (_, __) {
-        return switch (user.messageState) {
+        return switch (vozController.messageStatus) {
           VozMessageState.empty ||
           VozMessageState.edited ||
           VozMessageState.loaded =>
             VozEditAction(
               scale: scale,
               onPressed: () =>
-                  setState(() => user.messageState = VozMessageState.editing),
+                  setState(() => vozController.messageStatus = VozMessageState.editing),
             ),
           VozMessageState.editing => VozRequestAction(
               scale: scale,
               onPressed: () {
                 unawaited(AppEvent.questionByTyping.track());
                 setState(() {
-                  user.messageState = VozMessageState.edited;
+                  vozController.messageStatus = VozMessageState.edited;
                 });
                 formKey.currentState?.save();
               },

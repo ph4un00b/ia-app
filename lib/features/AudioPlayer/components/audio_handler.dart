@@ -6,12 +6,12 @@ class LolaAudioHandler extends StatelessWidget {
     super.key,
     required this.stream,
     required this.scale,
-    required this.controller,
+    required this.lolaController,
   });
 
   final Stream<AudioState>? stream;
   final double scale;
-  final AudioPlayerHandlers controller;
+  final AudioPlayerHandlers lolaController;
 
   @override
   Widget build(BuildContext context) {
@@ -24,24 +24,24 @@ class LolaAudioHandler extends StatelessWidget {
           NoAudioPath() => ui.build(scale: scale),
           PlayingAudio() => ui.build(
               scale: scale,
-              onStop: controller.stopAudio,
+              onStop: lolaController.stopAudio,
             ),
           PlayingAudioErr() => ui.build(
               scale: scale,
-              onRetry: controller.playAudio,
+              onRetry: lolaController.playAudio,
             ),
           PlayingAudioOk() => ui.build(
-              from: controller.toString(),
+              from: lolaController.toString(),
               scale: scale,
-              onReplay: controller.playAudio,
+              onReplay: lolaController.playAudio,
             ),
           Stopped() => ui.build(
               scale: scale,
-              onPlay: controller.playAudio,
+              onPlay: lolaController.playAudio,
             ),
           StoppedErr() => ui.build(
               scale: scale,
-              onPlay: controller.playAudio,
+              onPlay: lolaController.playAudio,
             ),
         };
       },

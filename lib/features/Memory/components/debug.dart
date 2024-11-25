@@ -46,10 +46,10 @@ class DebugMemorySaveFile extends StatelessWidget {
 class DebugMemory extends StatelessWidget {
   const DebugMemory({
     super.key,
-    required this.lola,
+    required this.lolaController,
   });
 
-  final LolaController lola;
+  final LolaController lolaController;
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +58,7 @@ class DebugMemory extends StatelessWidget {
       child: Card.filled(
         child: InkWell(
           splashColor: Colors.purple.withAlpha(30),
-          onTap: () async => lola.loadReply(
+          onTap: () async => lolaController.queryReply(
             userQuestion: 'hola lola que debo hacer los viernes?',
             debug: true,
           ),

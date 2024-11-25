@@ -12,7 +12,7 @@ import 'package:record/record.dart' as rec;
 
 import 'utils.dart';
 
-enum VozState {
+enum VozRecordState {
   idle,
   recording,
   recordingError,
@@ -26,7 +26,12 @@ enum VozState {
   playingCompleted
 }
 
-enum VozAI { idle, transcribing, transcribingError, transcribingOk }
+enum TranscriptionState {
+  idle,
+  transcribing,
+  transcribingError,
+  transcribingOk
+}
 
 enum VozMessageState {
   empty,
@@ -35,17 +40,17 @@ enum VozMessageState {
   edited,
 }
 
-final class Voz with ChangeNotifier, ContentHandler {
+final class VozController with ChangeNotifier, ContentHandler {
   final rec.AudioRecorder _recorder = rec.AudioRecorder();
   final audio.AudioPlayer _player = audio.AudioPlayer();
-  VozState state = VozState.idle;
-  VozAI aiState = VozAI.idle;
-  VozMessageState messageState = VozMessageState.empty;
+  VozRecordState currentStatus = VozRecordState.idle;
+  TranscriptionState transcriptionStatus = TranscriptionState.idle;
+  VozMessageState messageStatus = VozMessageState.empty;
 
   String _input = '';
   String _path = '';
 
-  Voz() {
+  VozController() {
     _recorder.onStateChanged().listen((event) async {
       if (event case rec.RecordState.stop) {
         notifyListeners();
@@ -55,7 +60,7 @@ final class Voz with ChangeNotifier, ContentHandler {
     _player.playbackEventStream.listen((event) async {
       switch (event.processingState) {
         case audio.ProcessingState.idle:
-          state = VozState.idle;
+          currentStatus = VozRecordState.idle;
           notifyListeners();
           break;
         case audio.ProcessingState.loading:
@@ -65,7 +70,7 @@ final class Voz with ChangeNotifier, ContentHandler {
         case audio.ProcessingState.ready:
           break;
         case audio.ProcessingState.completed:
-          state = VozState.playingCompleted;
+          currentStatus = VozRecordState.playingCompleted;
           notifyListeners();
       }
     });
@@ -96,7 +101,7 @@ final class Voz with ChangeNotifier, ContentHandler {
 
     OpenAIAudioModel transcription;
     try {
-      aiState = VozAI.transcribing;
+      transcriptionStatus = TranscriptionState.transcribing;
       notifyListeners();
       transcription = await OpenAI.instance.audio.createTranscription(
         file: File(_path),
@@ -105,13 +110,13 @@ final class Voz with ChangeNotifier, ContentHandler {
       );
     } catch (e, st) {
       ErrorLogger.logException(e, st);
-      aiState = VozAI.transcribingError;
+      transcriptionStatus = TranscriptionState.transcribingError;
       notifyListeners();
       return '';
     }
 
-    aiState = VozAI.transcribingOk;
-    messageState = VozMessageState.loaded;
+    transcriptionStatus = TranscriptionState.transcribingOk;
+    messageStatus = VozMessageState.loaded;
     notifyListeners();
     return transcription.text;
   }
@@ -127,29 +132,29 @@ final class Voz with ChangeNotifier, ContentHandler {
       _player.setFilePath(_path);
       await _player.play();
 
-      state = VozState.playing;
+      currentStatus = VozRecordState.playing;
       notifyListeners();
     } catch (e, st) {
       ErrorLogger.logException(e, st);
-      state = VozState.playingError;
+      currentStatus = VozRecordState.playingError;
       notifyListeners();
     }
   }
 
   Future<void> notifyStopAudio() async {
     try {
-      state = VozState.stopPlaying;
+      currentStatus = VozRecordState.stopPlaying;
       notifyListeners();
 
       await _player.stop();
     } catch (e, st) {
       ErrorLogger.logException(e, st);
-      state = VozState.stopPlayingError;
+      currentStatus = VozRecordState.stopPlayingError;
       notifyListeners();
     }
   }
 
-  Future<void> notifyStartRecording() async {
+  Future<void> startRecording() async {
     unawaited(AppEvent.questionByVoice.track());
 
     try {
@@ -170,20 +175,20 @@ final class Voz with ChangeNotifier, ContentHandler {
             await buildPath(encoder: encoder, folder: FolderKind.temp);
         _path = path;
 
-        state = VozState.recording;
+        currentStatus = VozRecordState.recording;
         notifyListeners();
 
         await _recorder.start(config, path: path);
       }
     } catch (e, st) {
       ErrorLogger.logException(e, st);
-      state = VozState.recordingError;
+      currentStatus = VozRecordState.recordingError;
       notifyListeners();
     }
   }
 
-  Future<void> notifyStopRecording() async {
-    state = VozState.stopRecording;
+  Future<void> stopRecording() async {
+    currentStatus = VozRecordState.stopRecording;
     notifyListeners();
     try {
       var path = await _recorder.stop() ?? '';
@@ -192,7 +197,7 @@ final class Voz with ChangeNotifier, ContentHandler {
       updateContent(await _fetchAITranscription());
     } catch (e, st) {
       ErrorLogger.logException(e, st);
-      state = VozState.stopRecordingError;
+      currentStatus = VozRecordState.stopRecordingError;
       notifyListeners();
     }
   }

@@ -124,7 +124,7 @@ class _InitialVozBodyState extends State<InitialVozBody> {
                           padding: const EdgeInsets.all(4.0),
                           child: LolaAudioHandler(
                             stream: _audioStream,
-                            controller: _initialCtrl,
+                            lolaController: _initialCtrl,
                             scale: _scale,
                           ),
                         ),

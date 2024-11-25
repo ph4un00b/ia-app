@@ -12,7 +12,7 @@ class VozMessagePad extends StatelessWidget {
   });
 
   final double scale;
-  final Voz controller;
+  final VozController controller;
   final GlobalKey<FormState> formkey;
   final Function(String?) onMessageEdited;
   final VozMessageState state;
@@ -22,30 +22,30 @@ class VozMessagePad extends StatelessWidget {
     return ListenableBuilder(
       listenable: controller,
       builder: (_, __) {
-        debugPrint('>> voz-message-pad: ${controller.state}, ${controller.aiState}');
-        return switch (controller.aiState) {
-          VozAI.transcribingOk => MessageWidget(
+        debugPrint('>> voz-message-pad: ${controller.currentStatus}, ${controller.transcriptionStatus}');
+        return switch (controller.transcriptionStatus) {
+          TranscriptionState.transcribingOk => MessageWidget(
               formkey: formkey,
               state: state,
               controller: controller,
               scale: scale,
               onMessageEdited: onMessageEdited,
             ),
-          VozAI.transcribing => MessageWidget(
+          TranscriptionState.transcribing => MessageWidget(
               formkey: formkey,
               state: state,
               controller: controller,
               scale: scale,
               onMessageEdited: onMessageEdited,
             ),
-          VozAI.idle => MessageWidget(
+          TranscriptionState.idle => MessageWidget(
               formkey: formkey,
               state: state,
               controller: controller,
               scale: scale,
               onMessageEdited: onMessageEdited,
             ),
-          VozAI.transcribingError => Center(
+          TranscriptionState.transcribingError => Center(
               child: Text(
                 'Presiona para grabar mensaje.',
                 style: TextStyle(fontSize: 36.0 * scale),
@@ -69,7 +69,7 @@ class MessageWidget extends StatelessWidget {
 
   final GlobalKey<FormState> formkey;
   final VozMessageState state;
-  final Voz controller;
+  final VozController controller;
   final double scale;
   final Function(String? p1) onMessageEdited;
 

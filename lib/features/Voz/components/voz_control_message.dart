@@ -10,23 +10,25 @@ import 'package:lola_ai_app/screens/voz/user_message/user_message_screen.dart';
 class UserVozControlDisplayMessage extends StatelessWidget {
   const UserVozControlDisplayMessage({
     super.key,
-    required this.user,
+    required this.vozController,
     required this.scale,
-    required this.lola,
+    required this.lolaController,
     required this.from,
+    required this.debug,
   });
 
   final String from;
-  final Voz user;
+  final VozController vozController;
   final double scale;
-  final LolaController lola;
+  final LolaController lolaController;
+  final bool debug;
 
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: user,
+      listenable: vozController,
       builder: (_, __) {
-        return switch (user.messageState) {
+        return switch (vozController.messageStatus) {
           VozMessageState.empty ||
           VozMessageState.editing =>
             VozOpenMessageDisabled(scale: scale),
@@ -42,10 +44,11 @@ class UserVozControlDisplayMessage extends StatelessWidget {
                   isScrollControlled: true,
                   context: context,
                   builder: (ctx) => UserMessageScreen(
-                    lolaController: lola,
-                    controller: user,
+                    lolaController: lolaController,
+                    controller: vozController,
                     parentContext: context,
                     scale: scale,
+                    debug: debug,
                   ),
                 );
               },

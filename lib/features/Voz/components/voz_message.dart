@@ -8,7 +8,7 @@ class VozMessage extends StatelessWidget {
     required this.context,
   });
 
-  final Voz voz;
+  final VozController voz;
   final BuildContext context;
 
   @override
