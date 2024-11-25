@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/core/types.dart';
-import 'package:lola_ai_app/main.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 extension _BuildContextExtensions on BuildContext {

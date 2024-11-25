@@ -1,4 +1,4 @@
-import 'package:lola_ai_app/main.dart';
+import 'package:lola_ai_app/features/App/status.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class Conversation {

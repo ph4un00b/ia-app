@@ -1,6 +1,7 @@
 import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Agents/llm.dart';
-import 'package:lola_ai_app/main.dart';
+import 'package:lola_ai_app/features/App/status.dart';
+import 'package:lola_ai_app/features/Reminders/types.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 import '../llm_utils.dart';

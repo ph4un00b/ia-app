@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
-import 'package:lola_ai_app/main.dart';
+import 'package:lola_ai_app/features/App/status.dart';
 
 mixin ContentHandler {
   String content();

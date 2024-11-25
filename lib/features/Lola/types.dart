@@ -9,6 +9,8 @@ import 'package:path_provider/path_provider.dart';
 import '../core/elevenlabs/api.dart';
 import '../core/elevenlabs/types.dart';
 
+enum LolaState { idle, running, creatingReminder }
+
 class LolaAudioException implements Exception {
   final String? message;
 

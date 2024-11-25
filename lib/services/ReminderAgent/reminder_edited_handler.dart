@@ -1,5 +1,5 @@
 import 'package:lola_ai_app/config/env.dart';
-import 'package:lola_ai_app/main.dart';
+import 'package:lola_ai_app/features/App/status.dart';
 import 'package:openai_dart/openai_dart.dart';
 
 import '../../features/Agents/llm.dart';

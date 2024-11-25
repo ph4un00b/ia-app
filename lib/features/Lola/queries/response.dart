@@ -1,9 +1,10 @@
 import 'dart:async';
 
 import 'package:lola_ai_app/features/Agents/types.dart';
+import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/Reminders/types.dart';
 import 'package:lola_ai_app/features/User/types.dart';
-import 'package:lola_ai_app/main.dart';
 import 'package:lola_ai_app/services/ReminderAgent/mutations/create_reminder.dart';
 import 'package:lola_ai_app/services/ReminderAgent/mutations/onboarding_reminder.dart';
 import 'package:path/path.dart' as p;

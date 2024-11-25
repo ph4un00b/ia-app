@@ -1,4 +1,4 @@
-import 'package:lola_ai_app/main.dart';
+import 'package:lola_ai_app/features/Reminders/types.dart';
 
 import 'reminder_agent.dart';
 import 'text_agent.dart';

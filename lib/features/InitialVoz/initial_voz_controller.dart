@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 import 'package:lola_ai_app/features/App/init.dart';
+import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/User/user_settings.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
@@ -11,7 +12,6 @@ import 'package:path/path.dart' as p;
 import 'package:lola_ai_app/features/Agents/reminder_agent.dart';
 import 'package:lola_ai_app/features/Lola/queries/summary.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
-import 'package:lola_ai_app/main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 extension ProcessingStateX on audio.ProcessingState {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Agents/reminder_agent.dart';
+import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/LocalStore/local_store.dart';
 import 'package:lola_ai_app/features/User/types.dart';
-import 'package:lola_ai_app/main.dart';
 import 'package:openai_dart/openai_dart.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
