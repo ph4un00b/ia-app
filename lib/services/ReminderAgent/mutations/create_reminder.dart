@@ -14,31 +14,30 @@ import '../reminder_filled_handler.dart';
 import '../reminder_input_checker.dart';
 
 final class CreateReminderHandler {
-  /**
-   * CASO 1. Active:
-   * 1. user: recuerdame beber soda lunes en la noche
-   * 2. user: cambia a viernes
-   * 3. user: quien es el presidente de argentina?
-   *  - guarda el recordatorio
-   *
-   * CASO 2. Active:
-   * 1. user: recuerdame beber soda lunes en la noche
-   * 2. user: que es el presidente de argentina?
-   *  - guarda el recordatorio
-   *
-   * CASO 3. Active: todo
-   * 1. user: recuerdame beber soda lunes en la noche
-   * 2. user: cambia a viernes
-   * 3. user: todo perfecto
-   *  - guarda el recordatorio
-   * 3. user: quien es el presidente de argentina?
-   *
-   * CASO 4. Active:
-   * 1. user: recuerdame beber soda lunes en la noche
-   * 2. user: todo perfecto
-   *  - guarda el recordatorio
-   * 3. user: que es el presidente de argentina?
-   */
+  /// CASO 1. Active:
+  /// 1. user: recuerdame beber lechita caliente lunes en la tarde
+  /// 2. user: cambia a martes
+  /// 3. user: quien es el presidente de mexico?
+  ///  - guarda el recordatorio
+  ///
+  /// CASO 2. Active:
+  /// 1. user: recuerdame beber vino lunes en la noche
+  /// 2. user: quien es el presidente de venezuela?
+  ///  - guarda el recordatorio
+  ///  - no responde la pregunta
+  ///
+  /// CASO 3. Active: todo
+  /// 1. user: recuerdame preparar yogurt el sabado en la mañana
+  /// 2. user: cambialo para domingo
+  /// 3. user: todo bien
+  ///  - guarda el recordatorio
+  /// 3. user: quien es el presidente de argentina?
+  ///
+  /// CASO 4. Active:
+  /// 1. user: recuerdame beber cerveza el jueves a mediodía
+  /// 2. user: todo perfecto
+  ///  - guarda el recordatorio
+  /// 3. user: que es el presidente de peru?
   static Future<LolaResult> handle(
     String userQuery,
     VoiceLola voiceModel,

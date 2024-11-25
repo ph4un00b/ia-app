@@ -14,28 +14,27 @@ import '../reminder_filled_handler.dart';
 import '../reminder_input_checker.dart';
 
 final class OnboardingReminderHandler {
-  /**
-   * CASO 1. Onboarding:
-   * 1. user: recuerdame beber soda lunes en la noche
-   * 2. user: cambia a viernes
-   * 3. user: todo perfecto
-   *  - guarda el recordatorio
-   * 4. user: quien es el presidente de argentina?
-   *
-   * CASO 2. Onboarding:
-   * 1. user: recuerdame beber soda lunes en la noche
-   * 2. user: todo perfecto
-   *  - guarda el recordatorio
-   * 3. user: quien es el presidente de argentina?
-   *
-   * CASO 3. Onboarding: te lleva hasta llegar a status "filled"
-   * 1. user: recuerdame beber soda lunes en la noche
-   * 2. user: quien es el presidente de argentina?
-   */
+  /// CASO 1. Onboarding:
+  /// 1. user: recuerdame beber soda lunes en la noche
+  /// 2. user: cambia a viernes
+  /// 3. user: todo perfecto
+  ///  - guarda el recordatorio
+  /// 4. user: quien es el presidente de argentina?
+  ///
+  /// CASO 2. Onboarding:
+  /// 1. user: recuerdame beber soda lunes en la noche
+  /// 2. user: todo perfecto
+  ///  - guarda el recordatorio
+  /// 3. user: quien es el presidente de argentina?
+  ///
+  /// CASO 3. Onboarding: te lleva hasta llegar a status "filled"
+  /// 1. user: recuerdame beber soda lunes en la noche
+  /// 2. user: quien es el presidente de argentina?
   static Future<LolaResult> handle(
     String userQuery,
     VoiceLola voiceModel,
   ) async {
+    AppStatus.instance.lolaStatus = LolaState.creatingReminder;
     final reminderStatus = AppStatus.instance.reminderStatus;
 
     ReminderResponse response = switch (reminderStatus) {
@@ -43,7 +42,10 @@ final class OnboardingReminderHandler {
           final draftResult = await ReminderDraftHandler.query(userInput);
           final botReply = draftResult['bot_reply'];
 
-          unawaited(AppEvent.reminderDraft.track(params: {"from": "idle"}));
+          unawaited(AppEvent.reminderDraft.track(params: {
+            "from": "idle",
+            "userStatus": AppStatus.instance.currentUserStatus.name
+          }));
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.draft,
@@ -53,7 +55,10 @@ final class OnboardingReminderHandler {
           final draftResult = await ReminderDraftHandler.query(userInput);
           final botReply = draftResult['bot_reply'];
 
-          unawaited(AppEvent.reminderDraft.track(params: {"from": "create"}));
+          unawaited(AppEvent.reminderDraft.track(params: {
+            "from": "create",
+            "userStatus": AppStatus.instance.currentUserStatus.name
+          }));
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.draft,
@@ -68,7 +73,9 @@ final class OnboardingReminderHandler {
                 final botReply = editResult['bot_reply'];
 
                 AppStatus.instance.reminderStatus = ReminderState.edited;
-                unawaited(AppEvent.reminderEdited.track());
+                unawaited(AppEvent.reminderEdited.track(params: {
+                  "userStatus": AppStatus.instance.currentUserStatus.name
+                }));
                 return ReminderResponse(
                   payload: botReply,
                   status: ReminderState.edited,
@@ -80,7 +87,9 @@ final class OnboardingReminderHandler {
                 final botReply = filledResult['bot_reply'];
 
                 AppStatus.instance.reminderStatus = ReminderState.filled;
-                unawaited(AppEvent.reminderFilled.track());
+                unawaited(AppEvent.reminderFilled.track(params: {
+                  "userStatus": AppStatus.instance.currentUserStatus.name
+                }));
                 return ReminderResponse(
                   payload: botReply,
                   status: ReminderState.filled,
@@ -124,7 +133,9 @@ final class OnboardingReminderHandler {
           final botReply = editedResult['bot_reply'];
 
           AppStatus.instance.reminderStatus = ReminderState.edited;
-          unawaited(AppEvent.reminderEdited.track());
+          unawaited(AppEvent.reminderEdited.track(params: {
+            "userStatus": AppStatus.instance.currentUserStatus.name
+          }));
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.edited,
@@ -135,7 +146,9 @@ final class OnboardingReminderHandler {
           final botReply = filledResult['bot_reply'];
 
           AppStatus.instance.reminderStatus = ReminderState.filled;
-          unawaited(AppEvent.reminderFilled.track());
+          unawaited(AppEvent.reminderFilled.track(params: {
+            "userStatus": AppStatus.instance.currentUserStatus.name
+          }));
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.filled,

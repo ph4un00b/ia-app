@@ -7,17 +7,17 @@ enum AppInitDecision {
   none;
 
   static AppInitDecision from({
-    required AppUserState userState,
+    required UserState userState,
     required UserMetadata? userMetadata,
   }) {
     if (userMetadata == null) {
       return AppInitDecision.createUserMetadata;
     } else {
       return switch (userState) {
-        AppUserState.idle => AppInitDecision.updateUserStatus,
-        AppUserState.auth => AppInitDecision.none,
-        AppUserState.onboarding => AppInitDecision.none,
-        AppUserState.active => AppInitDecision.none,
+        UserState.idle => AppInitDecision.updateUserStatus,
+        UserState.auth => AppInitDecision.none,
+        UserState.onboarding => AppInitDecision.none,
+        UserState.active => AppInitDecision.none,
       };
     }
   }

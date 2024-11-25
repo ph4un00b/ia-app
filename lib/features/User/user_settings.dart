@@ -11,7 +11,7 @@ final class UserMetadata {
   final String reminderFileId;
   final String vectorId;
   final String assistantId;
-  final AppUserState appStatus;
+  final UserState appStatus;
 
   const UserMetadata({
     required this.reminderFileId,
@@ -25,7 +25,7 @@ final class UserMetadata {
         reminderFileId: json['reminder_file_id'],
         vectorId: json['vector_id'],
         assistantId: json['assistant_id'],
-        appStatus: AppUserState.values
+        appStatus: UserState.values
             .firstWhere((v) => v.name == json['app_status']));
   }
 }
@@ -84,7 +84,7 @@ Aquí hay algunas recomendaciones para ayudarte a ser más efectiva:
     debugPrint('metadata: $result');
 
     final meta = UserMetadata.fromJson(result);
-    AppStatus.instance.currentStatus = meta.appStatus;
+    AppStatus.instance.currentUserStatus = meta.appStatus;
     return meta;
   }
 

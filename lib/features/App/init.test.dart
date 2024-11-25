@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 
 extension TestUserMetadata on UserMetadata {
   static UserMetadata create({
-    required AppUserState appStatus,
+    required UserState appStatus,
   }) =>
       UserMetadata(
         reminderFileId: 'reminderFileId',
@@ -20,7 +20,7 @@ void main() {
     test('creates user metadata when metadata is null', () {
       expect(
         AppInitDecision.from(
-          userState: AppUserState.idle,
+          userState: UserState.idle,
           userMetadata: null,
         ),
         AppInitDecision.createUserMetadata,
@@ -30,9 +30,9 @@ void main() {
     test('updates user status when app is idle but has metadata', () {
       expect(
         AppInitDecision.from(
-          userState: AppUserState.idle,
+          userState: UserState.idle,
           userMetadata: TestUserMetadata.create(
-            appStatus: AppUserState.onboarding,
+            appStatus: UserState.onboarding,
           ),
         ),
         AppInitDecision.updateUserStatus,
@@ -42,9 +42,9 @@ void main() {
     test('does nothing on onboarding state', () {
       expect(
         AppInitDecision.from(
-          userState: AppUserState.onboarding,
+          userState: UserState.onboarding,
           userMetadata: TestUserMetadata.create(
-            appStatus: AppUserState.onboarding,
+            appStatus: UserState.onboarding,
           ),
         ),
         AppInitDecision.none,
@@ -54,9 +54,9 @@ void main() {
     test('does nothing on active state', () {
       expect(
         AppInitDecision.from(
-          userState: AppUserState.active,
+          userState: UserState.active,
           userMetadata: TestUserMetadata.create(
-            appStatus: AppUserState.active,
+            appStatus: UserState.active,
           ),
         ),
         AppInitDecision.none,

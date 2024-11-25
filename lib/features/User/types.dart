@@ -1,1 +1,1 @@
-enum AppUserState { idle, auth, onboarding, active }
+enum UserState { idle, auth, onboarding, active }

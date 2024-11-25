@@ -2,7 +2,6 @@ import 'package:lola_ai_app/features/Agents/llm.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Memory/queries/short_memory_messages.dart';
 import 'package:lola_ai_app/features/Prompts/micro_summary.dart';
-import 'package:lola_ai_app/features/User/types.dart';
 import 'package:lola_ai_app/features/core/write_file.dart';
 import 'package:lola_ai_app/main.dart';
 import 'package:path/path.dart' as p;
@@ -22,7 +21,7 @@ class LolaSummaryGenerator {
       );
     }
 
-    final summary = AppStatus.instance.currentStatus == AppUserState.active
+    final summary = AppStatus.isActive()
         ? await PromptMicroSummary.query(
             llm: LLM.openaiChat,
             text: userQuestions,

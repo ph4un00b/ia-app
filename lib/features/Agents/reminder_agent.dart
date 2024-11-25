@@ -8,7 +8,6 @@ import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/LocalStore/local_store.dart';
 import 'package:lola_ai_app/features/Reminders/json2reminder.dart';
-import 'package:lola_ai_app/features/User/types.dart';
 import 'package:lola_ai_app/features/User/user_settings.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
@@ -93,8 +92,8 @@ class ReminderAgent {
       1 => 0,
       _ => linesCount - 1,
     };
-    if (reminderCount > 0 &&
-        AppStatus.instance.currentStatus == AppUserState.onboarding) {
+
+    if (reminderCount > 0 && AppStatus.isOnboarding()) {
       await AppStatus.instance.activateUser();
     }
 
@@ -102,7 +101,7 @@ class ReminderAgent {
       AppEvent.reminderCreated.track(
         params: {
           'count': reminderCount,
-          'userStatus': AppStatus.instance.currentStatus,
+          'userStatus': AppStatus.instance.currentUserStatus,
         },
       ),
     );

@@ -50,7 +50,7 @@ class AppDrawer extends StatelessWidget {
               debugPrint(
                   '>> session? ${Supabase.instance.client.auth.currentSession}');
               AppStatus.instance.reminderStatus = ReminderState.idle;
-              AppStatus.instance.currentStatus = AppUserState.idle;
+              AppStatus.instance.currentUserStatus = UserState.idle;
               AppStatus.instance.lolaStatus = LolaState.idle;
               AppStatus.instance.currentReminderChat = [];
               AppStatus.instance.currentReminder = {};

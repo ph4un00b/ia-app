@@ -50,7 +50,7 @@ class AppStatus {
   SupabaseClient? db;
 
   var lolaStatus = LolaState.idle;
-  var currentStatus = AppUserState.idle;
+  var currentUserStatus = UserState.idle;
   var reminderStatus = ReminderState.idle;
   var currentReminder = ReminderData();
   var currentReminderChat = <ChatCompletionMessage>[];
@@ -84,15 +84,14 @@ class AppStatus {
   User? get user => db?.auth.currentUser;
 
   Future<void> activateUser() async {
-    if (AppStatus.instance.currentStatus == AppUserState.active) return;
+    if (_instance.currentUserStatus == UserState.active) return;
 
-    AppStatus.instance.currentStatus = AppUserState.active;
+    _instance.currentUserStatus = UserState.active;
     await Supabase.instance.client
         .from('person_metadata')
-        .update({'app_status': AppUserState.active.name}).eq('user_id', userId);
+        .update({'app_status': UserState.active.name}).eq('user_id', userId);
 
-    unawaited(AppEvent.userActivated
-        .track(params: {'user': AppStatus.instance.userId}));
+    unawaited(AppEvent.userActivated.track(params: {'user': _instance.userId}));
   }
 
   Future<void> _initMixpanel() async {
@@ -102,6 +101,14 @@ class AppStatus {
     )
       ..setLoggingEnabled(false);
   }
+
+  static bool isOnboarding() => _instance.currentUserStatus == UserState.onboarding;
+
+  static bool isActive() => _instance.currentUserStatus == UserState.active;
+
+  static bool isCreatingReminder() =>
+      _instance.lolaStatus == LolaState.creatingReminder &&
+      _instance.reminderStatus != ReminderState.filled;
 
   static Flavor flavor() {
     return switch (appFlavor) {

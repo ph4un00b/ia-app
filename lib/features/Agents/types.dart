@@ -11,7 +11,16 @@ enum IntentKind {
   greeting,
   reminder,
   createReminder,
-  none,
+  none;
+
+  bool get isConversational =>
+    this == IntentKind.text ||
+    this == IntentKind.none ||
+    this == IntentKind.greeting;
+
+  bool get isReminderRelated =>
+    this == IntentKind.reminder ||
+    this == IntentKind.createReminder;
 }
 
 sealed class LLMResponse {

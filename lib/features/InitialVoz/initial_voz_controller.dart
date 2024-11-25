@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 import 'package:lola_ai_app/features/App/init.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
-import 'package:lola_ai_app/features/User/types.dart';
 import 'package:lola_ai_app/features/User/user_settings.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
@@ -93,11 +92,12 @@ final class InitialVozController with AudioPlayerHandlers {
     }
 
     try {
-      final result = await LolaSummaryGenerator.generate(voice: currentVoice, debug: debug);
+      final result = await LolaSummaryGenerator.generate(
+          voice: currentVoice, debug: debug);
       if (currentState != InitialState.loadingSummary) return;
 
       unawaited(AppEvent.summaryFetched
-          .track(params: {'userStatus': AppStatus.instance.currentStatus}));
+          .track(params: {'userStatus': AppStatus.instance.currentUserStatus}));
 
       _currentAudioPath = result.path;
       _currentOutput = result.reply;
@@ -137,7 +137,7 @@ final class InitialVozController with AudioPlayerHandlers {
   Future<void> loadReminders({required bool debug}) async {
     currentState = InitialState.loadingReminders;
 
-    if (AppStatus.instance.currentStatus case AppUserState.active) {
+    if (AppStatus.isActive()) {
       await _handleExistingReminders(debug);
     } else {
       await _handleFirstTimeReminders(debug);
@@ -164,7 +164,7 @@ final class InitialVozController with AudioPlayerHandlers {
       }
 
       unawaited(AppEvent.remindersFetched
-          .track(params: {'userStatus': AppStatus.instance.currentStatus}));
+          .track(params: {'userStatus': AppStatus.instance.currentUserStatus}));
 
       await _processAndPlayResponse(reminderResponse.payload);
     } on PostgrestException catch (e) {
@@ -191,7 +191,6 @@ final class InitialVozController with AudioPlayerHandlers {
     }
 
     try {
-      // TODO: test first time reminders skipping
       unawaited(AppEvent.remindersFirstTime.track());
 
       await _processAndPlayResponse(
@@ -258,13 +257,13 @@ final class InitialVozController with AudioPlayerHandlers {
       final userMetadata = await UserSettings.metadata();
 
       final decisionResult = AppInitDecision.from(
-          userState: AppStatus.instance.currentStatus,
+          userState: AppStatus.instance.currentUserStatus,
           userMetadata: userMetadata);
 
       final _ = switch (decisionResult) {
         AppInitDecision.createUserMetadata => await UserSettings.initialize(),
-        AppInitDecision.updateUserStatus => AppStatus.instance.currentStatus =
-            userMetadata!.appStatus,
+        AppInitDecision.updateUserStatus =>
+          AppStatus.instance.currentUserStatus = userMetadata!.appStatus,
         AppInitDecision.none => {},
       };
     } on PostgrestException catch (e) {
