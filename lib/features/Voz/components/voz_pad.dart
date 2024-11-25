@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_message_pad.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
@@ -26,7 +27,7 @@ class VozInputPad extends StatelessWidget {
       builder: (_, __) {
         return Card.filled(
           shape: RoundedRectangleBorder(
-            side: vozController.currentStatus == VozRecordState.recording
+            side: vozController.currentStatus == RecordState.recording
                 ? const BorderSide(color: Colors.green, width: 2.0)
                 : BorderSide.none,
             borderRadius: BorderRadius.circular(10.0),
@@ -55,15 +56,15 @@ class VozInputPad extends StatelessWidget {
 
   void _handleTap() async {
     if (vozController.currentStatus
-        case VozRecordState.idle ||
-            VozRecordState.recordingOk ||
-            VozRecordState.stopRecording ||
-            VozRecordState.stopRecordingError ||
-            VozRecordState.playingError ||
-            VozRecordState.playingCompleted) {
+        case RecordState.idle ||
+            RecordState.recordingOk ||
+            RecordState.stopRecording ||
+            RecordState.stopRecordingError ||
+            RecordState.playingError ||
+            RecordState.playingCompleted) {
       await lolaController.stopAudio();
       await vozController.startRecording();
-    } else if (vozController.currentStatus case VozRecordState.recording) {
+    } else if (vozController.currentStatus case RecordState.recording) {
       await vozController.stopRecording();
       await lolaController.queryReply(
           userQuestion: vozController.content(), debug: debug);

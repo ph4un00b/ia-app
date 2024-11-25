@@ -5,6 +5,20 @@ import 'package:lola_ai_app/features/core/types.dart';
 
 import '../core/components/action_btn.dart';
 
+enum RecordState {
+  idle,
+  recording,
+  recordingError,
+  recordingOk,
+  stopRecording,
+  stopRecordingError,
+  playing,
+  playingError,
+  stopPlaying,
+  stopPlayingError,
+  playingCompleted
+}
+
 mixin AudioPlayerHandlers {
   Future<void> stopAudio();
   Future<void> playAudio();

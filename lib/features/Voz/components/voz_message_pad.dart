@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Voz/voz.dart';
+import 'package:lola_ai_app/services/Transcription/types.dart';
 
 class VozMessagePad extends StatelessWidget {
   const VozMessagePad({

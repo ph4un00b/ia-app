@@ -1,37 +1,15 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/config/constants.dart';
-import 'package:lola_ai_app/config/env.dart';
+import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
+import 'package:lola_ai_app/services/Transcription/transcription.dart';
+import 'package:lola_ai_app/services/Transcription/types.dart';
 import 'package:just_audio/just_audio.dart' as audio;
 import 'package:record/record.dart' as rec;
 
 import 'utils.dart';
-
-enum VozRecordState {
-  idle,
-  recording,
-  recordingError,
-  recordingOk,
-  stopRecording,
-  stopRecordingError,
-  playing,
-  playingError,
-  stopPlaying,
-  stopPlayingError,
-  playingCompleted
-}
-
-enum TranscriptionState {
-  idle,
-  transcribing,
-  transcribingError,
-  transcribingOk
-}
 
 enum VozMessageState {
   empty,
@@ -43,7 +21,7 @@ enum VozMessageState {
 final class VozController with ChangeNotifier, ContentHandler {
   final rec.AudioRecorder _recorder = rec.AudioRecorder();
   final audio.AudioPlayer _player = audio.AudioPlayer();
-  VozRecordState currentStatus = VozRecordState.idle;
+  RecordState currentStatus = RecordState.idle;
   TranscriptionState transcriptionStatus = TranscriptionState.idle;
   VozMessageState messageStatus = VozMessageState.empty;
 
@@ -60,7 +38,7 @@ final class VozController with ChangeNotifier, ContentHandler {
     _player.playbackEventStream.listen((event) async {
       switch (event.processingState) {
         case audio.ProcessingState.idle:
-          currentStatus = VozRecordState.idle;
+          currentStatus = RecordState.idle;
           notifyListeners();
           break;
         case audio.ProcessingState.loading:
@@ -70,7 +48,7 @@ final class VozController with ChangeNotifier, ContentHandler {
         case audio.ProcessingState.ready:
           break;
         case audio.ProcessingState.completed:
-          currentStatus = VozRecordState.playingCompleted;
+          currentStatus = RecordState.playingCompleted;
           notifyListeners();
       }
     });
@@ -92,22 +70,11 @@ final class VozController with ChangeNotifier, ContentHandler {
       return '';
     }
 
-    OpenAI.apiKey = Env.openAiKey;
-    OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-    OpenAI.requestsTimeOut =
-        const Duration(seconds: Constants.maxTimeout); // 60 seconds.
-    OpenAI.showLogs = true;
-    OpenAI.showResponsesLogs = true;
-
-    OpenAIAudioModel transcription;
+    String transcription;
     try {
       transcriptionStatus = TranscriptionState.transcribing;
       notifyListeners();
-      transcription = await OpenAI.instance.audio.createTranscription(
-        file: File(_path),
-        model: "whisper-1",
-        responseFormat: OpenAIAudioResponseFormat.json,
-      );
+      transcription = await Transcription.request(path: _path);
     } catch (e, st) {
       ErrorLogger.logException(e, st);
       transcriptionStatus = TranscriptionState.transcribingError;
@@ -118,7 +85,7 @@ final class VozController with ChangeNotifier, ContentHandler {
     transcriptionStatus = TranscriptionState.transcribingOk;
     messageStatus = VozMessageState.loaded;
     notifyListeners();
-    return transcription.text;
+    return transcription;
   }
 
   bool get hasPath => _path.isNotEmpty;
@@ -132,24 +99,24 @@ final class VozController with ChangeNotifier, ContentHandler {
       _player.setFilePath(_path);
       await _player.play();
 
-      currentStatus = VozRecordState.playing;
+      currentStatus = RecordState.playing;
       notifyListeners();
     } catch (e, st) {
       ErrorLogger.logException(e, st);
-      currentStatus = VozRecordState.playingError;
+      currentStatus = RecordState.playingError;
       notifyListeners();
     }
   }
 
   Future<void> notifyStopAudio() async {
     try {
-      currentStatus = VozRecordState.stopPlaying;
+      currentStatus = RecordState.stopPlaying;
       notifyListeners();
 
       await _player.stop();
     } catch (e, st) {
       ErrorLogger.logException(e, st);
-      currentStatus = VozRecordState.stopPlayingError;
+      currentStatus = RecordState.stopPlayingError;
       notifyListeners();
     }
   }
@@ -175,20 +142,20 @@ final class VozController with ChangeNotifier, ContentHandler {
             await buildPath(encoder: encoder, folder: FolderKind.temp);
         _path = path;
 
-        currentStatus = VozRecordState.recording;
+        currentStatus = RecordState.recording;
         notifyListeners();
 
         await _recorder.start(config, path: path);
       }
     } catch (e, st) {
       ErrorLogger.logException(e, st);
-      currentStatus = VozRecordState.recordingError;
+      currentStatus = RecordState.recordingError;
       notifyListeners();
     }
   }
 
   Future<void> stopRecording() async {
-    currentStatus = VozRecordState.stopRecording;
+    currentStatus = RecordState.stopRecording;
     notifyListeners();
     try {
       var path = await _recorder.stop() ?? '';
@@ -197,7 +164,7 @@ final class VozController with ChangeNotifier, ContentHandler {
       updateContent(await _fetchAITranscription());
     } catch (e, st) {
       ErrorLogger.logException(e, st);
-      currentStatus = VozRecordState.stopRecordingError;
+      currentStatus = RecordState.stopRecordingError;
       notifyListeners();
     }
   }
