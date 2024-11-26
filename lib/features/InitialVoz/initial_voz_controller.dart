@@ -106,6 +106,14 @@ final class InitialVozController with AudioPlayerHandlers {
       await _playAudio(result.path);
     } on PostgrestException catch (e) {
       _handleDbError(debug, e);
+    } on TimeoutException catch (e) {
+      ErrorLogger.logException(e, StackTrace.current);
+
+      if (debug) {
+        serviceState.add(Error(payload: e.toString()));
+      } else {
+        serviceState.add(Data(payload: _currentOutput));
+      }
     } catch (e, st) {
       if (_isHttpCancelled) {
         debugPrint('😡 Summary request was cancelled');
@@ -169,6 +177,14 @@ final class InitialVozController with AudioPlayerHandlers {
       await _processAndPlayResponse(reminderResponse.payload);
     } on PostgrestException catch (e) {
       _handleDbError(debug, e);
+    } on TimeoutException catch (e) {
+      ErrorLogger.logException(e, StackTrace.current);
+
+      if (debug) {
+        serviceState.addIfStreamOpen(Error(payload: e.toString()));
+      } else {
+        serviceState.addIfStreamOpen(Data(payload: _currentOutput));
+      }
     } catch (e, st) {
       if (_isHttpCancelled) {
         debugPrint('😡 reminders request was cancelled');
@@ -269,6 +285,8 @@ final class InitialVozController with AudioPlayerHandlers {
     } on PostgrestException catch (e) {
       //! manejamos el error de PostgrestException de Supabase por que
       //! se pierde el stacktrace de la excepcion en el logger
+      ErrorLogger.logException(e, StackTrace.current);
+    } on TimeoutException catch (e) {
       ErrorLogger.logException(e, StackTrace.current);
     } catch (e, st) {
       ErrorLogger.logException(e, st);

@@ -20,12 +20,13 @@ final class CreateReminderHandler {
   /// 2. user: cambia a martes
   /// 3. user: quien es el presidente de mexico?
   ///  - guarda el recordatorio
+  ///  - no responde la pregunta (esperado)
   ///
   /// CASO 2. Active:
   /// 1. user: recuerdame beber vino lunes en la noche
   /// 2. user: quien es el presidente de venezuela?
   ///  - guarda el recordatorio
-  ///  - no responde la pregunta
+  ///  - no responde la pregunta (esperado)
   ///
   /// CASO 3. Active: todo
   /// 1. user: recuerdame preparar yogurt el sabado en la mañana

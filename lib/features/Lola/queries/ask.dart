@@ -8,15 +8,14 @@ import 'package:path/path.dart' as p;
 import '../types.dart';
 
 final class AskLola {
-    static Future<LolaResult> query(
+  static Future<LolaResult> query(
     userQuery,
-    VoiceLola voiceModel,
-  ) async {
+    VoiceLola voiceModel, {
+    required IntentKind intention,
+  }) async {
     AppStatus.instance.lolaStatus = LolaState.running;
-    // TODO: remover classifier?
-    final userIntent = await StructuredAgent.classification.query(userQuery);
 
-    if (userIntent == IntentKind.createReminder &&
+    if (intention == IntentKind.createReminder &&
         AppStatus.instance.reminderStatus == ReminderState.idle) {
       final response = await Agent.text.query(userQuery);
 
@@ -33,7 +32,7 @@ final class AskLola {
       return LolaResult(path, response.payload);
     }
 
-    LLMResponse response = switch (userIntent) {
+    LLMResponse response = switch (intention) {
       IntentKind.none => const NoneResponse(),
       IntentKind.createReminder => await (userQuery) async {
           AppStatus.instance.lolaStatus = LolaState.creatingReminder;
@@ -56,5 +55,4 @@ final class AskLola {
 
     return LolaResult(path, response.payload);
   }
-
 }

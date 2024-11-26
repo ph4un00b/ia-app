@@ -52,6 +52,8 @@ final class MessagesController {
 
       debugPrint('Error occurred: ${e.toJson().toString()}');
       ErrorLogger.logException(e, StackTrace.current);
+    } on TimeoutException catch (e) {
+      ErrorLogger.logException(e, StackTrace.current);
     } catch (e, st) {
       ErrorLogger.logException(e, st);
       messagesState.add(Error(err: e));
@@ -115,6 +117,8 @@ final class MessagesController {
       messagesState.add(Error(err: e.toString()));
 
       debugPrint('Error occurred: ${e.toJson().toString()}');
+      ErrorLogger.logException(e, StackTrace.current);
+    } on TimeoutException catch (e) {
       ErrorLogger.logException(e, StackTrace.current);
     } catch (e, st) {
       ErrorLogger.logException(e, st);

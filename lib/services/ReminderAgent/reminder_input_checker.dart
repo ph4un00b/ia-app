@@ -90,18 +90,13 @@ class ReminderInputChecker {
   static Future<UserInputIntent> query(String userInput) async {
     if (userInput.isEmpty) {
       // TODO: Decide on default behavior for empty input
+      //! por ahora que lo apruebe al chile 😎.
       return UserInputIntent.approved;
     }
 
     Map<String, dynamic> result = {};
-    final client = OpenAIClient(apiKey: Env.openAiKey);
-
     // TODO: retries, logs
-    // OpenAI.apiKey = Env.openAiKey;
-    // OpenAI.baseUrl = "https://api.openai.com/"; // the default one.
-    // OpenAI.requestsTimeOut = const Duration(seconds: Constants.maxTimeout);
-    // OpenAI.showLogs = true;
-    // OpenAI.showResponsesLogs = true;
+    final client = OpenAIClient(apiKey: Env.openAiKey);
 
     final response = await client.createChatCompletion(
       request: CreateChatCompletionRequest(

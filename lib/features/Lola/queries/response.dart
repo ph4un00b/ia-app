@@ -47,7 +47,7 @@ class LolaResponse {
     return switch (AppStatus.instance.currentUserStatus) {
       UserState.active => shouldHandleReminder
           ? CreateReminderHandler.handle(userQuery, voiceModel)
-          : AskLola.query(userQuery, voiceModel),
+          : AskLola.query(userQuery, voiceModel, intention: userIntent),
       UserState.onboarding =>
         OnboardingReminderHandler.handle(userQuery, voiceModel),
       UserState.idle || UserState.auth => throw StateError(

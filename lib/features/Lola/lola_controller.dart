@@ -83,6 +83,14 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
 
       debugPrint('Error occurred: ${e.toJson().toString()}');
       ErrorLogger.logException(e, StackTrace.current);
+    } on TimeoutException catch (e) {
+      ErrorLogger.logException(e, StackTrace.current);
+
+      if (debug) {
+        serviceState.add(Error(payload: e.toString()));
+      } else {
+        serviceState.add(Data(payload: _currentOutput));
+      }
     } catch (e, st) {
       ErrorLogger.logException(e, st);
 

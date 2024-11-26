@@ -75,6 +75,11 @@ final class VozController with ChangeNotifier, ContentHandler {
       transcriptionStatus = TranscriptionState.transcribing;
       notifyListeners();
       transcription = await Transcription.request(path: _path);
+    } on TimeoutException catch (e) {
+      ErrorLogger.logException(e, StackTrace.current);
+      transcriptionStatus = TranscriptionState.transcribingError;
+      notifyListeners();
+      return '';
     } catch (e, st) {
       ErrorLogger.logException(e, st);
       transcriptionStatus = TranscriptionState.transcribingError;

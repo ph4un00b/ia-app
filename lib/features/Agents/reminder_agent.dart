@@ -69,7 +69,11 @@ class ReminderAgent {
     final updatedRemindersFile = await LocalStore.append(
       "jamon.md",
       ReminderParser.parseJsonToReminderText(reminderJson),
-    ).then((_) => uploadLocalRemindersFile());
+    ).then((_) {
+      return uploadLocalRemindersFile();
+    });
+
+    debugPrint("updatedRemindersFile: $updatedRemindersFile");
 
     // attach new file to vector store
     final client = OpenAIClient(apiKey: Env.openAiKey);
@@ -82,10 +86,10 @@ class ReminderAgent {
 
     debugPrint('File attached to vector store: ${addedFile.toString()}');
 
-    await Supabase.instance.client
-        .from('person_metadata')
-        .update({'reminder_file_id': updatedRemindersFile.id}).eq(
-            'user_id', AppStatus.instance.userId);
+    await Supabase.instance.client.from('person_metadata').update(
+      {'reminder_file_id': updatedRemindersFile.id},
+      // ignoreDuplicates: true,
+    ).eq('user_id', AppStatus.instance.userId);
 
     await _tryDeleteOldFile(userMetadata.reminderFileId);
 

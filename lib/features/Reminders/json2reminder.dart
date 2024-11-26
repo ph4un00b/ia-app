@@ -40,7 +40,8 @@ class ReminderParser {
   static DateTime? _parseTimeString(String? timeStr) {
     if (timeStr == null) return null;
     return DateTime.parse('1970-01-01 $timeStr');
-    // TODO: descomentar cuando existan más pruebas y evitar sorpresas de la ia
+    //! descomentar si queremos comernos un error de la ia
+
     // try {
     //   return DateTime.parse('1970-01-01 $timeStr');
     // } catch (e, st) {
