@@ -58,9 +58,10 @@ class ReminderParser {
   ) {
     final lowercaseTitle = title.toLowerCase();
     final timeFormatted = time != null ? _formatTimeToAmPm(time) : '';
-    return switch (repeat) {
-      30 =>
+    return switch ((repeat, timeFormatted.isEmpty)) {
+      (30, false) =>
         '**Daily reminder** to $lowercaseTitle at $timeFormatted for a month.',
+      (30, true) => '**Daily reminder** to $lowercaseTitle for a month.',
       _ => '**Daily reminder** to $lowercaseTitle at $timeFormatted.',
     };
   }

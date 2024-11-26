@@ -109,6 +109,18 @@ void main() {
           }''',
           expected: "**Weekly reminder** on TUESDAY to comer tacos at 12:00 AM."
         ),
+        (
+          name: "Recordatorio para comer patatas todos los días durante un mes",
+          context: "AI should interpret this as a weekly event",
+          json: '''
+          {
+            "title": "Comer patatas",
+            "category": "Alimentación",
+            "kind": "DAILY",
+            "repeat": 30
+          }''',
+          expected: "**Daily reminder** to comer patatas for a month."
+        ),
       ];
 
       for (final testCase in testCases) {
