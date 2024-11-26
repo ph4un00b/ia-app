@@ -31,6 +31,7 @@ final class OnboardingReminderHandler {
   /// CASO 3. Onboarding: te lleva hasta llegar a status "filled"
   /// 1. user: recuerdame beber soda lunes en la noche
   /// 2. user: quien es el presidente de argentina?
+  /// - no contesta (esperado)
   static Future<LolaResult> handle(
     String userQuery,
     VoiceLola voiceModel,
