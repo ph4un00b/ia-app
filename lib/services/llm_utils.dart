@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/config/env.dart';
 import 'package:openai_dart/openai_dart.dart';
 
@@ -21,6 +23,8 @@ class LLMUtils {
         model: const ChatCompletionModel.model(ChatCompletionModels.gpt4oMini),
         messages: messages,
         temperature: 0,
+        maxCompletionTokens: kDebugMode ? 1024 : Constants.maxTokens,
+        maxTokens: kDebugMode ? 1024 : Constants.maxTokens,
         responseFormat: responseFormat,
       ),
     );

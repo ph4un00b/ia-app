@@ -19,7 +19,7 @@ class ShortMemoryMessages {
         .not('intent', 'eq', IntentKind.greeting.name)
         .not('system', 'eq', 'lola')
         .order('created_at', ascending: false)
-        .limit(Constants.maxMemoryMessages);
+        .limit(Constants.maxMessages);
 
     var messages = _messagesFrom(result);
     return _prepare(messages);
@@ -32,7 +32,7 @@ class ShortMemoryMessages {
         .eq('user_id', AppStatus.instance.userId)
         .not('intent', 'eq', IntentKind.greeting.name)
         .order('created_at', ascending: false)
-        .limit(Constants.maxMemoryMessages);
+        .limit(Constants.maxMessages);
 
     var messages = _messagesFrom(result);
     return messages;

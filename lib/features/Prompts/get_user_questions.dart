@@ -1,4 +1,5 @@
 import 'package:dart_openai/dart_openai.dart';
+import 'package:flutter/foundation.dart';
 import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/config/env.dart';
 
@@ -17,7 +18,7 @@ class PromptGetUserQuestions {
       messages: [
         llm.system(message: _prompt(messages: messages)),
       ],
-      maxTokens: 400,
+      maxTokens: kDebugMode ? 1024 : Constants.maxTokens,
       temperature: 0,
       n: 1,
     );

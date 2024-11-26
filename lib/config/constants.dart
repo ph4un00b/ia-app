@@ -5,5 +5,9 @@ abstract class Constants {
   /// Default UI scale factor
   static const double scale = 0.75;
 
-  static const int maxMemoryMessages = 36;
+  /// Maximum number of messages to store in memory
+  static const int maxMessages = 36;
+
+  /// Maximum number of characters to store in memory
+  static const int maxTokens = 2048;
 }

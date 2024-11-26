@@ -1,5 +1,5 @@
 import 'package:dart_openai/dart_openai.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/config/env.dart';
 import 'package:lola_ai_app/features/Agents/llm.dart';
@@ -51,7 +51,7 @@ class TextAgent {
         llm.system(message: _masterPrompt2(strMessages: messages)),
         llm.user(message: input),
       ],
-      maxTokens: 185,
+      maxTokens: kDebugMode ? 1024 : Constants.maxTokens,
       temperature: 1,
       topP: 1,
       n: 1,
@@ -84,7 +84,7 @@ class TextAgent {
     completion = await OpenAI.instance.completion.create(
       model: "gpt-3.5-turbo-instruct",
       prompt: input,
-      maxTokens: 85,
+      maxTokens: kDebugMode ? 1024 : Constants.maxTokens,
       temperature: 0.5,
       n: 1,
       echo: true,
