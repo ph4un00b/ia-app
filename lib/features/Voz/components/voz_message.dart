@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Voz/voz.dart';
+import 'package:lola_ai_app/features/Voz/voz_controller.dart';
 
 class VozMessage extends StatelessWidget {
   const VozMessage({

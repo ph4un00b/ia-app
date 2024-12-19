@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Voz/voz.dart';
+import 'package:lola_ai_app/features/Voz/voz_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LolaMessageScreen extends StatefulWidget {

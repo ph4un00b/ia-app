@@ -153,13 +153,15 @@ class _InitialVozBodyState extends State<InitialVozBody> {
                             text: 'Continuar',
                             scale: _scale,
                             onPressed: () async {
+                              final navigator = Navigator.of(context);
+
                               await _initialCtrl.loadUserMetadata();
 
                               await switch (_initialCtrl.currentState) {
                                 InitialState.idle =>
                                   _initialCtrl.loadSummary(debug: _debug),
                                 InitialState.loadingReminders =>
-                                  Navigator.of(context).popAndPushNamed('/voz'),
+                                  navigator.popAndPushNamed('/voz'),
                                 InitialState.loadingSummary =>
                                   _initialCtrl.loadReminders(debug: _debug)
                               };

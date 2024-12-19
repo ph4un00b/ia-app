@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/Voz/voz.dart';
+import 'package:lola_ai_app/features/Voz/voz_controller.dart';
 import 'package:lola_ai_app/features/core/components/debug_alt_widget.dart';
 
 class DebugVozMessageState extends StatelessWidget {

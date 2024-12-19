@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_action_buttons.dart';
-import 'package:lola_ai_app/features/Voz/voz.dart';
+import 'package:lola_ai_app/features/Voz/voz_controller.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/screens/voz/user_message/user_message_screen.dart';
 

@@ -30,6 +30,9 @@ class AppDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     return NavigationDrawer(
       onDestinationSelected: (index) async {
+
+        final navigator = Navigator.of(context);
+
         debugPrint("$index");
         var args = {'subroute': '/otros'};
         if (index case 0) {
@@ -57,8 +60,8 @@ class AppDrawer extends StatelessWidget {
               AppStatus.instance.currentReminderChat = [];
               AppStatus.instance.currentReminder = {};
 
-              Navigator.of(context).pop();
-              Navigator.of(context).pushNamed('/');
+              navigator.pop();
+              navigator.pushNamed('/');
             }
           }
         } else if (index case 4) {
