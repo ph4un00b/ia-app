@@ -16,7 +16,8 @@ When modifying the .env file, the generator might not pick up the change
 
 # tests
 
-- reminders: `clear; flutter test lib/features/Reminders
+- reminders: `$ clear; flutter test lib/features/Reminders`
+- app init: `$ clear; flutter test lib/features/App/init.test.dart`
 
 # todo
 
