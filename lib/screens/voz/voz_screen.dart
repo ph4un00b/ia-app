@@ -110,20 +110,20 @@ class _VozBodyState extends State<VozBody> {
       padding: const EdgeInsets.all(18),
       child: Column(
         children: [
-          Expanded(
-            flex: 1,
-            child: SettingAppText(
-              scale: _scale,
-              onChangedValue: (value) async {
-                setState(() => _scale = value);
-                final prefs = await SharedPreferences.getInstance();
-                prefs.setDouble(
-                  'app-setting-text',
-                  value,
-                );
-              },
-            ),
-          ),
+          // Expanded(
+          //   flex: 1,
+          //   child: SettingAppText(
+          //     scale: _scale,
+          //     onChangedValue: (value) async {
+          //       setState(() => _scale = value);
+          //       final prefs = await SharedPreferences.getInstance();
+          //       prefs.setDouble(
+          //         'app-setting-text',
+          //         value,
+          //       );
+          //     },
+          //   ),
+          // ),
           Expanded(
             flex: 4,
             child: LolaServerMessagePad(
@@ -159,8 +159,7 @@ class _VozBodyState extends State<VozBody> {
             DebugWidget(
               children: StreamBuilder(
                 stream: _lolaStream,
-                builder: (_, __) =>
-                    Center(child: Text(_debugLolaState.toString())),
+                builder: (_, __) => Center(child: Text(_debugLolaState.toString())),
               ),
             ),
           if (_debug)
@@ -180,32 +179,18 @@ class _VozBodyState extends State<VozBody> {
               debug: _debug,
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: UserVozControlFormMessage(
-                    formKey: _messageFormKey,
-                    setState: setState,
-                    vozController: _user,
-                    scale: _scale,
-                  ),
+          Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: UserVozControlFormMessage(
+                  formKey: _messageFormKey,
+                  setState: setState,
+                  vozController: _user,
+                  scale: _scale,
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  flex: 1,
-                  child: UserVozControlDisplayMessage(
-                    from: widget.toString(),
-                    vozController: _user,
-                    lolaController: _lola,
-                    scale: _scale,
-                    debug: _debug,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
           if (_debug) const TestErrorLogger(),
           if (_debug) const DebugClassificationAgent(),

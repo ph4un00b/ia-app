@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/core/routes.dart';
 import 'package:lola_ai_app/screens/splash/splash_screen.dart';
 import 'package:lola_ai_app/screens/voz/initial_screen.dart';
+import 'package:lola_ai_app/screens/voz/voice_screen.dart';
 import 'package:lola_ai_app/screens/voz/voz_screen.dart';
 
 import 'opciones/messages/messages_screen.dart';
@@ -11,7 +12,7 @@ import 'opciones/profile/options_profile_screen.dart';
 final appRoutes = <String, WidgetBuilder>{
   '/': (ctx) => const SplashScreen(),
   '/initial': (ctx) => const InitialVozScreen(),
-  '/voz': (ctx) => const VozScreen(),
+  '/voz': (ctx) => const VoiceScreen(),
   // '/opciones': (ctx) => const OptProfileScreen(),
   // '/opciones/messages': (ctx) =>
   //     MessagesScreen(items: List<String>.generate(10000, (i) => 'Item $i')),
@@ -48,11 +49,9 @@ Route<dynamic>? routesProvider(RouteSettings settings) {
   //   _ => throw UnimplementedError(),
   // };
   return switch (settings.name) {
-    '/opciones/mensajes' => pageRoute(
-        MessagesScreen(items: List<String>.generate(10000, (i) => 'Item $i'))),
+    '/opciones/mensajes' => pageRoute(MessagesScreen(items: List<String>.generate(10000, (i) => 'Item $i'))),
     // '/opciones/others' => pageRoute(const OptOthersScreen()),
-    '/opciones/profile' =>
-      MaterialPageRoute(builder: (ctx) => const OptProfileScreen()),
+    '/opciones/profile' => MaterialPageRoute(builder: (ctx) => const OptProfileScreen()),
     String() => null,
     null => null,
   };
@@ -62,10 +61,9 @@ MaterialPageRoute<dynamic> opciones(Object params) {
   debugPrint(params.toString());
   return switch (params) {
     (ProfileArgs _) => pageRoute(const OptProfileScreen()),
-    {'subroute': String r} when r == "/otros" =>
-      pageRoute(const OptOthersScreen()),
-    (String subname, _) when subname == "/mensajes" => pageRoute(
-        MessagesScreen(items: List<String>.generate(10000, (i) => 'Item $i'))),
+    {'subroute': String r} when r == "/otros" => pageRoute(const OptOthersScreen()),
+    (String subname, _) when subname == "/mensajes" =>
+      pageRoute(MessagesScreen(items: List<String>.generate(10000, (i) => 'Item $i'))),
     _ => throw UnimplementedError(),
   };
 }
