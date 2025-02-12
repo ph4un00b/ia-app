@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
+import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Voz/voz_controller.dart';
+import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
+
+// import 'package:keyboard_actions/keyboard_actions.dart';
+// import 'package:keyboard_actions/keyboard_actions_config.dart';
 
 class VoiceScreen extends StatelessWidget {
   const VoiceScreen({super.key});
@@ -82,7 +86,34 @@ class VoiceBody extends StatefulWidget {
 
 class _VoiceBodyState extends State<VoiceBody> {
   final _userNotifier = VozController();
+  final _lola = LolaController();
   final _messageFormKey = GlobalKey<FormState>();
+
+  ///////////// KEYBOARD ACTIONS ////////////////
+  // final _nameFocus = FocusNode();
+  // final _cardNumberFocus = FocusNode();
+  // final _cardPinFocus = FocusNode();
+
+  /// Creates the [KeyboardActionsConfig] to hook up the fields
+  /// and their focus nodes to our [FormKeyboardActions].
+  // KeyboardActionsConfig _buildKeyboardActionsConfig(BuildContext context) {
+  //   return KeyboardActionsConfig(
+  //     keyboardActionsPlatform: KeyboardActionsPlatform.ALL,
+  //     keyboardBarColor: Colors.grey,
+  //     actions: [
+  //       KeyboardActionsItem(
+  //         focusNode: _nameFocus,
+  //       ),
+  //       KeyboardActionsItem(
+  //         focusNode: _cardNumberFocus,
+  //       ),
+  //       KeyboardActionsItem(
+  //         focusNode: _cardPinFocus,
+  //       ),
+  //     ],
+  //   );
+  // }
+  ///////////// KEYBOARD ACTIONS END ////////////////
 
   @override
   void dispose() {
@@ -95,17 +126,16 @@ class _VoiceBodyState extends State<VoiceBody> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-      Expanded(
+        child: Column(children: [
+      // child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+      const Expanded(
         child: SingleChildScrollView(
           child: true
-              ? Container(
-                  child: const Icon(
-                    Icons.multitrack_audio,
-                    size: 72,
-                  ),
+              ? Icon(
+                  Icons.multitrack_audio,
+                  size: 72,
                 )
-              : const Text("lorem"),
+              : Text("lorem"),
         ),
       ),
       Container(
@@ -120,12 +150,24 @@ class _VoiceBodyState extends State<VoiceBody> {
                     return Form(
                       key: _messageFormKey,
                       child: TextFormField(
+                          validator: (value) {
+                            debugPrint('input valido? $value');
+                            // TODO: como hacer mas prolijo ese is String?
+                            if (value is String) {
+                              if (value.isEmpty) {
+                                return 'Field required';
+                              } else {
+                                return null;
+                              }
+                            }
+                            return 'Field Required';
+                          },
                           minLines: null,
-                          maxLines: 5,
+                          maxLines: 4,
                           controller: TextEditingController(
                               text: _userNotifier.content()),
                           keyboardType: TextInputType.multiline,
-                          textInputAction: TextInputAction.send,
+                          textInputAction: TextInputAction.unspecified,
                           decoration: InputDecoration(
                             // filled: !true,
                             // isDense: !true,
@@ -142,17 +184,30 @@ class _VoiceBodyState extends State<VoiceBody> {
                                 fontSize: 36),
                           ),
                           style: const TextStyle(
-                              fontSize: 36.0, color: Colors.white70),
+                            fontSize: 36.0,
+                            color: Colors.white70,
+                          ),
                           onFieldSubmitted: (value) {
                             debugPrint(
                                 '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
-                            var snackBar = const SnackBar(
-                                content: Text('Hello, I am here'));
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
+                            var sk = SnackBar(content: Text('Hello: $value'));
+                            ScaffoldMessenger.of(context).showSnackBar(sk);
                           },
                           onSaved: (value) {
                             debugPrint('>> on-saved-value: $value');
+                            if (value == null) return;
+
+                            _userNotifier.updateContent(value);
+
+                            showModalBottomSheet(
+                              isScrollControlled: true,
+                              context: context,
+                              builder: (ctx) => LolaMessageScreen(
+                                // TODO: input lola stream
+                                text: _userNotifier.content(),
+                                scale: 1.0,
+                              ),
+                            );
                           },
                           onTapOutside: (event) {
                             debugPrint('>> ev: $event');
@@ -166,7 +221,7 @@ class _VoiceBodyState extends State<VoiceBody> {
                 // TODO: probar LayoutBuilder para obtener dinamicamente el heigth?
                 height: 200,
                 // height: _messageFormKey.currentContext?.size?.height,
-                color: Colors.amber[700],
+                color: Colors.greenAccent[700],
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -184,18 +239,20 @@ class _VoiceBodyState extends State<VoiceBody> {
                                     onPressed: _handleUserRecording,
                                     icon: const Icon(Icons.mic));
                           }),
-                      IconButton.filledTonal(
-                          color: Colors.white70,
-                          onPressed: () async {
-                            await Clipboard.setData(
-                                ClipboardData(text: _userNotifier.content()));
+                      // TODO: dejar para otra ocasión la feature de copiar
+                      // IconButton.filledTonal(
+                      //     color: Colors.white70,
+                      //     onPressed: () async {
+                      //       await Clipboard.setData(
+                      //           ClipboardData(text: _userNotifier.content()));
 
-                            var snackBar =
-                                const SnackBar(content: Text('copied!'));
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(snackBar);
-                          },
-                          icon: const Icon(Icons.save)),
+                      //       var snackBar =
+                      //           const SnackBar(content: Text('copied!'));
+                      //       ScaffoldMessenger.of(context)
+                      //           .showSnackBar(snackBar);
+                      //     },
+                      //     icon: const Icon(Icons.save)),
+
                       IconButton.filledTonal(
                           color: Colors.white70,
                           onPressed: () {
@@ -203,7 +260,21 @@ class _VoiceBodyState extends State<VoiceBody> {
                             debugPrint(_messageFormKey.currentState.toString());
                             _messageFormKey.currentState?.reset();
                           },
-                          icon: const Icon(Icons.delete_forever))
+                          icon: const Icon(Icons.delete_forever)),
+                      IconButton.filledTonal(
+                          color: Colors.white70,
+                          onPressed: () {
+                            debugPrint('preguntando a lola!');
+                            var isValid =
+                                _messageFormKey.currentState?.validate();
+
+                            if (isValid == null) return;
+                            if (isValid) {
+                              _messageFormKey.currentState?.save();
+                              // _messageFormKey.currentState?.reset();
+                            }
+                          },
+                          icon: const Icon(Icons.send_outlined)),
                     ]))
           ]))
     ]));
