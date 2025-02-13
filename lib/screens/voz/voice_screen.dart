@@ -130,7 +130,7 @@ class _VoiceBodyState extends State<VoiceBody> {
       // child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
       const Expanded(
         child: SingleChildScrollView(
-          child: true
+          child: !true
               ? Icon(
                   Icons.multitrack_audio,
                   size: 72,
@@ -142,145 +142,39 @@ class _VoiceBodyState extends State<VoiceBody> {
           padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
           child: Row(children: [
             Flexible(
-              // TODO: que es mejor un listener con varios componentes ó varios listener con un componente?
-              child: ListenableBuilder(
-                  listenable: _userNotifier,
-                  builder: (_ctx, __) {
-                    // debugPrint("size: ${ctx.size?.height}");
-                    return Form(
-                      key: _messageFormKey,
-                      child: TextFormField(
-                          validator: (value) {
-                            debugPrint('input valido? $value');
-                            // TODO: como hacer mas prolijo ese is String?
-                            if (value is String) {
-                              if (value.isEmpty) {
-                                return 'Field required';
-                              } else {
-                                return null;
-                              }
-                            }
-                            return 'Field Required';
-                          },
-                          minLines: null,
-                          maxLines: 4,
-                          controller: TextEditingController(
-                              text: _userNotifier.content()),
-                          keyboardType: TextInputType.multiline,
-                          textInputAction: TextInputAction.unspecified,
-                          decoration: InputDecoration(
-                            // filled: !true,
-                            // isDense: !true,
-                            border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                borderSide: BorderSide.none),
-                            // border: state == VozMessageState.editing
-                            // ? const OutlineInputBorder()
-                            // : InputBorder.none,
-                            // labelText: 'Presiona para grabar mensaje',
-                            labelStyle: const TextStyle(
-                                color: Colors.white70,
-                                fontStyle: FontStyle.normal,
-                                fontSize: 36),
-                          ),
-                          style: const TextStyle(
-                            fontSize: 36.0,
-                            color: Colors.white70,
-                          ),
-                          onFieldSubmitted: (value) {
-                            debugPrint(
-                                '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
-                            var sk = SnackBar(content: Text('Hello: $value'));
-                            ScaffoldMessenger.of(context).showSnackBar(sk);
-                          },
-                          onSaved: (value) {
-                            debugPrint('>> on-saved-value: $value');
-                            if (value == null) return;
-
-                            _userNotifier.updateContent(value);
-
-                            showModalBottomSheet(
-                              isScrollControlled: true,
-                              context: context,
-                              builder: (ctx) => LolaMessageScreen(
-                                // TODO: input lola stream
-                                text: _userNotifier.content(),
-                                scale: 1.0,
-                              ),
-                            );
-                          },
-                          onTapOutside: (event) {
-                            debugPrint('>> ev: $event');
-                            FocusManager.instance.primaryFocus?.unfocus();
-                          }),
-                    );
-                  }),
-            ),
-            const SizedBox(width: 12),
-            Container(
+              flex: 4,
+                // TODO: que es mejor un listener con varios componentes ó varios listener con un componente?
+                child: InputChatMessage(
+                    userNotifier: _userNotifier,
+                    messageFormKey: _messageFormKey)),
+            // const SizedBox(width: 12),
+            Flexible(
+              flex: 1,
                 // TODO: probar LayoutBuilder para obtener dinamicamente el heigth?
-                height: 200,
                 // height: _messageFormKey.currentContext?.size?.height,
-                color: Colors.greenAccent[700],
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ListenableBuilder(
-                          listenable: _userNotifier,
-                          builder: (_, __) {
-                            return _userNotifier.currentStatus ==
-                                    RecordState.recording
-                                ? IconButton(
-                                    color: Colors.redAccent,
-                                    onPressed: _handleUserRecording,
-                                    icon: const Icon(Icons.mic))
-                                : IconButton.filledTonal(
-                                    color: Colors.white70,
-                                    onPressed: _handleUserRecording,
-                                    icon: const Icon(Icons.mic));
-                          }),
-                      // TODO: dejar para otra ocasión la feature de copiar
-                      // IconButton.filledTonal(
-                      //     color: Colors.white70,
-                      //     onPressed: () async {
-                      //       await Clipboard.setData(
-                      //           ClipboardData(text: _userNotifier.content()));
-
-                      //       var snackBar =
-                      //           const SnackBar(content: Text('copied!'));
-                      //       ScaffoldMessenger.of(context)
-                      //           .showSnackBar(snackBar);
-                      //     },
-                      //     icon: const Icon(Icons.save)),
-
-                      IconButton.filledTonal(
-                          color: Colors.white70,
-                          onPressed: () {
-                            // TODO: probar bien el reset!
-                            debugPrint(_messageFormKey.currentState.toString());
-                            _messageFormKey.currentState?.reset();
-                          },
-                          icon: const Icon(Icons.delete_forever)),
-                      IconButton.filledTonal(
-                          color: Colors.white70,
-                          onPressed: () {
-                            debugPrint('preguntando a lola!');
-                            var isValid =
-                                _messageFormKey.currentState?.validate();
-
-                            if (isValid == null) return;
-                            if (isValid) {
-                              _messageFormKey.currentState?.save();
-                              // _messageFormKey.currentState?.reset();
-                            }
-                          },
-                          icon: const Icon(Icons.send_outlined)),
-                    ]))
+                // height: 200,
+                // color: Colors.greenAccent[700],
+                child: InputChatActions(
+                    userNotifier: _userNotifier,
+                    messageFormKey: _messageFormKey))
           ]))
     ]));
   }
+}
 
-  void _handleUserRecording() async {
+class InputChatActions extends StatelessWidget {
+  const InputChatActions({
+    super.key,
+    required VozController userNotifier,
+    required GlobalKey<FormState> messageFormKey,
+    // TODO: preguntar sobre este patron de init
+  })  : _userNotifier = userNotifier,
+        _messageFormKey = messageFormKey;
+
+  final VozController _userNotifier;
+  final GlobalKey<FormState> _messageFormKey;
+
+  Future<void> _handleUserRecording() async {
     if (_userNotifier.currentStatus
         case RecordState.idle ||
             RecordState.recordingOk ||
@@ -297,5 +191,152 @@ class _VoiceBodyState extends State<VoiceBody> {
     } else if (_userNotifier.currentStatus case _) {
       debugPrint('noop');
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+      ListenableBuilder(
+          listenable: _userNotifier,
+          builder: (_, __) {
+            return _userNotifier.currentStatus == RecordState.recording
+                ? IconButton(
+                    color: Colors.redAccent,
+                    // onPressed: () {},
+                    onPressed: _handleUserRecording,
+                    icon: const Icon(Icons.mic))
+                : IconButton.filledTonal(
+                    color: Colors.white70,
+                    // onPressed: () {},
+                    onPressed: _handleUserRecording,
+                    icon: const Icon(Icons.mic));
+          }),
+      // TODO: dejar para otra ocasión la feature de copiar
+      // IconButton.filledTonal(
+      //     color: Colors.white70,
+      //     onPressed: () async {
+      //       await Clipboard.setData(
+      //           ClipboardData(text: _userNotifier.content()));
+
+      //       var snackBar =
+      //           const SnackBar(content: Text('copied!'));
+      //       ScaffoldMessenger.of(context)
+      //           .showSnackBar(snackBar);
+      //     },
+      //     icon: const Icon(Icons.save)),
+
+      IconButton.filledTonal(
+          color: Colors.white70,
+          // onPressed: () {},
+          onPressed: () {
+            // TODO: probar bien el reset!
+            debugPrint(_messageFormKey.currentState.toString());
+            _messageFormKey.currentState?.reset();
+          },
+          icon: const Icon(Icons.delete_forever)),
+      IconButton.filledTonal(
+          color: Colors.white70,
+          // onPressed: () {},
+          onPressed: () {
+            debugPrint('preguntando a lola!');
+            var isValid =
+                _messageFormKey.currentState?.validate();
+
+            if (isValid == null) return;
+            if (isValid) {
+              _messageFormKey.currentState?.save();
+            }
+          },
+          icon: const Icon(Icons.send_outlined)),
+    ]);
+  }
+}
+
+class InputChatMessage extends StatelessWidget {
+  const InputChatMessage({
+    super.key,
+    required VozController userNotifier,
+    required GlobalKey<FormState> messageFormKey,
+    // TODO: preguntar sobre este patron de init
+  })  : _userNotifier = userNotifier,
+        _messageFormKey = messageFormKey;
+
+  final VozController _userNotifier;
+  final GlobalKey<FormState> _messageFormKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+        listenable: _userNotifier,
+        builder: (_, __) {
+          // debugPrint("size: ${ctx.size?.height}");
+          return Form(
+            key: _messageFormKey,
+            child: TextFormField(
+                validator: (value) {
+                  debugPrint('input valido? $value');
+                  // TODO: como hacer mas prolijo ese is String?
+                  if (value is String) {
+                    if (value.isEmpty) {
+                      return 'Field required';
+                    } else {
+                      return null;
+                    }
+                  }
+                  return 'Field Required';
+                },
+                minLines: null,
+                maxLines: 4,
+                controller:
+                    TextEditingController(text: _userNotifier.content()),
+                keyboardType: TextInputType.multiline,
+                textInputAction: TextInputAction.unspecified,
+                decoration: InputDecoration(
+                  // filled: !true,
+                  // isDense: !true,
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      borderSide: BorderSide.none),
+                  // border: state == VozMessageState.editing
+                  // ? const OutlineInputBorder()
+                  // : InputBorder.none,
+                  // labelText: 'Presiona para grabar mensaje',
+                  labelStyle: const TextStyle(
+                      color: Colors.white70,
+                      fontStyle: FontStyle.normal,
+                      fontSize: 36),
+                ),
+                style: const TextStyle(
+                  fontSize: 36.0,
+                  color: Colors.white70,
+                ),
+                onFieldSubmitted: (value) {
+                  debugPrint(
+                      '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
+                  var sk = SnackBar(content: Text('Hello: $value'));
+                  ScaffoldMessenger.of(context).showSnackBar(sk);
+                },
+                onSaved: (value) {
+                  debugPrint('>> on-saved-value: $value');
+                  if (value == null) return;
+
+                  _userNotifier.updateContent(value);
+
+                  showModalBottomSheet(
+                    isScrollControlled: true,
+                    context: context,
+                    builder: (ctx) => LolaMessageScreen(
+                      // TODO: input lola stream
+                      text: _userNotifier.content(),
+                      scale: 1.0,
+                    ),
+                  );
+                },
+                onTapOutside: (event) {
+                  debugPrint('>> ev: $event');
+                  FocusManager.instance.primaryFocus?.unfocus();
+                }),
+          );
+        });
   }
 }
