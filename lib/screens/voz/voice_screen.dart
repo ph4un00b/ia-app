@@ -8,23 +8,77 @@ import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 // import 'package:keyboard_actions/keyboard_actions.dart';
 // import 'package:keyboard_actions/keyboard_actions_config.dart';
 
-class VoiceScreen extends StatelessWidget {
+final class ChatMessage {
+  String msgContent;
+  String msgType;
+  ChatMessage({required this.msgContent, required this.msgType});
+}
+
+List<ChatMessage> messages = [
+  ChatMessage(msgContent: "Hello, Will", msgType: "receiver"),
+  ChatMessage(msgContent: "How have you been?", msgType: "receiver"),
+  ChatMessage(
+      msgContent: "I am doing fine dude. wbu asdasd dsa ds dsa d af sfafaasf?",
+      msgType: "sender"),
+  ChatMessage(
+      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(msgContent: "Is there any thing wrong?", msgType: "sender"),
+  ChatMessage(
+      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(msgContent: "Hello, Will", msgType: "receiver"),
+  ChatMessage(msgContent: "How have you been?", msgType: "receiver"),
+  ChatMessage(
+      msgContent: "I am doing fine dude. wbu asdasd dsa ds dsa d af sfafaasf?",
+      msgType: "sender"),
+  ChatMessage(
+      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(msgContent: "Is there any thing wrong?", msgType: "sender"),
+  ChatMessage(
+      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(
+      msgContent: "I am doing fine dude. wbu asdasd dsa ds dsa d af sfafaasf?",
+      msgType: "sender"),
+  ChatMessage(
+      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(msgContent: "Is there any thing wrong?", msgType: "sender"),
+  ChatMessage(
+      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+];
+
+class VoiceScreen extends StatefulWidget {
   const VoiceScreen({super.key});
+
+  @override
+  State<VoiceScreen> createState() => _VoiceScreenState();
+}
+
+class _VoiceScreenState extends State<VoiceScreen> {
+  int pageIndex = 0;
+
+  // final _userNotifier = VozController();
+  // final _messageFormKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(
-          'Voz',
-          style: GoogleFonts.satisfy(
-            textStyle: Theme.of(context).textTheme.displayLarge,
-            fontSize: 28,
-            fontWeight: FontWeight.w200,
-            fontStyle: FontStyle.italic,
-          ),
+        toolbarHeight: 140,
+        title: const Column(
+          children: [
+            HeaderUI(),
+            // SearchBarUI()
+          ],
         ),
+        // title: Text(
+        //   'Voz',
+        //   style: GoogleFonts.satisfy(
+        //     textStyle: Theme.of(context).textTheme.displayLarge,
+        //     fontSize: 28,
+        //     fontWeight: FontWeight.w200,
+        //     fontStyle: FontStyle.italic,
+        //   ),
+        // ),
         actions: [
           GestureDetector(
             onTap: () => _showFormatTypographyBottomSheet(context),
@@ -32,7 +86,116 @@ class VoiceScreen extends StatelessWidget {
           )
         ],
       ),
+      bottomNavigationBar: const BottomTabs(),
+      // bottomNavigationBar: buildCustomBottomTabs(context),
       body: const VoiceBody(),
+    );
+  }
+
+  Theme buildCustomBottomTabs(BuildContext context) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        hoverColor: Colors.transparent,
+      ),
+      child: Container(
+        height: 220,
+        decoration: BoxDecoration(
+          color: Theme.of(context).primaryColor,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                IconButton(
+                  enableFeedback: false,
+                  onPressed: () {
+                    setState(() {
+                      pageIndex = 0;
+                    });
+                  },
+                  icon: pageIndex == 0
+                      ? const Icon(
+                          Icons.home_filled,
+                          color: Colors.white,
+                          size: 35,
+                        )
+                      : const Icon(
+                          Icons.home_outlined,
+                          color: Colors.white,
+                          size: 35,
+                        ),
+                ),
+                IconButton(
+                  enableFeedback: false,
+                  onPressed: () {
+                    setState(() {
+                      pageIndex = 1;
+                    });
+                  },
+                  icon: pageIndex == 1
+                      ? const Icon(
+                          Icons.work_rounded,
+                          color: Colors.white,
+                          size: 35,
+                        )
+                      : const Icon(
+                          Icons.work_outline_outlined,
+                          color: Colors.white,
+                          size: 35,
+                        ),
+                ),
+                IconButton(
+                  enableFeedback: false,
+                  onPressed: () {
+                    setState(() {
+                      pageIndex = 2;
+                    });
+                  },
+                  icon: pageIndex == 2
+                      ? const Icon(
+                          Icons.widgets_rounded,
+                          color: Colors.white,
+                          size: 35,
+                        )
+                      : const Icon(
+                          Icons.widgets_outlined,
+                          color: Colors.white,
+                          size: 35,
+                        ),
+                ),
+                IconButton(
+                  enableFeedback: false,
+                  onPressed: () {
+                    setState(() {
+                      pageIndex = 3;
+                    });
+                  },
+                  icon: pageIndex == 3
+                      ? const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                          size: 35,
+                        )
+                      : const Icon(
+                          Icons.person_outline,
+                          color: Colors.white,
+                          size: 35,
+                        ),
+                ),
+              ],
+            ),
+            // InputChat(
+            //     userNotifier: _userNotifier, messageFormKey: _messageFormKey)
+          ],
+        ),
+      ),
     );
   }
 
@@ -71,6 +234,41 @@ class VoiceScreen extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+class BottomTabs extends StatelessWidget {
+  const BottomTabs({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BottomNavigationBar(
+      elevation: 0.0,
+      selectedItemColor: Colors.red,
+      unselectedItemColor: Colors.grey.shade600,
+      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      type: BottomNavigationBarType.fixed,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.message),
+          // title: Text("Chats"),
+          label: "Chats",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.group_work),
+          // title: Text("Channels"),
+          label: "Channels",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.account_box),
+          // title: Text("Profile"),
+          label: "Profile",
+        ),
+      ],
     );
   }
 }
@@ -125,40 +323,205 @@ class _VoiceBodyState extends State<VoiceBody> {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-        child: Column(children: [
-      // child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-      const Expanded(
-        child: SingleChildScrollView(
-          child: !true
-              ? Icon(
-                  Icons.multitrack_audio,
-                  size: 72,
-                )
-              : Text("lorem"),
+    return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        SafeArea(
+          child: ListView.builder(
+            itemCount: messages.length,
+            shrinkWrap: true,
+            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (context, index) {
+              return Padding(
+                // padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: LayoutBuilder(
+                  builder: (_, constrains) {
+                    // return Align(
+                    //   alignment: (messages[index].msgType == "receiver"
+                    //       ? Alignment.topLeft
+                    //       : Alignment.topRight),``
+                    //   child: Container(
+                    //     decoration: BoxDecoration(``
+                    //       borderRadius: BorderRadius.circular(20),
+                    //       color: (messages[index].msgType == "receiver"
+                    //           ? Colors.grey.shade800
+                    //           : Colors.blue[800]),
+                    //     ),
+                    //     padding: EdgeInsets.all(16),
+                    //     child: Text(
+                    //       messages[index].msgContent,
+                    //       style: TextStyle(fontSize: 35),
+                    //     ),
+                    //   ),
+                    // );
+                    return Row(
+                      children: [
+                        if (messages[index].msgType == "sender") const Spacer(),
+                        ConstrainedBox(
+                          constraints:
+                              BoxConstraints(maxWidth: constrains.maxWidth),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                                color: (messages[index].msgType == "receiver"
+                                    ? Colors.grey.shade800
+                                    : Colors.blue[800]),
+                                borderRadius: BorderRadius.circular(16)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                messages[index].msgContent,
+                                style: const TextStyle(fontSize: 15),
+                              ),
+                            ),
+                          ),
+                        ),
+                        if (messages[index].msgType != "sender") const Spacer(),
+                      ],
+                    );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
+        // child: Column(mainAxisAlignment: MainAxisAlignment.end, children: [
+        // const Expanded(
+        //   child: SingleChildScrollView(
+        //     child: !true
+        //         ? Icon(
+        //             Icons.multitrack_audio,
+        //             size: 72,
+        //           )
+        //         : Text("jamon"),
+        //   ),
+        // ),
+        InputChat(userNotifier: _userNotifier, messageFormKey: _messageFormKey)
+      ]),
+    );
+  }
+}
+
+class SearchBarUI extends StatelessWidget {
+  const SearchBarUI({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 16, left: 16, right: 16),
+      child: TextField(
+        decoration: InputDecoration(
+          hintText: "Search...",
+          hintStyle: TextStyle(color: Colors.grey.shade600),
+          prefixIcon: Icon(
+            Icons.search,
+            color: Colors.grey.shade600,
+            size: 20,
+          ),
+          filled: true,
+          fillColor: Colors.grey.shade100,
+          contentPadding: const EdgeInsets.all(8),
+          enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(20),
+              borderSide: BorderSide(color: Colors.grey.shade100)),
         ),
       ),
-      Container(
-          padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-          child: Row(children: [
-            Flexible(
+    );
+  }
+}
+
+class HeaderUI extends StatelessWidget {
+  const HeaderUI({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Text(
+            'Voz',
+            style: GoogleFonts.satisfy(
+              textStyle: Theme.of(context).textTheme.displayLarge,
+              fontSize: 28,
+              fontWeight: FontWeight.w200,
+              fontStyle: FontStyle.italic,
+            ),
+          ),
+          // const Text(
+          //   "Conversations",
+          //   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+          // ),
+          Container(
+            padding:
+                const EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+            height: 30,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              color: Colors.grey[800],
+            ),
+            child: const Row(
+              children: <Widget>[
+                Icon(
+                  Icons.add,
+                  color: Colors.pink,
+                  size: 20,
+                ),
+                SizedBox(
+                  width: 2,
+                ),
+                Text(
+                  "Add New",
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class InputChat extends StatelessWidget {
+  const InputChat({
+    super.key,
+    required VozController userNotifier,
+    required GlobalKey<FormState> messageFormKey,
+  })  : _userNotifier = userNotifier,
+        _messageFormKey = messageFormKey;
+
+  final VozController _userNotifier;
+  final GlobalKey<FormState> _messageFormKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+        child: Row(children: [
+          Flexible(
               flex: 4,
-                // TODO: que es mejor un listener con varios componentes ó varios listener con un componente?
-                child: InputChatMessage(
-                    userNotifier: _userNotifier,
-                    messageFormKey: _messageFormKey)),
-            // const SizedBox(width: 12),
-            Flexible(
+              // TODO: que es mejor un listener con varios componentes ó varios listener con un componente?
+              child: InputChatMessage(
+                  userNotifier: _userNotifier,
+                  messageFormKey: _messageFormKey)),
+          // const SizedBox(width: 12),
+          Flexible(
               flex: 1,
-                // TODO: probar LayoutBuilder para obtener dinamicamente el heigth?
-                // height: _messageFormKey.currentContext?.size?.height,
-                // height: 200,
-                // color: Colors.greenAccent[700],
-                child: InputChatActions(
-                    userNotifier: _userNotifier,
-                    messageFormKey: _messageFormKey))
-          ]))
-    ]));
+              // TODO: probar LayoutBuilder para obtener dinamicamente el heigth?
+              // height: _messageFormKey.currentContext?.size?.height,
+              // height: 200,
+              // color: Colors.greenAccent[700],
+              child: InputChatActions(
+                  userNotifier: _userNotifier, messageFormKey: _messageFormKey))
+        ]));
   }
 }
 
@@ -239,8 +602,7 @@ class InputChatActions extends StatelessWidget {
           // onPressed: () {},
           onPressed: () {
             debugPrint('preguntando a lola!');
-            var isValid =
-                _messageFormKey.currentState?.validate();
+            var isValid = _messageFormKey.currentState?.validate();
 
             if (isValid == null) return;
             if (isValid) {
@@ -286,7 +648,7 @@ class InputChatMessage extends StatelessWidget {
                   return 'Field Required';
                 },
                 minLines: null,
-                maxLines: 4,
+                maxLines: 1,
                 controller:
                     TextEditingController(text: _userNotifier.content()),
                 keyboardType: TextInputType.multiline,
