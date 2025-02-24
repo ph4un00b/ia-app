@@ -8,6 +8,8 @@ import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 // import 'package:keyboard_actions/keyboard_actions.dart';
 // import 'package:keyboard_actions/keyboard_actions_config.dart';
 
+const double _INPUT_H = 60.0;
+
 final class ChatMessage {
   String msgContent;
   String msgType;
@@ -63,13 +65,17 @@ class _VoiceScreenState extends State<VoiceScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 140,
-        title: const Column(
-          children: [
-            HeaderUI(),
-            // SearchBarUI()
-          ],
-        ),
+        // centerTitle: true,
+        // automaticallyImplyLeading: !false,
+        backgroundColor: Colors.grey[900],
+        flexibleSpace: const SafeArea(child: HeaderBar()),
+        // toolbarHeight: 140,
+        // title: const Column(
+        //   children: [
+        //     HeaderUI(),
+        //     // SearchBarUI()
+        //   ],
+        // ),
         // title: Text(
         //   'Voz',
         //   style: GoogleFonts.satisfy(
@@ -88,7 +94,8 @@ class _VoiceScreenState extends State<VoiceScreen> {
       ),
       bottomNavigationBar: const BottomTabs(),
       // bottomNavigationBar: buildCustomBottomTabs(context),
-      body: const VoiceBody(),
+      // body: const VoiceBody(),
+      body: const StackedBody(),
     );
   }
 
@@ -234,6 +241,240 @@ class _VoiceScreenState extends State<VoiceScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class HeaderBar extends StatelessWidget {
+  const HeaderBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(right: 16),
+      child: Row(
+        children: [
+          // IconButton(
+          //   onPressed: () {
+          //     Navigator.pop(context);
+          //   },
+          //   icon: const Icon(
+          //     Icons.arrow_back,
+          //     color: Colors.white,
+          //   ),
+          // ),
+          const SizedBox(
+            width: 16,
+          ),
+          const CircleAvatar(
+            backgroundImage: NetworkImage(
+                "<https://randomuser.me/api/portraits/women/5.jpg>"),
+            maxRadius: 20,
+          ),
+          const SizedBox(
+            width: 12,
+          ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text(
+                  "Lola",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(
+                  height: 6,
+                ),
+                Text(
+                  "Online",
+                  style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          // const Icon(
+          //   Icons.settings,
+          //   color: Colors.black54,
+          // ),
+        ],
+      ),
+    );
+  }
+}
+
+class StackedBody extends StatelessWidget {
+  const StackedBody({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        if (!!true)
+          const SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: SafeArea(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [MessagesBuilder(), SizedBox(height: _INPUT_H)]),
+              )),
+        if (!true)
+          SafeArea(
+              child: Container(
+            decoration: BoxDecoration(
+              color: Colors.lightBlue,
+              borderRadius: BorderRadius.circular(30),
+            ),
+            child: const Center(
+                heightFactor: null,
+                widthFactor: null,
+                child: Icon(size: 72.0, Icons.waves)),
+          )),
+        const InputMessage()
+      ],
+    );
+  }
+}
+
+class MessagesBuilder extends StatelessWidget {
+  const MessagesBuilder({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.builder(
+      itemCount: messages.length,
+      shrinkWrap: true,
+      padding: const EdgeInsets.only(top: 10, bottom: 10),
+      physics: const NeverScrollableScrollPhysics(),
+      itemBuilder: (context, index) {
+        return Padding(
+          // padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child: LayoutBuilder(
+            builder: (_, constrains) {
+              // return Align(
+              //   alignment: (messages[index].msgType == "receiver"
+              //       ? Alignment.topLeft
+              //       : Alignment.topRight),``
+              //   child: Container(
+              //     decoration: BoxDecoration(``
+              //       borderRadius: BorderRadius.circular(20),
+              //       color: (messages[index].msgType == "receiver"
+              //           ? Colors.grey.shade800
+              //           : Colors.blue[800]),
+              //     ),
+              //     padding: EdgeInsets.all(16),
+              //     child: Text(
+              //       messages[index].msgContent,
+              //       style: TextStyle(fontSize: 35),
+              //     ),
+              //   ),
+              // );
+              return Row(
+                children: [
+                  if (messages[index].msgType == "sender") const Spacer(),
+                  ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: constrains.maxWidth),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                          color: (messages[index].msgType == "receiver"
+                              ? Colors.grey.shade800
+                              : Colors.blue[800]),
+                          borderRadius: BorderRadius.circular(16)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Text(
+                          messages[index].msgContent,
+                          style: const TextStyle(fontSize: 15),
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (messages[index].msgType != "sender") const Spacer(),
+                ],
+              );
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+class InputMessage extends StatelessWidget {
+  const InputMessage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: Container(
+        padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
+        height: _INPUT_H,
+        width: double.infinity,
+        color: Colors.white,
+        child: Row(
+          children: [
+            // GestureDetector(
+            //   onTap: (){
+            //   },
+            //   child: Container(
+            //     height: 30,
+            //     width: 30,
+            //     decoration: BoxDecoration(
+            //       color: Colors.lightBlue,
+            //       borderRadius: BorderRadius.circular(30),
+            //     ),
+            //     child: const Icon(Icons.add, color: Colors.white, size: 20, ),
+            //   ),
+            // ),
+            const SizedBox(width: 1),
+            const Expanded(
+                child: TextField(
+                    decoration: InputDecoration(
+                        fillColor: Colors.amber,
+                        hintText: "Write message...",
+                        hintStyle: TextStyle(color: Colors.black54),
+                        border: InputBorder.none))),
+            const SizedBox(width: 4),
+            // FloatingActionButton(
+            //   onPressed: () {},
+            //   backgroundColor: Colors.blue,
+            //   elevation: 0,
+            //   child: const Icon(
+            //     Icons.send,
+            //     color: Colors.white,
+            //     size: 18,
+            //   ),
+            // ),
+            GestureDetector(
+              onTap: () {},
+              child: Container(
+                height: 40,
+                width: 40,
+                decoration: BoxDecoration(
+                  color: Colors.lightBlue,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: const Icon(
+                  Icons.send,
+                  color: Colors.white,
+                  size: 18,
+                ),
+              ),
+            ),
+            const SizedBox(width: 4),
+          ],
+        ),
+      ),
     );
   }
 }
