@@ -76,21 +76,6 @@ class _VoiceScreenState extends State<VoiceScreen> {
         //     // SearchBarUI()
         //   ],
         // ),
-        // title: Text(
-        //   'Voz',
-        //   style: GoogleFonts.satisfy(
-        //     textStyle: Theme.of(context).textTheme.displayLarge,
-        //     fontSize: 28,
-        //     fontWeight: FontWeight.w200,
-        //     fontStyle: FontStyle.italic,
-        //   ),
-        // ),
-        actions: [
-          GestureDetector(
-            onTap: () => _showFormatTypographyBottomSheet(context),
-            child: const Icon(Icons.text_fields),
-          )
-        ],
       ),
       bottomNavigationBar: const BottomTabs(),
       // bottomNavigationBar: buildCustomBottomTabs(context),
@@ -205,6 +190,67 @@ class _VoiceScreenState extends State<VoiceScreen> {
       ),
     );
   }
+}
+
+class HeaderBar extends StatelessWidget {
+  const HeaderBar({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(right: 16),
+      child: Row(
+        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          // IconButton(
+          //   onPressed: () {
+          //     Navigator.pop(context);
+          //   },
+          //   icon: const Icon(
+          //     Icons.arrow_back,
+          //     color: Colors.white,
+          //   ),
+          // ),
+          const SizedBox(width: 16),
+          const CircleAvatar(
+            backgroundImage: NetworkImage(
+                "<https://randomuser.me/api/portraits/women/84.jpg>"),
+            maxRadius: 20,
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            flex: 8,
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text(
+                    "Lola",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                  ),
+                  // const SizedBox(height: 6),
+                  Text(
+                    "Online",
+                    style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+                  )
+                ]),
+          ),
+          Expanded(
+            flex: 1,
+            child: GestureDetector(
+                onTap: () => _showFormatTypographyBottomSheet(context),
+                child: const Icon(Icons.text_fields)),
+          ),
+          const Expanded(
+            flex: 1,
+            child: Icon(Icons.settings),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _showFormatTypographyBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -245,66 +291,6 @@ class _VoiceScreenState extends State<VoiceScreen> {
   }
 }
 
-class HeaderBar extends StatelessWidget {
-  const HeaderBar({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(right: 16),
-      child: Row(
-        children: [
-          // IconButton(
-          //   onPressed: () {
-          //     Navigator.pop(context);
-          //   },
-          //   icon: const Icon(
-          //     Icons.arrow_back,
-          //     color: Colors.white,
-          //   ),
-          // ),
-          const SizedBox(
-            width: 16,
-          ),
-          const CircleAvatar(
-            backgroundImage: NetworkImage(
-                "<https://randomuser.me/api/portraits/women/5.jpg>"),
-            maxRadius: 20,
-          ),
-          const SizedBox(
-            width: 12,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text(
-                  "Lola",
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(
-                  height: 6,
-                ),
-                Text(
-                  "Online",
-                  style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-                ),
-              ],
-            ),
-          ),
-          // const Icon(
-          //   Icons.settings,
-          //   color: Colors.black54,
-          // ),
-        ],
-      ),
-    );
-  }
-}
-
 class StackedBody extends StatelessWidget {
   const StackedBody({
     super.key,
@@ -334,7 +320,7 @@ class StackedBody extends StatelessWidget {
                 widthFactor: null,
                 child: Icon(size: 72.0, Icons.waves)),
           )),
-        const InputMessage()
+        const InputMessageForm()
       ],
     );
   }
@@ -407,8 +393,8 @@ class MessagesBuilder extends StatelessWidget {
   }
 }
 
-class InputMessage extends StatelessWidget {
-  const InputMessage({
+class InputMessageForm extends StatelessWidget {
+  const InputMessageForm({
     super.key,
   });
 
@@ -437,13 +423,18 @@ class InputMessage extends StatelessWidget {
             //   ),
             // ),
             const SizedBox(width: 1),
-            const Expanded(
-                child: TextField(
-                    decoration: InputDecoration(
-                        fillColor: Colors.amber,
-                        hintText: "Write message...",
-                        hintStyle: TextStyle(color: Colors.black54),
-                        border: InputBorder.none))),
+            Expanded(
+                child: Form(
+                    child: TextFormField(
+                        decoration: const InputDecoration(
+                            fillColor: Colors.amber,
+                            hintText: "Write message...",
+                            hintStyle: TextStyle(color: Colors.black54),
+                            border: InputBorder.none),
+                        onTapOutside: (event) {
+                          debugPrint('>> ev: $event');
+                          FocusManager.instance.primaryFocus?.unfocus();
+                        }))),
             const SizedBox(width: 4),
             // FloatingActionButton(
             //   onPressed: () {},
