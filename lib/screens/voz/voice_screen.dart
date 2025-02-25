@@ -291,10 +291,27 @@ class HeaderBar extends StatelessWidget {
   }
 }
 
-class StackedBody extends StatelessWidget {
+class StackedBody extends StatefulWidget {
   const StackedBody({
     super.key,
   });
+
+  @override
+  State<StackedBody> createState() => _StackedBodyState();
+}
+
+class _StackedBodyState extends State<StackedBody> {
+  final _userNotifier = VozController();
+  final _lola = LolaController();
+  final _messageFormKey = GlobalKey<FormState>();
+
+  @override
+  void dispose() {
+    _userNotifier.dispose();
+    // _lola.dispose();
+    super.dispose();
+    debugPrint('disposing voice screen');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -320,7 +337,8 @@ class StackedBody extends StatelessWidget {
                 widthFactor: null,
                 child: Icon(size: 72.0, Icons.waves)),
           )),
-        const InputMessageForm()
+        InputMessageForm(
+            messageFormKey: _messageFormKey, userNotifier: _userNotifier)
       ],
     );
   }
@@ -396,7 +414,14 @@ class MessagesBuilder extends StatelessWidget {
 class InputMessageForm extends StatelessWidget {
   const InputMessageForm({
     super.key,
-  });
+    required VozController userNotifier,
+    required GlobalKey<FormState> messageFormKey,
+    // TODO: preguntar sobre este patron de init
+  })  : _userNotifier = userNotifier,
+        _messageFormKey = messageFormKey;
+
+  final VozController _userNotifier;
+  final GlobalKey<FormState> _messageFormKey;
 
   @override
   Widget build(BuildContext context) {
@@ -406,7 +431,7 @@ class InputMessageForm extends StatelessWidget {
         padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
         height: _INPUT_H,
         width: double.infinity,
-        color: Colors.white,
+        color: Colors.grey[900],
         child: Row(
           children: [
             // GestureDetector(
@@ -424,17 +449,66 @@ class InputMessageForm extends StatelessWidget {
             // ),
             const SizedBox(width: 1),
             Expanded(
-                child: Form(
-                    child: TextFormField(
-                        decoration: const InputDecoration(
-                            fillColor: Colors.amber,
-                            hintText: "Write message...",
-                            hintStyle: TextStyle(color: Colors.black54),
-                            border: InputBorder.none),
-                        onTapOutside: (event) {
-                          debugPrint('>> ev: $event');
-                          FocusManager.instance.primaryFocus?.unfocus();
-                        }))),
+                child: ListenableBuilder(
+                    listenable: _userNotifier,
+                    builder: (_, __) {
+                      return Form(
+                          key: _messageFormKey,
+                          child: TextFormField(
+                              validator: (value) {
+                                debugPrint('input valido? $value');
+                                // TODO: como hacer mas prolijo ese is String?
+                                if (value is String) {
+                                  if (value.isEmpty) {
+                                    return 'Field required';
+                                  } else {
+                                    return null;
+                                  }
+                                }
+                                return 'Field Required';
+                              },
+                              minLines: null,
+                              maxLines: 1,
+                              controller: TextEditingController(
+                                  text: _userNotifier.content()),
+                              keyboardType: TextInputType.multiline,
+                              textInputAction: TextInputAction.unspecified,
+                              decoration: InputDecoration(
+                                  suffixIcon: GestureDetector(
+                                    onTap: () {
+                                      debugPrint(_messageFormKey.currentState
+                                          .toString());
+                                      _messageFormKey.currentState?.reset();
+                                    },
+                                    child: const Icon(
+                                      Icons.delete_forever,
+                                      color: Colors.white,
+                                      size: 24,
+                                    ),
+                                  ),
+                                  fillColor: Colors.grey[900],
+                                  hintText: "Mensaje...",
+                                  hintStyle:
+                                      const TextStyle(color: Colors.white54),
+                                  border: InputBorder.none),
+                              onFieldSubmitted: (value) {
+                                debugPrint(
+                                    '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
+                                var sk =
+                                    SnackBar(content: Text('Hello: $value'));
+                                ScaffoldMessenger.of(context).showSnackBar(sk);
+                              },
+                              onSaved: (value) {
+                                debugPrint('>> on-saved-value: $value');
+                                if (value == null) return;
+
+                                _userNotifier.updateContent(value);
+                              },
+                              onTapOutside: (event) {
+                                debugPrint('>> unfocusing: $event');
+                                FocusManager.instance.primaryFocus?.unfocus();
+                              }));
+                    })),
             const SizedBox(width: 4),
             // FloatingActionButton(
             //   onPressed: () {},
@@ -446,27 +520,73 @@ class InputMessageForm extends StatelessWidget {
             //     size: 18,
             //   ),
             // ),
-            GestureDetector(
-              onTap: () {},
-              child: Container(
-                height: 40,
-                width: 40,
-                decoration: BoxDecoration(
-                  color: Colors.lightBlue,
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: const Icon(
-                  Icons.send,
-                  color: Colors.white,
-                  size: 18,
-                ),
-              ),
-            ),
+            ListenableBuilder(
+                listenable: _userNotifier,
+                builder: (_, __) {
+                  return _userNotifier.currentStatus == RecordState.recording
+                      ? GestureDetector(
+                          onTap: () {
+                            _handleUserRecording();
+                            _messageFormKey.currentState?.save();
+                          },
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: const Icon(
+                              Icons.mic,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        )
+                      : GestureDetector(
+                             onTap: () {
+                            _handleUserRecording();
+                            _messageFormKey.currentState?.save();
+                          },
+                          child: Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              color: Colors.lightBlue,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                            child: const Icon(
+                              Icons.mic,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                        );
+                }),
             const SizedBox(width: 4),
           ],
         ),
       ),
     );
+  }
+
+  Future<void> _handleUserRecording() async {
+    if (_userNotifier.currentStatus
+        case RecordState.idle ||
+            RecordState.recordingOk ||
+            RecordState.stopRecording ||
+            RecordState.stopRecordingError ||
+            RecordState.playingError ||
+            RecordState.playingCompleted) {
+      // await lolaController.stopAudio();
+      await _userNotifier.startRecording();
+    } else if (_userNotifier.currentStatus case RecordState.recording) {
+      await _userNotifier.stopRecording();
+      // await lolaController.queryReply(
+      // userQuestion: _userController.content(), debug: debug);
+    } else if (_userNotifier.currentStatus case _) {
+      debugPrint('noop');
+    }
   }
 }
 
