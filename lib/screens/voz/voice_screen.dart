@@ -479,6 +479,7 @@ class InputMessageForm extends StatelessWidget {
                                       debugPrint(_messageFormKey.currentState
                                           .toString());
                                       _messageFormKey.currentState?.reset();
+                                      _userNotifier.updateContent("");
                                     },
                                     child: const Icon(
                                       Icons.delete_forever,
