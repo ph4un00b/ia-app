@@ -56,7 +56,7 @@ class VozBody extends StatefulWidget {
 }
 
 class _VozBodyState extends State<VozBody> {
-  final _debug = !true;
+  final _debug = true;
   final _user = VozController();
   final _lola = LolaController();
   final _messageFormKey = GlobalKey<FormState>();

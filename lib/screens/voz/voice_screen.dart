@@ -215,8 +215,8 @@ class HeaderBar extends StatelessWidget {
           // ),
           const SizedBox(width: 16),
           const CircleAvatar(
-            backgroundImage: NetworkImage(
-                "<https://randomuser.me/api/portraits/women/84.jpg>"),
+            // backgroundImage: NetworkImage(
+            //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
             maxRadius: 20,
           ),
           const SizedBox(width: 12),
@@ -317,26 +317,25 @@ class _StackedBodyState extends State<StackedBody> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        if (!!true)
-          const SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              child: SafeArea(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [MessagesBuilder(), SizedBox(height: _INPUT_H)]),
-              )),
-        if (!true)
-          SafeArea(
-              child: Container(
-            decoration: BoxDecoration(
-              color: Colors.lightBlue,
-              borderRadius: BorderRadius.circular(30),
-            ),
-            child: const Center(
-                heightFactor: null,
-                widthFactor: null,
-                child: Icon(size: 72.0, Icons.waves)),
-          )),
+        const SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: SafeArea(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [MessagesBuilder(), SizedBox(height: _INPUT_H)]),
+            )),
+        // if (!true)
+        //   SafeArea(
+        //       child: Container(
+        //     decoration: BoxDecoration(
+        //       color: Colors.lightBlue,
+        //       borderRadius: BorderRadius.circular(30),
+        //     ),
+        //     child: const Center(
+        //         heightFactor: null,
+        //         widthFactor: null,
+        //         child: Icon(size: 72.0, Icons.waves)),
+        //   )),
         InputMessageForm(
             messageFormKey: _messageFormKey, userNotifier: _userNotifier)
       ],
@@ -545,7 +544,7 @@ class InputMessageForm extends StatelessWidget {
                           ),
                         )
                       : GestureDetector(
-                             onTap: () {
+                          onTap: () {
                             _handleUserRecording();
                             _messageFormKey.currentState?.save();
                           },

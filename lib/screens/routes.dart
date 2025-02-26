@@ -13,6 +13,7 @@ final appRoutes = <String, WidgetBuilder>{
   '/': (ctx) => const SplashScreen(),
   '/initial': (ctx) => const InitialVozScreen(),
   '/voz': (ctx) => const VoiceScreen(),
+  // '/voz': (ctx) => const VozScreen(),
   // '/opciones': (ctx) => const OptProfileScreen(),
   // '/opciones/messages': (ctx) =>
   //     MessagesScreen(items: List<String>.generate(10000, (i) => 'Item $i')),
