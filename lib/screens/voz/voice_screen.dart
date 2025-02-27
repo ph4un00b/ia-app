@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
+import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Voz/voz_controller.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
 
@@ -301,43 +303,60 @@ class StackedBody extends StatefulWidget {
 }
 
 class _StackedBodyState extends State<StackedBody> {
+  final _debug = true;
   final _userNotifier = VozController();
-  final _lola = LolaController();
+  final _lolaController = LolaController();
   final _messageFormKey = GlobalKey<FormState>();
+  Stream<LolaServiceState>? _lolaStream;
+  Stream<AudioState>? _audioStream;
+
+  var _debugLolaState = '';
+  var _debugLolaAudioState = '';
+  // var _scale = Constants.scale;
+
+  @override
+  void initState() {
+    super.initState();
+    // _loadUserPreferences();
+
+    _lolaStream = _lolaController.serviceState.stream.asBroadcastStream();
+    _audioStream = _lolaController.audioState.stream.asBroadcastStream();
+
+    if (_debug) {
+      _lolaStream?.listen((state) {
+        _debugLolaState = state.toString();
+      });
+
+      _audioStream?.listen((state) {
+        _debugLolaAudioState = state.toString();
+      });
+    }
+  }
 
   @override
   void dispose() {
     _userNotifier.dispose();
-    // _lola.dispose();
+    _lolaController.dispose();
     super.dispose();
-    debugPrint('disposing voice screen');
+    debugPrint('disposing voz screen');
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        const SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: SafeArea(
-              child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [MessagesBuilder(), SizedBox(height: _INPUT_H)]),
-            )),
-        // if (!true)
-        //   SafeArea(
-        //       child: Container(
-        //     decoration: BoxDecoration(
-        //       color: Colors.lightBlue,
-        //       borderRadius: BorderRadius.circular(30),
-        //     ),
-        //     child: const Center(
-        //         heightFactor: null,
-        //         widthFactor: null,
-        //         child: Icon(size: 72.0, Icons.waves)),
-        //   )),
+        LolaServerMessagePad(scale: 1.0, stream: _lolaStream),
+        // const SingleChildScrollView(
+        //     physics: BouncingScrollPhysics(),
+        //     child: SafeArea(
+        //       child: Column(
+        //           crossAxisAlignment: CrossAxisAlignment.start,
+        //           children: [MessagesBuilder(), SizedBox(height: _INPUT_H)]),
+        //     )),
         InputMessageForm(
-            messageFormKey: _messageFormKey, userNotifier: _userNotifier)
+            messageFormKey: _messageFormKey,
+            userNotifier: _userNotifier,
+            lolaController: _lolaController)
       ],
     );
   }
@@ -415,12 +434,15 @@ class InputMessageForm extends StatelessWidget {
     super.key,
     required VozController userNotifier,
     required GlobalKey<FormState> messageFormKey,
+    required LolaController lolaController,
     // TODO: preguntar sobre este patron de init
   })  : _userNotifier = userNotifier,
+        _lolaController = lolaController,
         _messageFormKey = messageFormKey;
 
   final VozController _userNotifier;
   final GlobalKey<FormState> _messageFormKey;
+  final LolaController _lolaController;
 
   @override
   Widget build(BuildContext context) {
@@ -521,10 +543,15 @@ class InputMessageForm extends StatelessWidget {
             //   ),
             // ),
             RecordingAction(
-                userNotifier: _userNotifier, messageFormKey: _messageFormKey),
+                userNotifier: _userNotifier,
+                messageFormKey: _messageFormKey,
+                lolaController: _lolaController),
             const SizedBox(width: 16),
             RecordingAction(
-                userNotifier: _userNotifier, messageFormKey: _messageFormKey),
+                userNotifier: _userNotifier,
+                messageFormKey: _messageFormKey,
+                lolaController: _lolaController),
+
             const SizedBox(width: 4),
           ],
         ),
@@ -538,11 +565,14 @@ class RecordingAction extends StatelessWidget {
     super.key,
     required VozController userNotifier,
     required GlobalKey<FormState> messageFormKey,
+    required LolaController lolaController,
   })  : _userNotifier = userNotifier,
+        _lolaController = lolaController,
         _messageFormKey = messageFormKey;
 
   final VozController _userNotifier;
   final GlobalKey<FormState> _messageFormKey;
+  final LolaController _lolaController;
 
   @override
   Widget build(BuildContext context) {
@@ -599,12 +629,12 @@ class RecordingAction extends StatelessWidget {
             RecordState.stopRecordingError ||
             RecordState.playingError ||
             RecordState.playingCompleted) {
-      // await lolaController.stopAudio();
+      await _lolaController.stopAudio();
       await _userNotifier.startRecording();
     } else if (_userNotifier.currentStatus case RecordState.recording) {
       await _userNotifier.stopRecording();
-      // await lolaController.queryReply(
-      // userQuestion: _userController.content(), debug: debug);
+      await _lolaController.queryReply(
+          userQuestion: _userNotifier.content(), debug: true);
     } else if (_userNotifier.currentStatus case _) {
       debugPrint('noop');
     }
