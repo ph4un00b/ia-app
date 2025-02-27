@@ -520,54 +520,75 @@ class InputMessageForm extends StatelessWidget {
             //     size: 18,
             //   ),
             // ),
-            ListenableBuilder(
-                listenable: _userNotifier,
-                builder: (_, __) {
-                  return _userNotifier.currentStatus == RecordState.recording
-                      ? GestureDetector(
-                          onTap: () {
-                            _handleUserRecording();
-                            _messageFormKey.currentState?.save();
-                          },
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              color: Colors.green,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: const Icon(
-                              Icons.mic,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                        )
-                      : GestureDetector(
-                          onTap: () {
-                            _handleUserRecording();
-                            _messageFormKey.currentState?.save();
-                          },
-                          child: Container(
-                            height: 40,
-                            width: 40,
-                            decoration: BoxDecoration(
-                              color: Colors.lightBlue,
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            child: const Icon(
-                              Icons.mic,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ),
-                        );
-                }),
+            RecordingAction(
+                userNotifier: _userNotifier, messageFormKey: _messageFormKey),
+            const SizedBox(width: 16),
+            RecordingAction(
+                userNotifier: _userNotifier, messageFormKey: _messageFormKey),
             const SizedBox(width: 4),
           ],
         ),
       ),
     );
+  }
+}
+
+class RecordingAction extends StatelessWidget {
+  const RecordingAction({
+    super.key,
+    required VozController userNotifier,
+    required GlobalKey<FormState> messageFormKey,
+  })  : _userNotifier = userNotifier,
+        _messageFormKey = messageFormKey;
+
+  final VozController _userNotifier;
+  final GlobalKey<FormState> _messageFormKey;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+        listenable: _userNotifier,
+        builder: (_, __) {
+          return _userNotifier.currentStatus == RecordState.recording
+              ? GestureDetector(
+                  onTap: () {
+                    _handleUserRecording();
+                    _messageFormKey.currentState?.save();
+                  },
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Icon(
+                      Icons.mic,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                )
+              : GestureDetector(
+                  onTap: () {
+                    _handleUserRecording();
+                    _messageFormKey.currentState?.save();
+                  },
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.lightBlue,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Icon(
+                      Icons.mic,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                );
+        });
   }
 
   Future<void> _handleUserRecording() async {
