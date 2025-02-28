@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
@@ -345,7 +346,7 @@ class _StackedBodyState extends State<StackedBody> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        LolaServerMessagePad(scale: 1.0, stream: _lolaStream),
+        SafeArea(child: LolaServerMessagePad(scale: 1.0, stream: _lolaStream)),
         // const SingleChildScrollView(
         //     physics: BouncingScrollPhysics(),
         //     child: SafeArea(
@@ -354,9 +355,11 @@ class _StackedBodyState extends State<StackedBody> {
         //           children: [MessagesBuilder(), SizedBox(height: _INPUT_H)]),
         //     )),
         InputMessageForm(
-            messageFormKey: _messageFormKey,
-            userNotifier: _userNotifier,
-            lolaController: _lolaController)
+          messageFormKey: _messageFormKey,
+          userNotifier: _userNotifier,
+          lolaController: _lolaController,
+          lolaStream: _audioStream,
+        )
       ],
     );
   }
@@ -435,7 +438,167 @@ class InputMessageForm extends StatelessWidget {
     required VozController userNotifier,
     required GlobalKey<FormState> messageFormKey,
     required LolaController lolaController,
+    required Stream<AudioState>? lolaStream,
     // TODO: preguntar sobre este patron de init
+  })  : _userNotifier = userNotifier,
+        _lolaController = lolaController,
+        _lolaStream = lolaStream,
+        _messageFormKey = messageFormKey;
+
+  final VozController _userNotifier;
+  final GlobalKey<FormState> _messageFormKey;
+  final LolaController _lolaController;
+  final Stream<AudioState>? _lolaStream;
+
+  @override
+  Widget build(BuildContext context) {
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: Container(
+        padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
+        height: _INPUT_H * 2.0,
+        width: double.infinity,
+        color: Colors.grey[900],
+        child: Column(
+          children: [
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  // IconButton.filled(
+                  //     onPressed: () {}, icon: const Icon(Icons.abc)),
+                  LolaAudioHandler(
+                    stream: _lolaStream,
+                    lolaController: _lolaController,
+                    scale: 1.0,
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: Row(
+                children: [
+                  // GestureDetector(
+                  //   onTap: (){
+                  //   },
+                  //   child: Container(
+                  //     height: 30,
+                  //     width: 30,
+                  //     decoration: BoxDecoration(
+                  //       color: Colors.lightBlue,
+                  //       borderRadius: BorderRadius.circular(30),
+                  //     ),
+                  //     child: const Icon(Icons.add, color: Colors.white, size: 20, ),
+                  //   ),
+                  // ),
+                  const SizedBox(width: 1),
+                  Expanded(
+                      child: ListenableBuilder(
+                          listenable: _userNotifier,
+                          builder: (_, __) {
+                            return Form(
+                                key: _messageFormKey,
+                                child: TextFormField(
+                                    validator: (value) {
+                                      debugPrint('input valido? $value');
+                                      // TODO: como hacer mas prolijo ese is String?
+                                      if (value is String) {
+                                        if (value.isEmpty) {
+                                          return 'Field required';
+                                        } else {
+                                          return null;
+                                        }
+                                      }
+                                      return 'Field Required';
+                                    },
+                                    minLines: null,
+                                    maxLines: 1,
+                                    controller: TextEditingController(
+
+                                        text: _userNotifier.content()),
+                                    keyboardType: TextInputType.multiline,
+                                    textInputAction:
+                                        TextInputAction.unspecified,
+                                    decoration: InputDecoration(
+                                      enabledBorder: OutlineInputBorder(),
+                                        suffixIcon: GestureDetector(
+                                          onTap: () {
+                                            debugPrint(_messageFormKey
+                                                .currentState
+                                                .toString());
+                                            _messageFormKey.currentState
+                                                ?.reset();
+                                            _userNotifier.updateContent("");
+                                          },
+                                          child: const Icon(
+                                            Icons.delete_forever,
+                                            color: Colors.white,
+                                            size: 24,
+                                          ),
+                                        ),
+                                        fillColor: Colors.grey[900],
+                                        hintText: "Mensaje...",
+                                        hintStyle: const TextStyle(
+                                            color: Colors.white54),
+                                        border: InputBorder.none),
+                                    onFieldSubmitted: (value) {
+                                      debugPrint(
+                                          '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
+                                      var sk = SnackBar(
+                                          content: Text('Hello: $value'));
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(sk);
+                                    },
+                                    onSaved: (value) {
+                                      debugPrint('>> on-saved-value: $value');
+                                      if (value == null) return;
+
+                                      _userNotifier.updateContent(value);
+                                    },
+                                    onTapOutside: (event) {
+                                      debugPrint('>> unfocusing: $event');
+                                      FocusManager.instance.primaryFocus
+                                          ?.unfocus();
+                                    }));
+                          })),
+                  const SizedBox(width: 4),
+                  // FloatingActionButton(
+                  //   onPressed: () {},
+                  //   backgroundColor: Colors.blue,
+                  //   elevation: 0,
+                  //   child: const Icon(
+                  //     Icons.send,
+                  //     color: Colors.white,
+                  //     size: 18,
+                  //   ),
+                  // ),
+                  RecordingAction(
+                      userNotifier: _userNotifier,
+                      messageFormKey: _messageFormKey,
+                      lolaController: _lolaController),
+                  const SizedBox(width: 16),
+                  SendAction(
+                      userNotifier: _userNotifier,
+                      messageFormKey: _messageFormKey,
+                      lolaController: _lolaController),
+
+                  const SizedBox(width: 4),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SendAction extends StatelessWidget {
+  const SendAction({
+    super.key,
+    required VozController userNotifier,
+    required GlobalKey<FormState> messageFormKey,
+    required LolaController lolaController,
   })  : _userNotifier = userNotifier,
         _lolaController = lolaController,
         _messageFormKey = messageFormKey;
@@ -446,117 +609,51 @@ class InputMessageForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.bottomLeft,
-      child: Container(
-        padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
-        height: _INPUT_H,
-        width: double.infinity,
-        color: Colors.grey[900],
-        child: Row(
-          children: [
-            // GestureDetector(
-            //   onTap: (){
-            //   },
-            //   child: Container(
-            //     height: 30,
-            //     width: 30,
-            //     decoration: BoxDecoration(
-            //       color: Colors.lightBlue,
-            //       borderRadius: BorderRadius.circular(30),
-            //     ),
-            //     child: const Icon(Icons.add, color: Colors.white, size: 20, ),
-            //   ),
-            // ),
-            const SizedBox(width: 1),
-            Expanded(
-                child: ListenableBuilder(
-                    listenable: _userNotifier,
-                    builder: (_, __) {
-                      return Form(
-                          key: _messageFormKey,
-                          child: TextFormField(
-                              validator: (value) {
-                                debugPrint('input valido? $value');
-                                // TODO: como hacer mas prolijo ese is String?
-                                if (value is String) {
-                                  if (value.isEmpty) {
-                                    return 'Field required';
-                                  } else {
-                                    return null;
-                                  }
-                                }
-                                return 'Field Required';
-                              },
-                              minLines: null,
-                              maxLines: 1,
-                              controller: TextEditingController(
-                                  text: _userNotifier.content()),
-                              keyboardType: TextInputType.multiline,
-                              textInputAction: TextInputAction.unspecified,
-                              decoration: InputDecoration(
-                                  suffixIcon: GestureDetector(
-                                    onTap: () {
-                                      debugPrint(_messageFormKey.currentState
-                                          .toString());
-                                      _messageFormKey.currentState?.reset();
-                                      _userNotifier.updateContent("");
-                                    },
-                                    child: const Icon(
-                                      Icons.delete_forever,
-                                      color: Colors.white,
-                                      size: 24,
-                                    ),
-                                  ),
-                                  fillColor: Colors.grey[900],
-                                  hintText: "Mensaje...",
-                                  hintStyle:
-                                      const TextStyle(color: Colors.white54),
-                                  border: InputBorder.none),
-                              onFieldSubmitted: (value) {
-                                debugPrint(
-                                    '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
-                                var sk =
-                                    SnackBar(content: Text('Hello: $value'));
-                                ScaffoldMessenger.of(context).showSnackBar(sk);
-                              },
-                              onSaved: (value) {
-                                debugPrint('>> on-saved-value: $value');
-                                if (value == null) return;
-
-                                _userNotifier.updateContent(value);
-                              },
-                              onTapOutside: (event) {
-                                debugPrint('>> unfocusing: $event');
-                                FocusManager.instance.primaryFocus?.unfocus();
-                              }));
-                    })),
-            const SizedBox(width: 4),
-            // FloatingActionButton(
-            //   onPressed: () {},
-            //   backgroundColor: Colors.blue,
-            //   elevation: 0,
-            //   child: const Icon(
-            //     Icons.send,
-            //     color: Colors.white,
-            //     size: 18,
-            //   ),
-            // ),
-            RecordingAction(
-                userNotifier: _userNotifier,
-                messageFormKey: _messageFormKey,
-                lolaController: _lolaController),
-            const SizedBox(width: 16),
-            RecordingAction(
-                userNotifier: _userNotifier,
-                messageFormKey: _messageFormKey,
-                lolaController: _lolaController),
-
-            const SizedBox(width: 4),
-          ],
-        ),
-      ),
-    );
+    return ListenableBuilder(
+        listenable: _userNotifier,
+        builder: (_, __) {
+          return _userNotifier.currentStatus == RecordState.recording
+              ? GestureDetector(
+                  onTap: () async {
+                    _messageFormKey.currentState?.save();
+                    await _lolaController.queryReply(
+                        userQuestion: _userNotifier.content(), debug: true);
+                  },
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.green,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                )
+              : GestureDetector(
+                  onTap: () async {
+                    _messageFormKey.currentState?.save();
+                    await _lolaController.queryReply(
+                        userQuestion: _userNotifier.content(), debug: true);
+                  },
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.lightBlue,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: const Icon(
+                      Icons.send,
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                );
+        });
   }
 }
 
