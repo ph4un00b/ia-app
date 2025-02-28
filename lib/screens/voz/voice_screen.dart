@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
@@ -455,50 +456,28 @@ class InputMessageForm extends StatelessWidget {
     return Align(
       alignment: Alignment.bottomLeft,
       child: Container(
-        padding: const EdgeInsets.only(left: 10, bottom: 10, top: 10),
-        height: _INPUT_H * 2.0,
+        padding: const EdgeInsets.only(left: 0, bottom: 0, top: 0),
+        // color: Colors.grey[900],
+        height: _INPUT_H * 2.2,
         width: double.infinity,
-        color: Colors.grey[900],
         child: Column(
           children: [
             Expanded(
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  // IconButton.filled(
-                  //     onPressed: () {}, icon: const Icon(Icons.abc)),
-                  LolaAudioHandler(
-                    stream: _lolaStream,
-                    lolaController: _lolaController,
-                    scale: 1.0,
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Row(
-                children: [
-                  // GestureDetector(
-                  //   onTap: (){
-                  //   },
-                  //   child: Container(
-                  //     height: 30,
-                  //     width: 30,
-                  //     decoration: BoxDecoration(
-                  //       color: Colors.lightBlue,
-                  //       borderRadius: BorderRadius.circular(30),
-                  //     ),
-                  //     child: const Icon(Icons.add, color: Colors.white, size: 20, ),
-                  //   ),
-                  // ),
-                  const SizedBox(width: 1),
                   Expanded(
+                      flex: 2,
                       child: ListenableBuilder(
                           listenable: _userNotifier,
                           builder: (_, __) {
                             return Form(
                                 key: _messageFormKey,
                                 child: TextFormField(
+                                    maxLength: 2048,
+                                    maxLengthEnforcement:
+                                        MaxLengthEnforcement.enforced,
+                                    // expands: true,
                                     validator: (value) {
                                       debugPrint('input valido? $value');
                                       // TODO: como hacer mas prolijo ese is String?
@@ -512,35 +491,40 @@ class InputMessageForm extends StatelessWidget {
                                       return 'Field Required';
                                     },
                                     minLines: null,
-                                    maxLines: 1,
+                                    maxLines: 3,
                                     controller: TextEditingController(
-
                                         text: _userNotifier.content()),
                                     keyboardType: TextInputType.multiline,
                                     textInputAction:
                                         TextInputAction.unspecified,
                                     decoration: InputDecoration(
-                                      enabledBorder: OutlineInputBorder(),
-                                        suffixIcon: GestureDetector(
-                                          onTap: () {
-                                            debugPrint(_messageFormKey
-                                                .currentState
-                                                .toString());
-                                            _messageFormKey.currentState
-                                                ?.reset();
-                                            _userNotifier.updateContent("");
-                                          },
-                                          child: const Icon(
-                                            Icons.delete_forever,
-                                            color: Colors.white,
-                                            size: 24,
-                                          ),
+                                      // constraints: const BoxConstraints.expand(height: 100),
+                                      enabledBorder: const OutlineInputBorder(),
+                                      suffixIcon: GestureDetector(
+                                        onTap: () {
+                                          debugPrint(_messageFormKey
+                                              .currentState
+                                              .toString());
+                                          _messageFormKey.currentState?.reset();
+                                          _userNotifier.updateContent("");
+                                        },
+                                        child: const Icon(
+                                          Icons.delete_forever,
+                                          color: Colors.white,
+                                          size: 24,
                                         ),
-                                        fillColor: Colors.grey[900],
-                                        hintText: "Mensaje...",
-                                        hintStyle: const TextStyle(
-                                            color: Colors.white54),
-                                        border: InputBorder.none),
+                                      ),
+                                      fillColor: Colors.grey[900],
+                                      // alignLabelWithHint: true,
+                                      contentPadding: const EdgeInsets.all(15),
+                                      // filled: false,
+
+                                      hintText: "Escribe a Lola",
+                                      hintStyle: const TextStyle(
+                                        color: Colors.white54,
+                                      ),
+                                      border: InputBorder.none,
+                                    ),
                                     onFieldSubmitted: (value) {
                                       debugPrint(
                                           '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
@@ -561,28 +545,70 @@ class InputMessageForm extends StatelessWidget {
                                           ?.unfocus();
                                     }));
                           })),
-                  const SizedBox(width: 4),
-                  // FloatingActionButton(
-                  //   onPressed: () {},
-                  //   backgroundColor: Colors.blue,
-                  //   elevation: 0,
-                  //   child: const Icon(
-                  //     Icons.send,
-                  //     color: Colors.white,
-                  //     size: 18,
-                  //   ),
-                  // ),
-                  RecordingAction(
-                      userNotifier: _userNotifier,
-                      messageFormKey: _messageFormKey,
-                      lolaController: _lolaController),
-                  const SizedBox(width: 16),
-                  SendAction(
-                      userNotifier: _userNotifier,
-                      messageFormKey: _messageFormKey,
-                      lolaController: _lolaController),
+                  Expanded(
+                    child: Container(
+                      // color: Colors.amber,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        // crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 12),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                // GestureDetector(
+                                //   onTap: (){
+                                //   },
+                                //   child: Container(
+                                //     height: 30,
+                                //     width: 30,
+                                //     decoration: BoxDecoration(
+                                //       color: Colors.lightBlue,
+                                //       borderRadius: BorderRadius.circular(30),
+                                //     ),
+                                //     child: const Icon(Icons.add, color: Colors.white, size: 20, ),
+                                //   ),
+                                // ),
+                                // const SizedBox(width: 1),
 
-                  const SizedBox(width: 4),
+                                // const SizedBox(width: 4),
+                                // FloatingActionButton(
+                                //   onPressed: () {},
+                                //   backgroundColor: Colors.blue,
+                                //   elevation: 0,
+                                //   child: const Icon(
+                                //     Icons.send,
+                                //     color: Colors.white,
+                                //     size: 18,
+                                //   ),
+                                // ),
+                                RecordingAction(
+                                    userNotifier: _userNotifier,
+                                    messageFormKey: _messageFormKey,
+                                    lolaController: _lolaController),
+                                // const SizedBox(width: 16),
+                                SendAction(
+                                    userNotifier: _userNotifier,
+                                    messageFormKey: _messageFormKey,
+                                    lolaController: _lolaController),
+
+                                // const SizedBox(width: 4),
+                              ]),
+                          const SizedBox(height: 10),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                LolaAudioHandler(
+                                  stream: _lolaStream,
+                                  lolaController: _lolaController,
+                                  scale: 1.0,
+                                ),
+                                // const SizedBox(width: 4),
+                              ]),
+                        ],
+                      ),
+                    ),
+                  )
                 ],
               ),
             ),

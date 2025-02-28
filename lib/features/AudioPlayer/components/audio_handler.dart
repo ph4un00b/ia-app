@@ -21,26 +21,26 @@ class LolaAudioHandler extends StatelessWidget {
         final ui = snap.data;
         return switch (ui) {
           null => Container(),
-          NoAudioPath() => ui.build(scale: scale),
+          NoAudioPath() => ui.build(scale: scale * 0.8),
           PlayingAudio() => ui.build(
-              scale: scale,
+              scale: scale * 0.8,
               onStop: lolaController.stopAudio,
             ),
           PlayingAudioErr() => ui.build(
-              scale: scale,
+              scale: scale * 0.8,
               onRetry: lolaController.playAudio,
             ),
           PlayingAudioOk() => ui.build(
               from: lolaController.toString(),
-              scale: scale,
+              scale: scale * 0.8,
               onReplay: lolaController.playAudio,
             ),
           Stopped() => ui.build(
-              scale: scale,
+              scale: scale * 0.8,
               onPlay: lolaController.playAudio,
             ),
           StoppedErr() => ui.build(
-              scale: scale,
+              scale: scale * 0.8,
               onPlay: lolaController.playAudio,
             ),
         };
