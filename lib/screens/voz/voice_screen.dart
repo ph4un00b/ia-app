@@ -467,7 +467,7 @@ class InputMessageForm extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Expanded(
-                      flex: 2,
+                      flex: 1,
                       child: ListenableBuilder(
                           listenable: _userNotifier,
                           builder: (_, __) {
@@ -545,68 +545,67 @@ class InputMessageForm extends StatelessWidget {
                                           ?.unfocus();
                                     }));
                           })),
-                  Expanded(
-                    child: Container(
-                      // color: Colors.amber,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        // crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          const SizedBox(height: 12),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                // GestureDetector(
-                                //   onTap: (){
-                                //   },
-                                //   child: Container(
-                                //     height: 30,
-                                //     width: 30,
-                                //     decoration: BoxDecoration(
-                                //       color: Colors.lightBlue,
-                                //       borderRadius: BorderRadius.circular(30),
-                                //     ),
-                                //     child: const Icon(Icons.add, color: Colors.white, size: 20, ),
-                                //   ),
-                                // ),
-                                // const SizedBox(width: 1),
+                  SizedBox(
+                    width: 122,
+                    // color: Colors.amber,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      // crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        const SizedBox(height: 12),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              // GestureDetector(
+                              //   onTap: (){
+                              //   },
+                              //   child: Container(
+                              //     height: 30,
+                              //     width: 30,
+                              //     decoration: BoxDecoration(
+                              //       color: Colors.lightBlue,
+                              //       borderRadius: BorderRadius.circular(30),
+                              //     ),
+                              //     child: const Icon(Icons.add, color: Colors.white, size: 20, ),
+                              //   ),
+                              // ),
+                              // const SizedBox(width: 1),
 
-                                // const SizedBox(width: 4),
-                                // FloatingActionButton(
-                                //   onPressed: () {},
-                                //   backgroundColor: Colors.blue,
-                                //   elevation: 0,
-                                //   child: const Icon(
-                                //     Icons.send,
-                                //     color: Colors.white,
-                                //     size: 18,
-                                //   ),
-                                // ),
-                                RecordingAction(
-                                    userNotifier: _userNotifier,
-                                    messageFormKey: _messageFormKey,
-                                    lolaController: _lolaController),
-                                // const SizedBox(width: 16),
-                                SendAction(
-                                    userNotifier: _userNotifier,
-                                    messageFormKey: _messageFormKey,
-                                    lolaController: _lolaController),
+                              // const SizedBox(width: 4),
+                              // FloatingActionButton(
+                              //   onPressed: () {},
+                              //   backgroundColor: Colors.blue,
+                              //   elevation: 0,
+                              //   child: const Icon(
+                              //     Icons.send,
+                              //     color: Colors.white,
+                              //     size: 18,
+                              //   ),
+                              // ),
+                              RecordingAction(
+                                  userNotifier: _userNotifier,
+                                  messageFormKey: _messageFormKey,
+                                  lolaController: _lolaController),
+                              // const SizedBox(width: 16),
+                              SendAction(
+                                  userNotifier: _userNotifier,
+                                  messageFormKey: _messageFormKey,
+                                  lolaController: _lolaController),
 
-                                // const SizedBox(width: 4),
-                              ]),
-                          const SizedBox(height: 10),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                LolaAudioHandler(
-                                  stream: _lolaStream,
-                                  lolaController: _lolaController,
-                                  scale: 1.0,
-                                ),
-                                // const SizedBox(width: 4),
-                              ]),
-                        ],
-                      ),
+                              // const SizedBox(width: 4),
+                            ]),
+                        const SizedBox(height: 10),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              LolaAudioHandler(
+                                stream: _lolaStream,
+                                lolaController: _lolaController,
+                                scale: 1.0,
+                              ),
+                              // const SizedBox(width: 4),
+                            ]),
+                      ],
                     ),
                   )
                 ],
