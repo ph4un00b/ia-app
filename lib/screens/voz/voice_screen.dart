@@ -204,7 +204,7 @@ class HeaderBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(right: 16),
+      padding: const EdgeInsets.only(right: 66, left: 0),
       child: Row(
         // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -242,15 +242,22 @@ class HeaderBar extends StatelessWidget {
                 ]),
           ),
           Expanded(
-            flex: 1,
-            child: GestureDetector(
-                onTap: () => _showFormatTypographyBottomSheet(context),
-                child: const Icon(Icons.text_fields)),
+            child: IconButton(
+                onPressed: () {
+                  _showFormatTypographyBottomSheet(context);
+                },
+                icon: const Badge(
+                    offset: Offset(14, 0),
+                    label: Text("normal"),
+                    backgroundColor: Colors.orangeAccent,
+                    textColor: Colors.black87,
+                    child: Icon(Icons.text_fields))),
           ),
-          const Expanded(
-            flex: 1,
-            child: Icon(Icons.settings),
-          ),
+
+          // const Expanded(
+          //   flex: 1,
+          //   child: Icon(Icons.settings),
+          // ),
         ],
       ),
     );
@@ -770,7 +777,7 @@ class _BottomTabsState extends State<BottomTabs> {
         BottomNavigationBarItem(
           label: "Mensajes",
           icon: IconButton(
-            // padding: EdgeInsets.all(20),
+              // padding: EdgeInsets.all(20),
               onPressed: () {
                 Navigator.of(context).pushNamed('/opciones/mensajes');
               },
