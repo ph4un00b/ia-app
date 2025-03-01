@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
@@ -8,6 +9,7 @@ import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Voz/voz_controller.dart';
 import 'package:lola_ai_app/screens/voz/lola_message/lola_message_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // import 'package:keyboard_actions/keyboard_actions.dart';
 // import 'package:keyboard_actions/keyboard_actions_config.dart';
@@ -60,9 +62,23 @@ class VoiceScreen extends StatefulWidget {
 
 class _VoiceScreenState extends State<VoiceScreen> {
   int pageIndex = 0;
+  double screenScale = Constants.scale;
 
   // final _userNotifier = VozController();
   // final _messageFormKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserPrefereces();
+  }
+
+  Future<void> _loadUserPrefereces() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      screenScale = prefs.getDouble('screen-lola-voz') ?? screenScale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +88,152 @@ class _VoiceScreenState extends State<VoiceScreen> {
         // centerTitle: true,
         // automaticallyImplyLeading: !false,
         backgroundColor: Colors.grey[900],
-        flexibleSpace: const SafeArea(child: HeaderBar()),
+        flexibleSpace: SafeArea(
+            child: Container(
+          padding: const EdgeInsets.only(right: 66, left: 0),
+          child: Row(
+            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              // IconButton(
+              //   onPressed: () {
+              //     Navigator.pop(context);
+              //   },
+              //   icon: const Icon(
+              //     Icons.arrow_back,
+              //     color: Colors.white,
+              //   ),
+              // ),
+              const SizedBox(width: 16),
+              const CircleAvatar(
+                // backgroundImage: NetworkImage(
+                //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
+                maxRadius: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                flex: 8,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Lola",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.w600),
+                      ),
+                      // const SizedBox(height: 6),
+                      Text(
+                        "Online",
+                        style: TextStyle(
+                            color: Colors.grey.shade400, fontSize: 13),
+                      )
+                    ]),
+              ),
+              Expanded(
+                child: IconButton(
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        showDragHandle: true,
+                        barrierColor: Colors.transparent,
+                        builder: (bottomSheetContext) {
+                          return StatefulBuilder(
+                              builder: (context, setStateModal) {
+                            return Padding(
+                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: 100,
+                                    child: FilledButton.tonal(
+                                      onPressed: () {},
+                                      child: Text(screenScale.toStringAsFixed(2),
+                                          style: const TextStyle(fontSize: 14)),
+                                    ),
+                                  ),
+                                  Expanded(
+                                    child: FilledButton.tonal(
+                                      onPressed: () async {
+                                        double newScale = screenScale - 0.1;
+                                        setState(() => screenScale = newScale);
+                                        setStateModal(
+                                            () => screenScale = newScale);
+
+                                        debugPrint(
+                                            "screen-scale: ${screenScale - 0.1}");
+                                        final prefs = await SharedPreferences
+                                            .getInstance();
+                                        prefs.setDouble(
+                                          'screen-lola-voz',
+                                          screenScale,
+                                        );
+                                      },
+                                      child: const Icon(Icons.text_decrease,
+                                          size: 16),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 3),
+                                  Expanded(
+                                    child: FilledButton.tonal(
+                                      onPressed: () async {
+                                        double newScale = screenScale + 0.1;
+                                        setState(() => screenScale = newScale);
+                                        setStateModal(
+                                            () => screenScale = newScale);
+
+                                        debugPrint(
+                                            "screen-scale: ${screenScale + 0.1}");
+                                        final prefs = await SharedPreferences
+                                            .getInstance();
+                                        prefs.setDouble(
+                                          'screen-lola-voz',
+                                          screenScale,
+                                        );
+                                      },
+                                      child: const Icon(
+                                        Icons.text_increase,
+                                        size: 22,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  SizedBox(
+                                    width: 100,
+                                    child: FilledButton.tonal(
+                                      onPressed: () async {
+                                        debugPrint("screen-scale: 1.0");
+                                        double newScale = 1.0;
+                                        setState(() => screenScale = newScale);
+                                        setStateModal(
+                                            () => screenScale = newScale);
+
+                                        (await SharedPreferences.getInstance())
+                                            .setDouble(
+                                          'screen-lola-voz',
+                                          1.0,
+                                        );
+                                      },
+                                      child: const Text("Reset",
+                                          style: TextStyle(fontSize: 14)),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          });
+                        },
+                      );
+                    },
+                    icon: Badge(
+                        offset: const Offset(24, 0),
+                        label: Text(screenScale.toStringAsFixed(2)),
+                        backgroundColor: Colors.orangeAccent,
+                        textColor: Colors.black87,
+                        child: const Icon(Icons.text_fields))),
+              )
+            ],
+          ),
+        )),
         // toolbarHeight: 140,
         // title: const Column(
         //   children: [
@@ -192,112 +353,6 @@ class _VoiceScreenState extends State<VoiceScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class HeaderBar extends StatelessWidget {
-  const HeaderBar({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(right: 66, left: 0),
-      child: Row(
-        // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          // IconButton(
-          //   onPressed: () {
-          //     Navigator.pop(context);
-          //   },
-          //   icon: const Icon(
-          //     Icons.arrow_back,
-          //     color: Colors.white,
-          //   ),
-          // ),
-          const SizedBox(width: 16),
-          const CircleAvatar(
-            // backgroundImage: NetworkImage(
-            //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
-            maxRadius: 20,
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            flex: 8,
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Lola",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                  ),
-                  // const SizedBox(height: 6),
-                  Text(
-                    "Online",
-                    style: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-                  )
-                ]),
-          ),
-          Expanded(
-            child: IconButton(
-                onPressed: () {
-                  _showFormatTypographyBottomSheet(context);
-                },
-                icon: const Badge(
-                    offset: Offset(14, 0),
-                    label: Text("normal"),
-                    backgroundColor: Colors.orangeAccent,
-                    textColor: Colors.black87,
-                    child: Icon(Icons.text_fields))),
-          ),
-
-          // const Expanded(
-          //   flex: 1,
-          //   child: Icon(Icons.settings),
-          // ),
-        ],
-      ),
-    );
-  }
-
-  void _showFormatTypographyBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      showDragHandle: true,
-      barrierColor: Colors.transparent,
-      builder: (bottomSheetContext) {
-        return Padding(
-          padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
-          child: Row(
-            children: [
-              Expanded(
-                child: FilledButton.tonal(
-                  onPressed: () {},
-                  child: const Icon(Icons.text_decrease, size: 16),
-                ),
-              ),
-              const SizedBox(width: 3),
-              Expanded(
-                child: FilledButton.tonal(
-                  onPressed: () {},
-                  child: const Icon(Icons.text_increase, size: 22),
-                ),
-              ),
-              const SizedBox(width: 10),
-              SizedBox(
-                width: 100,
-                child: FilledButton.tonal(
-                  onPressed: () {},
-                  child: const Icon(Icons.format_clear, size: 22),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }
