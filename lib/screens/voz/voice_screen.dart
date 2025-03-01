@@ -550,38 +550,11 @@ class InputMessageForm extends StatelessWidget {
                     // color: Colors.amber,
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      // crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         const SizedBox(height: 12),
                         Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              // GestureDetector(
-                              //   onTap: (){
-                              //   },
-                              //   child: Container(
-                              //     height: 30,
-                              //     width: 30,
-                              //     decoration: BoxDecoration(
-                              //       color: Colors.lightBlue,
-                              //       borderRadius: BorderRadius.circular(30),
-                              //     ),
-                              //     child: const Icon(Icons.add, color: Colors.white, size: 20, ),
-                              //   ),
-                              // ),
-                              // const SizedBox(width: 1),
-
-                              // const SizedBox(width: 4),
-                              // FloatingActionButton(
-                              //   onPressed: () {},
-                              //   backgroundColor: Colors.blue,
-                              //   elevation: 0,
-                              //   child: const Icon(
-                              //     Icons.send,
-                              //     color: Colors.white,
-                              //     size: 18,
-                              //   ),
-                              // ),
                               RecordingAction(
                                   userNotifier: _userNotifier,
                                   messageFormKey: _messageFormKey,
@@ -763,36 +736,73 @@ class RecordingAction extends StatelessWidget {
   }
 }
 
-class BottomTabs extends StatelessWidget {
+class BottomTabs extends StatefulWidget {
   const BottomTabs({
     super.key,
   });
 
   @override
+  State<BottomTabs> createState() => _BottomTabsState();
+}
+
+class _BottomTabsState extends State<BottomTabs> {
+  int _selectedIndex = 1;
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
       elevation: 0.0,
-      selectedItemColor: Colors.red,
+      selectedItemColor: Colors.purple,
       unselectedItemColor: Colors.grey.shade600,
       selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
       unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      // TODO: shifted will not work since you need to tap the icon itself
       type: BottomNavigationBarType.fixed,
-      items: const [
+      onTap: _onItemTapped,
+      currentIndex: _selectedIndex,
+      items: [
         BottomNavigationBarItem(
-          icon: Icon(Icons.message),
-          // title: Text("Chats"),
-          label: "Chats",
+          label: "Mensajes",
+          icon: IconButton(
+            // padding: EdgeInsets.all(20),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/opciones/mensajes');
+              },
+              icon: const Badge(
+                  label: Text("24"),
+                  backgroundColor: Colors.orangeAccent,
+                  textColor: Colors.black87,
+                  child: Icon(Icons.message))),
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.group_work),
-          // title: Text("Channels"),
-          label: "Channels",
+          label: "Lola",
+          icon: IconButton(
+              onPressed: () {},
+              icon: const Badge(
+                  // label: Text("24"),
+                  backgroundColor: Colors.orangeAccent,
+                  textColor: Colors.black87,
+                  child: Icon(Icons.auto_awesome_mosaic))),
         ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.account_box),
-          // title: Text("Profile"),
-          label: "Profile",
-        ),
+        // BottomNavigationBarItem(
+        //   label: "Perfil",
+        //   icon: IconButton(
+        //       onPressed: () {
+        //         Navigator.of(context)
+        //             .pushNamed('/opciones/profile', arguments: "jamon");
+        //       },
+        //       icon: const Badge(
+        //           // label: Text("24"),
+        //           backgroundColor: Colors.orangeAccent,
+        //           textColor: Colors.black87,
+        //           child: Icon(Icons.account_box))),
+        // ),
       ],
     );
   }
