@@ -46,7 +46,7 @@ class LolaControlMessage extends StatelessWidget {
               icon: const Icon(Icons.expand_less),
               text: 'Ver',
               scale: scale,
-              onPressed: () => _showMessage(context, message),
+              onPressed: () => _showMessage(context, message.reply),
             ),
           Loading() => ActionButton(
               icon: const Icon(Icons.expand_less),

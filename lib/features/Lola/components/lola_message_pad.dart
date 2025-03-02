@@ -47,11 +47,11 @@ class LolaServerMessagePad extends StatelessWidget {
             return switch (service) {
               null => const SizedBox.shrink(),
               IdleService(payload: final message) =>
-                Container().messageText(message, scale, maxLines),
+                Container().messageText(message.reply, scale, maxLines),
               Loading() => Container().messageText(
                   'Lola está escribiendo un mensaje...', scale, maxLines),
               Data(payload: final message) =>
-                Container().messageText(message, scale, maxLines),
+                Container().messageText(message.reply, scale, maxLines),
               Error() => Container().messageText('', scale, maxLines),
             };
           },

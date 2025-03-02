@@ -104,8 +104,8 @@ enum VoiceLola {
 sealed class LolaServiceState {}
 
 final class IdleService implements LolaServiceState {
-  final String payload;
-  const IdleService({this.payload = ''});
+   final Payload payload;
+  const IdleService({this.payload = const Payload()});
 
   @override
   String toString() {
@@ -114,15 +114,25 @@ final class IdleService implements LolaServiceState {
 }
 
 final class Loading implements LolaServiceState {
+  final Payload payload;
+  const Loading({this.payload = const Payload()});
+
   @override
   String toString() {
     return 'Loading Lola Response';
   }
 }
 
+class Payload {
+  final String userQuestion;
+  final String reply;
+
+  const Payload({this.userQuestion = "", this.reply = ""});
+}
+
 final class Data implements LolaServiceState {
-  final String payload;
-  const Data({this.payload = ''});
+  final Payload payload;
+  const Data({this.payload = const Payload()});
 
   @override
   String toString() {
@@ -131,8 +141,8 @@ final class Data implements LolaServiceState {
 }
 
 final class Error implements LolaServiceState {
-  final String payload;
-  const Error({this.payload = ''});
+  final Payload payload;
+  const Error({this.payload = const Payload()});
 
   @override
   String toString() {

@@ -52,9 +52,9 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
     required String userQuestion,
     bool debug = false,
   }) async {
-    if (debug) serviceState.add(const IdleService(payload: 'loading response'));
+    if (debug) serviceState.add(const IdleService(payload: Payload(reply: 'loading response')));
     try {
-      serviceState.add(Loading());
+      serviceState.add(Loading(payload: Payload(userQuestion: userQuestion, reply: "...")));
 
       final result = await LolaResponse.query(
         userQuery: userQuestion,
@@ -64,7 +64,8 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
       _currentAudioPath = result.path;
       _currentOutput = result.reply;
 
-      serviceState.add(Data(payload: result.reply));
+      serviceState.add(Data(
+          payload: Payload(userQuestion: userQuestion, reply: result.reply)));
 
       await Conversation.save(
         user: userQuestion,
@@ -76,9 +77,12 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
       //! manejamos el error de PostgrestException de Supabase por que
       //! se pierde el stacktrace de la excepcion en el logger
       if (debug) {
-        serviceState.add(Error(payload: e.toString()));
+        serviceState.add(Error(
+            payload: Payload(userQuestion: userQuestion, reply: e.toString())));
       } else {
-        serviceState.add(Data(payload: _currentOutput));
+        serviceState.add(Data(
+            payload:
+                Payload(userQuestion: userQuestion, reply: _currentOutput)));
       }
 
       debugPrint('Error occurred: ${e.toJson().toString()}');
@@ -87,17 +91,23 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
       ErrorLogger.logException(e, StackTrace.current);
 
       if (debug) {
-        serviceState.add(Error(payload: e.toString()));
+        serviceState.add(Error(
+            payload: Payload(userQuestion: userQuestion, reply: e.toString())));
       } else {
-        serviceState.add(Data(payload: _currentOutput));
+        serviceState.add(Data(
+            payload:
+                Payload(userQuestion: userQuestion, reply: _currentOutput)));
       }
     } catch (e, st) {
       ErrorLogger.logException(e, st);
 
       if (debug) {
-        serviceState.add(Error(payload: e.toString()));
+        serviceState.add(Error(
+            payload: Payload(userQuestion: userQuestion, reply: e.toString())));
       } else {
-        serviceState.add(Data(payload: _currentOutput));
+        serviceState.add(Data(
+            payload:
+                Payload(userQuestion: userQuestion, reply: _currentOutput)));
       }
     }
   }

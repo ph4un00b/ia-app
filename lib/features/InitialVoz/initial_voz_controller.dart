@@ -86,7 +86,8 @@ final class InitialVozController with AudioPlayerHandlers {
     currentState = InitialState.loadingSummary;
 
     if (debug) {
-      serviceState.add(const IdleService(payload: 'loading summary'));
+      serviceState
+          .add(const IdleService(payload: Payload(reply: 'loading summary')));
     } else {
       serviceState.add(Loading());
     }
@@ -102,7 +103,7 @@ final class InitialVozController with AudioPlayerHandlers {
       _currentAudioPath = result.path;
       _currentOutput = result.reply;
 
-      serviceState.add(Data(payload: result.reply));
+      serviceState.add(Data(payload: Payload(reply: result.reply)));
       await _playAudio(result.path);
     } on PostgrestException catch (e) {
       _handleDbError(debug, e);
@@ -110,9 +111,9 @@ final class InitialVozController with AudioPlayerHandlers {
       ErrorLogger.logException(e, StackTrace.current);
 
       if (debug) {
-        serviceState.add(Error(payload: e.toString()));
+        serviceState.add(Error(payload: Payload(reply: e.toString())));
       } else {
-        serviceState.add(Data(payload: _currentOutput));
+        serviceState.add(Data(payload: Payload(reply: _currentOutput)));
       }
     } catch (e, st) {
       if (_isHttpCancelled) {
@@ -123,9 +124,9 @@ final class InitialVozController with AudioPlayerHandlers {
       ErrorLogger.logException(e, st);
 
       if (debug) {
-        serviceState.add(Error(payload: e.toString()));
+        serviceState.add(Error(payload: Payload(reply: e.toString())));
       } else {
-        serviceState.add(Data(payload: _currentOutput));
+        serviceState.add(Data(payload: Payload(reply: _currentOutput)));
       }
     }
   }
@@ -134,9 +135,11 @@ final class InitialVozController with AudioPlayerHandlers {
     //! manejamos el error de PostgrestException de Supabase por que
     //! se pierde el stacktrace de la excepcion en el logger
     if (debug) {
-      serviceState.addIfStreamOpen(Error(payload: e.toString()));
+      serviceState
+          .addIfStreamOpen(Error(payload: Payload(reply: e.toString())));
     } else {
-      serviceState.addIfStreamOpen(const Data(payload: "Presiona Continuar"));
+      serviceState.addIfStreamOpen(
+          const Data(payload: Payload(reply: "Presiona Continuar")));
     }
     debugPrint('Error occurred: ${e.toJson().toString()}');
     ErrorLogger.logException(e, StackTrace.current);
@@ -154,7 +157,8 @@ final class InitialVozController with AudioPlayerHandlers {
 
   Future<void> _handleExistingReminders(bool debug) async {
     if (debug) {
-      serviceState.add(const IdleService(payload: 'loading reminders'));
+      serviceState
+          .add(const IdleService(payload: Payload(reply: 'loading reminders')));
     }
 
     try {
@@ -181,9 +185,11 @@ final class InitialVozController with AudioPlayerHandlers {
       ErrorLogger.logException(e, StackTrace.current);
 
       if (debug) {
-        serviceState.addIfStreamOpen(Error(payload: e.toString()));
+        serviceState
+            .addIfStreamOpen(Error(payload: Payload(reply: e.toString())));
       } else {
-        serviceState.addIfStreamOpen(Data(payload: _currentOutput));
+        serviceState
+            .addIfStreamOpen(Data(payload: Payload(reply: _currentOutput)));
       }
     } catch (e, st) {
       if (_isHttpCancelled) {
@@ -194,16 +200,19 @@ final class InitialVozController with AudioPlayerHandlers {
       ErrorLogger.logException(e, st);
 
       if (debug) {
-        serviceState.addIfStreamOpen(Error(payload: e.toString()));
+        serviceState
+            .addIfStreamOpen(Error(payload: Payload(reply: e.toString())));
       } else {
-        serviceState.addIfStreamOpen(Data(payload: _currentOutput));
+        serviceState
+            .addIfStreamOpen(Data(payload: Payload(reply: _currentOutput)));
       }
     }
   }
 
   Future<void> _handleFirstTimeReminders(bool debug) async {
     if (debug) {
-      serviceState.add(const IdleService(payload: 'creating first reminders'));
+      serviceState.add(const IdleService(
+          payload: Payload(reply: 'creating first reminders')));
     }
 
     try {
@@ -215,9 +224,11 @@ final class InitialVozController with AudioPlayerHandlers {
       ErrorLogger.logException(e, st);
 
       if (debug) {
-        serviceState.addIfStreamOpen(Error(payload: e.toString()));
+        serviceState
+            .addIfStreamOpen(Error(payload: Payload(reply: e.toString())));
       } else {
-        serviceState.addIfStreamOpen(Data(payload: _currentOutput));
+        serviceState
+            .addIfStreamOpen(Data(payload: Payload(reply: _currentOutput)));
       }
     }
   }
@@ -230,7 +241,7 @@ final class InitialVozController with AudioPlayerHandlers {
 
     _currentAudioPath = result.path;
     _currentOutput = result.reply;
-    serviceState.add(Data(payload: result.reply));
+    serviceState.add(Data(payload: Payload(reply: result.reply)));
     await _playAudio(result.path);
   }
 

@@ -479,19 +479,24 @@ class MessagesBuilder extends StatelessWidget {
                 ChatMessage(msgContent: "null", msgType: "sender"),
                 ChatMessage(msgContent: "null", msgType: "receiver"),
               ]),
-            IdleService() => respuestaLola([
+            IdleService(payload: final _) => respuestaLola([
                 ChatMessage(msgContent: "idle", msgType: "sender"),
-                ChatMessage(msgContent: "idle", msgType: "receiver"),
+                // ChatMessage(msgContent: message.reply, msgType: "receiver"),
               ]),
-            Loading() => respuestaLola([
-                ChatMessage(msgContent: "loading", msgType: "sender"),
-                ChatMessage(msgContent: "loading", msgType: "receiver"),
+            Loading(payload: final payload) => respuestaLola([
+                ChatMessage(
+                    msgContent: payload.userQuestion, msgType: "sender"),
+                ChatMessage(msgContent: payload.reply, msgType: "receiver"),
               ]),
-            Data(payload: final message) => respuestaLola([
-                ChatMessage(msgContent: message, msgType: "receiver"),
+            Data(payload: final payload) => respuestaLola([
+                ChatMessage(
+                    msgContent: payload.userQuestion, msgType: "sender"),
+                ChatMessage(msgContent: payload.reply, msgType: "receiver"),
               ]),
-            Error() => respuestaLola([
-                ChatMessage(msgContent: "error", msgType: "sender"),
+            Error(payload: final message) => respuestaLola([
+                ChatMessage(
+                    msgContent: message.userQuestion, msgType: "sender"),
+                ChatMessage(msgContent: message.reply, msgType: "receiver"),
               ]),
           };
         });
