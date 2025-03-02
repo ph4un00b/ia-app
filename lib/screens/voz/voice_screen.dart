@@ -87,7 +87,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
       appBar: AppBar(
         // centerTitle: true,
         // automaticallyImplyLeading: !false,
-        backgroundColor: Colors.grey[900],
+        // backgroundColor: Colors.grey[900],
         flexibleSpace: SafeArea(
             child: Container(
           padding: const EdgeInsets.only(right: 66, left: 0),
@@ -116,10 +116,16 @@ class _VoiceScreenState extends State<VoiceScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
+                      Text(
                         "Lola",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
+                        style: GoogleFonts.satisfy(
+                          textStyle: Theme.of(context).textTheme.displayLarge,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w200,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        // style: TextStyle(
+                        //     fontSize: 16, fontWeight: FontWeight.w600),
                       ),
                       // const SizedBox(height: 6),
                       Text(
@@ -147,7 +153,8 @@ class _VoiceScreenState extends State<VoiceScreen> {
                                     width: 100,
                                     child: FilledButton.tonal(
                                       onPressed: () {},
-                                      child: Text(screenScale.toStringAsFixed(2),
+                                      child: Text(
+                                          screenScale.toStringAsFixed(2),
                                           style: const TextStyle(fontSize: 14)),
                                     ),
                                   ),
