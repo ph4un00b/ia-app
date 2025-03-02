@@ -85,174 +85,191 @@ class _VoiceScreenState extends State<VoiceScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        // centerTitle: true,
-        // automaticallyImplyLeading: !false,
-        // backgroundColor: Colors.grey[900],
-        flexibleSpace: SafeArea(
-            child: Container(
-          padding: const EdgeInsets.only(right: 66, left: 0),
-          child: Row(
-            // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              // IconButton(
-              //   onPressed: () {
-              //     Navigator.pop(context);
-              //   },
-              //   icon: const Icon(
-              //     Icons.arrow_back,
-              //     color: Colors.white,
-              //   ),
-              // ),
-              const SizedBox(width: 16),
-              const CircleAvatar(
-                // backgroundImage: NetworkImage(
-                //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
-                maxRadius: 20,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                flex: 8,
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Lola",
-                        style: GoogleFonts.satisfy(
-                          textStyle: Theme.of(context).textTheme.displayLarge,
-                          fontSize: 28,
-                          fontWeight: FontWeight.w200,
-                          fontStyle: FontStyle.italic,
+          // centerTitle: true,
+          // automaticallyImplyLeading: !false,
+          // backgroundColor: Colors.grey[900],
+          flexibleSpace: SafeArea(
+              child: Container(
+                  padding: const EdgeInsets.only(right: 66, left: 0),
+                  child: Row(
+                      // mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // IconButton(
+                        //   onPressed: () {
+                        //     Navigator.pop(context);
+                        //   },
+                        //   icon: const Icon(
+                        //     Icons.arrow_back,
+                        //     color: Colors.white,
+                        //   ),
+                        // ),
+                        const SizedBox(width: 16),
+                        const CircleAvatar(
+                          // backgroundImage: NetworkImage(
+                          //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
+                          maxRadius: 20,
                         ),
-                        // style: TextStyle(
-                        //     fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      // const SizedBox(height: 6),
-                      Text(
-                        "Online",
-                        style: TextStyle(
-                            color: Colors.grey.shade400, fontSize: 13),
-                      )
-                    ]),
-              ),
-              Expanded(
-                child: IconButton(
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        showDragHandle: true,
-                        barrierColor: Colors.transparent,
-                        builder: (bottomSheetContext) {
-                          return StatefulBuilder(
-                              builder: (context, setStateModal) {
-                            return Padding(
-                              padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
-                              child: Row(
-                                children: [
-                                  SizedBox(
-                                    width: 100,
-                                    child: FilledButton.tonal(
-                                      onPressed: () {},
-                                      child: Text(
-                                          screenScale.toStringAsFixed(2),
-                                          style: const TextStyle(fontSize: 14)),
-                                    ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          flex: 8,
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  "Lola",
+                                  style: GoogleFonts.satisfy(
+                                    textStyle: Theme.of(context)
+                                        .textTheme
+                                        .displayLarge,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.w200,
+                                    fontStyle: FontStyle.italic,
                                   ),
-                                  Expanded(
-                                    child: FilledButton.tonal(
-                                      onPressed: () async {
-                                        double newScale = screenScale - 0.1;
-                                        setState(() => screenScale = newScale);
-                                        setStateModal(
-                                            () => screenScale = newScale);
+                                  // style: TextStyle(
+                                  //     fontSize: 16, fontWeight: FontWeight.w600),
+                                ),
+                                // const SizedBox(height: 6),
+                                Text(
+                                  "Online",
+                                  style: TextStyle(
+                                      color: Colors.grey.shade400,
+                                      fontSize: 13),
+                                )
+                              ]),
+                        ),
+                        Expanded(
+                            child: IconButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    showDragHandle: true,
+                                    barrierColor: Colors.transparent,
+                                    builder: (bottomSheetContext) {
+                                      return StatefulBuilder(
+                                          builder: (context, setStateModal) {
+                                        return Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              20, 0, 20, 30),
+                                          child: Row(
+                                            children: [
+                                              SizedBox(
+                                                width: 100,
+                                                child: FilledButton.tonal(
+                                                  onPressed: () {},
+                                                  child: Text(
+                                                      screenScale
+                                                          .toStringAsFixed(2),
+                                                      style: const TextStyle(
+                                                          fontSize: 14)),
+                                                ),
+                                              ),
+                                              Expanded(
+                                                child: FilledButton.tonal(
+                                                  onPressed: () async {
+                                                    double newScale =
+                                                        screenScale - 0.1;
+                                                    setState(() =>
+                                                        screenScale = newScale);
+                                                    setStateModal(() =>
+                                                        screenScale = newScale);
 
-                                        debugPrint(
-                                            "screen-scale: ${screenScale - 0.1}");
-                                        final prefs = await SharedPreferences
-                                            .getInstance();
-                                        prefs.setDouble(
-                                          'screen-lola-voz',
-                                          screenScale,
-                                        );
-                                      },
-                                      child: const Icon(Icons.text_decrease,
-                                          size: 16),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 3),
-                                  Expanded(
-                                    child: FilledButton.tonal(
-                                      onPressed: () async {
-                                        double newScale = screenScale + 0.1;
-                                        setState(() => screenScale = newScale);
-                                        setStateModal(
-                                            () => screenScale = newScale);
+                                                    debugPrint(
+                                                        "screen-scale: ${screenScale - 0.1}");
+                                                    final prefs =
+                                                        await SharedPreferences
+                                                            .getInstance();
+                                                    prefs.setDouble(
+                                                      'screen-lola-voz',
+                                                      screenScale,
+                                                    );
+                                                  },
+                                                  child: const Icon(
+                                                      Icons.text_decrease,
+                                                      size: 16),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 3),
+                                              Expanded(
+                                                child: FilledButton.tonal(
+                                                  onPressed: () async {
+                                                    double newScale =
+                                                        screenScale + 0.1;
+                                                    setState(() =>
+                                                        screenScale = newScale);
+                                                    setStateModal(() =>
+                                                        screenScale = newScale);
 
-                                        debugPrint(
-                                            "screen-scale: ${screenScale + 0.1}");
-                                        final prefs = await SharedPreferences
-                                            .getInstance();
-                                        prefs.setDouble(
-                                          'screen-lola-voz',
-                                          screenScale,
-                                        );
-                                      },
-                                      child: const Icon(
-                                        Icons.text_increase,
-                                        size: 22,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  SizedBox(
-                                    width: 100,
-                                    child: FilledButton.tonal(
-                                      onPressed: () async {
-                                        debugPrint("screen-scale: 1.0");
-                                        double newScale = 1.0;
-                                        setState(() => screenScale = newScale);
-                                        setStateModal(
-                                            () => screenScale = newScale);
+                                                    debugPrint(
+                                                        "screen-scale: ${screenScale + 0.1}");
+                                                    final prefs =
+                                                        await SharedPreferences
+                                                            .getInstance();
+                                                    prefs.setDouble(
+                                                      'screen-lola-voz',
+                                                      screenScale,
+                                                    );
+                                                  },
+                                                  child: const Icon(
+                                                    Icons.text_increase,
+                                                    size: 22,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 10),
+                                              SizedBox(
+                                                width: 100,
+                                                child: FilledButton.tonal(
+                                                  onPressed: () async {
+                                                    debugPrint(
+                                                        "screen-scale: 1.0");
+                                                    double newScale = 1.0;
+                                                    setState(() =>
+                                                        screenScale = newScale);
+                                                    setStateModal(() =>
+                                                        screenScale = newScale);
 
-                                        (await SharedPreferences.getInstance())
-                                            .setDouble(
-                                          'screen-lola-voz',
-                                          1.0,
+                                                    (await SharedPreferences
+                                                            .getInstance())
+                                                        .setDouble(
+                                                      'screen-lola-voz',
+                                                      1.0,
+                                                    );
+                                                  },
+                                                  child: const Text("Reset",
+                                                      style: TextStyle(
+                                                          fontSize: 14)),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                         );
-                                      },
-                                      child: const Text("Reset",
-                                          style: TextStyle(fontSize: 14)),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          });
-                        },
-                      );
-                    },
-                    icon: Badge(
-                        offset: const Offset(24, 0),
-                        label: Text(screenScale.toStringAsFixed(2)),
-                        backgroundColor: Colors.orangeAccent,
-                        textColor: Colors.black87,
-                        child: const Icon(Icons.text_fields))),
-              )
-            ],
+                                      });
+                                    },
+                                  );
+                                },
+                                icon: Badge(
+                                    offset: const Offset(24, 0),
+                                    label: Text(screenScale.toStringAsFixed(2)),
+                                    textStyle: TextStyle(
+                                        fontSize: 12 * screenScale,
+                                        fontWeight: FontWeight.w600),
+                                    backgroundColor: Colors.orangeAccent,
+                                    textColor: Colors.black87,
+                                    child: const Icon(Icons.text_fields))))
+                      ])))
+          // toolbarHeight: 140,
+          // title: const Column(
+          //   children: [
+          //     HeaderUI(),
+          //     // SearchBarUI()
+          //   ],
+          // ),
           ),
-        )),
-        // toolbarHeight: 140,
-        // title: const Column(
-        //   children: [
-        //     HeaderUI(),
-        //     // SearchBarUI()
-        //   ],
-        // ),
-      ),
-      bottomNavigationBar: const BottomTabs(),
+      bottomNavigationBar: BottomTabs(scale: screenScale),
       // bottomNavigationBar: buildCustomBottomTabs(context),
       // body: const VoiceBody(),
-      body: const StackedBody(),
+      body: StackedBody(scale: screenScale),
     );
   }
 
@@ -367,7 +384,10 @@ class _VoiceScreenState extends State<VoiceScreen> {
 class StackedBody extends StatefulWidget {
   const StackedBody({
     super.key,
-  });
+    required double scale,
+  }) : _scale = scale;
+
+  final double _scale;
 
   @override
   State<StackedBody> createState() => _StackedBodyState();
@@ -429,6 +449,7 @@ class _StackedBodyState extends State<StackedBody> {
           userNotifier: _userNotifier,
           lolaController: _lolaController,
           lolaStream: _audioStream,
+          scale: widget._scale,
         )
       ],
     );
@@ -509,154 +530,153 @@ class InputMessageForm extends StatelessWidget {
     required GlobalKey<FormState> messageFormKey,
     required LolaController lolaController,
     required Stream<AudioState>? lolaStream,
+    required double scale,
     // TODO: preguntar sobre este patron de init
   })  : _userNotifier = userNotifier,
         _lolaController = lolaController,
         _lolaStream = lolaStream,
-        _messageFormKey = messageFormKey;
+        _messageFormKey = messageFormKey,
+        _scale = scale;
 
   final VozController _userNotifier;
   final GlobalKey<FormState> _messageFormKey;
   final LolaController _lolaController;
   final Stream<AudioState>? _lolaStream;
+  final double _scale;
 
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.bottomLeft,
-      child: Container(
-        padding: const EdgeInsets.only(left: 0, bottom: 0, top: 0),
-        // color: Colors.grey[900],
-        height: _INPUT_H * 2.2,
-        width: double.infinity,
-        child: Column(
-          children: [
-            Expanded(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(
-                      flex: 1,
-                      child: ListenableBuilder(
-                          listenable: _userNotifier,
-                          builder: (_, __) {
-                            return Form(
-                                key: _messageFormKey,
-                                child: TextFormField(
-                                    maxLength: 2048,
-                                    maxLengthEnforcement:
-                                        MaxLengthEnforcement.enforced,
-                                    // expands: true,
-                                    validator: (value) {
-                                      debugPrint('input valido? $value');
-                                      // TODO: como hacer mas prolijo ese is String?
-                                      if (value is String) {
-                                        if (value.isEmpty) {
-                                          return 'Field required';
-                                        } else {
-                                          return null;
-                                        }
+        alignment: Alignment.bottomLeft,
+        child: Container(
+            padding: const EdgeInsets.only(left: 0, bottom: 0, top: 0),
+            // color: Colors.grey[900],
+            height: _INPUT_H * 2.2,
+            width: double.infinity,
+            child: Column(children: [
+              Expanded(
+                  child:
+                      Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                Expanded(
+                    flex: 1,
+                    child: ListenableBuilder(
+                        listenable: _userNotifier,
+                        builder: (_, __) {
+                          return Form(
+                              key: _messageFormKey,
+                              child: TextFormField(
+                                  // style: ,
+                                  style: TextStyle(
+                                    fontSize: 16.0 * _scale,
+                                  ),
+                                  maxLength: 2048,
+                                  maxLengthEnforcement:
+                                      MaxLengthEnforcement.enforced,
+                                  // expands: true,
+                                  validator: (value) {
+                                    debugPrint('input valido? $value');
+                                    // TODO: como hacer mas prolijo ese is String?
+                                    if (value is String) {
+                                      if (value.isEmpty) {
+                                        return 'Field required';
+                                      } else {
+                                        return null;
                                       }
-                                      return 'Field Required';
-                                    },
-                                    minLines: null,
-                                    maxLines: 3,
-                                    controller: TextEditingController(
-                                        text: _userNotifier.content()),
-                                    keyboardType: TextInputType.multiline,
-                                    textInputAction:
-                                        TextInputAction.unspecified,
-                                    decoration: InputDecoration(
-                                      // constraints: const BoxConstraints.expand(height: 100),
-                                      enabledBorder: const OutlineInputBorder(),
-                                      suffixIcon: GestureDetector(
-                                        onTap: () {
-                                          debugPrint(_messageFormKey
-                                              .currentState
-                                              .toString());
-                                          _messageFormKey.currentState?.reset();
-                                          _userNotifier.updateContent("");
-                                        },
-                                        child: const Icon(
-                                          Icons.delete_forever,
-                                          color: Colors.white,
-                                          size: 24,
-                                        ),
+                                    }
+                                    return 'Field Required';
+                                  },
+                                  minLines: null,
+                                  maxLines: 3,
+                                  controller: TextEditingController(
+                                      text: _userNotifier.content()),
+                                  keyboardType: TextInputType.multiline,
+                                  textInputAction: TextInputAction.unspecified,
+                                  decoration: InputDecoration(
+                                    // constraints: const BoxConstraints.expand(height: 100),
+                                    // enabledBorder: const OutlineInputBorder(),
+                                    suffixIcon: GestureDetector(
+                                      onTap: () {
+                                        debugPrint(_messageFormKey.currentState
+                                            .toString());
+                                        _messageFormKey.currentState?.reset();
+                                        _userNotifier.updateContent("");
+                                      },
+                                      child: Icon(
+                                        Icons.delete_forever,
+                                        color: Colors.white,
+                                        size: 24 * _scale,
                                       ),
-                                      fillColor: Colors.grey[900],
-                                      // alignLabelWithHint: true,
-                                      contentPadding: const EdgeInsets.all(15),
-                                      // filled: false,
-
-                                      hintText: "Escribe a Lola",
-                                      hintStyle: const TextStyle(
-                                        color: Colors.white54,
-                                      ),
-                                      border: InputBorder.none,
                                     ),
-                                    onFieldSubmitted: (value) {
-                                      debugPrint(
-                                          '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
-                                      var sk = SnackBar(
-                                          content: Text('Hello: $value'));
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(sk);
-                                    },
-                                    onSaved: (value) {
-                                      debugPrint('>> on-saved-value: $value');
-                                      if (value == null) return;
+                                    fillColor: Colors.grey[900],
+                                    // alignLabelWithHint: true,
+                                    contentPadding: const EdgeInsets.all(10),
+                                    // filled: false,
 
-                                      _userNotifier.updateContent(value);
-                                    },
-                                    onTapOutside: (event) {
-                                      debugPrint('>> unfocusing: $event');
-                                      FocusManager.instance.primaryFocus
-                                          ?.unfocus();
-                                    }));
-                          })),
-                  SizedBox(
+                                    hintText: "Escribe a Lola",
+                                    hintStyle: TextStyle(
+                                      color: Colors.white54,
+                                      fontSize: 16 * _scale,
+                                    ),
+                                    border: InputBorder.none,
+                                  ),
+                                  onFieldSubmitted: (value) {
+                                    debugPrint(
+                                        '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
+                                    var sk = SnackBar(
+                                        content: Text('Hello: $value'));
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(sk);
+                                  },
+                                  onSaved: (value) {
+                                    debugPrint('>> on-saved-value: $value');
+                                    if (value == null) return;
+
+                                    _userNotifier.updateContent(value);
+                                  },
+                                  onTapOutside: (event) {
+                                    debugPrint('>> unfocusing: $event');
+                                    FocusManager.instance.primaryFocus
+                                        ?.unfocus();
+                                  }));
+                        })),
+                SizedBox(
                     width: 122,
                     // color: Colors.amber,
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 12),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              RecordingAction(
-                                  userNotifier: _userNotifier,
-                                  messageFormKey: _messageFormKey,
-                                  lolaController: _lolaController),
-                              // const SizedBox(width: 16),
-                              SendAction(
-                                  userNotifier: _userNotifier,
-                                  messageFormKey: _messageFormKey,
-                                  lolaController: _lolaController),
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 12),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                RecordingAction(
+                                    userNotifier: _userNotifier,
+                                    messageFormKey: _messageFormKey,
+                                    lolaController: _lolaController,
+                                    scale: _scale),
+                                // const SizedBox(width: 16),
+                                SendAction(
+                                    userNotifier: _userNotifier,
+                                    messageFormKey: _messageFormKey,
+                                    lolaController: _lolaController,
+                                    scale: _scale),
 
-                              // const SizedBox(width: 4),
-                            ]),
-                        const SizedBox(height: 10),
-                        Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              LolaAudioHandler(
-                                stream: _lolaStream,
-                                lolaController: _lolaController,
-                                scale: 1.0,
-                              ),
-                              // const SizedBox(width: 4),
-                            ]),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+                                // const SizedBox(width: 4),
+                              ]),
+                          const SizedBox(height: 10),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                LolaAudioHandler(
+                                  stream: _lolaStream,
+                                  lolaController: _lolaController,
+                                  scale: _scale,
+                                )
+                                // const SizedBox(width: 4),
+                              ])
+                        ]))
+              ]))
+            ])));
   }
 }
 
@@ -666,13 +686,16 @@ class SendAction extends StatelessWidget {
     required VozController userNotifier,
     required GlobalKey<FormState> messageFormKey,
     required LolaController lolaController,
+    required double scale,
   })  : _userNotifier = userNotifier,
         _lolaController = lolaController,
+        _scale = scale,
         _messageFormKey = messageFormKey;
 
   final VozController _userNotifier;
   final GlobalKey<FormState> _messageFormKey;
   final LolaController _lolaController;
+  final double _scale;
 
   @override
   Widget build(BuildContext context) {
@@ -687,16 +710,16 @@ class SendAction extends StatelessWidget {
                         userQuestion: _userNotifier.content(), debug: true);
                   },
                   child: Container(
-                    height: 40,
-                    width: 40,
+                    height: 40 * _scale,
+                    width: 40 * _scale,
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.send,
                       color: Colors.white,
-                      size: 24,
+                      size: 22 * _scale,
                     ),
                   ),
                 )
@@ -707,16 +730,16 @@ class SendAction extends StatelessWidget {
                         userQuestion: _userNotifier.content(), debug: true);
                   },
                   child: Container(
-                    height: 40,
-                    width: 40,
+                    height: 40 * _scale,
+                    width: 40 * _scale,
                     decoration: BoxDecoration(
                       color: Colors.lightBlue,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.send,
                       color: Colors.white,
-                      size: 24,
+                      size: 22 * _scale,
                     ),
                   ),
                 );
@@ -730,13 +753,16 @@ class RecordingAction extends StatelessWidget {
     required VozController userNotifier,
     required GlobalKey<FormState> messageFormKey,
     required LolaController lolaController,
+    required double scale,
   })  : _userNotifier = userNotifier,
         _lolaController = lolaController,
+        _scale = scale,
         _messageFormKey = messageFormKey;
 
   final VozController _userNotifier;
   final GlobalKey<FormState> _messageFormKey;
   final LolaController _lolaController;
+  final double _scale;
 
   @override
   Widget build(BuildContext context) {
@@ -750,16 +776,16 @@ class RecordingAction extends StatelessWidget {
                     _messageFormKey.currentState?.save();
                   },
                   child: Container(
-                    height: 40,
-                    width: 40,
+                    height: 40 * _scale,
+                    width: 40 * _scale,
                     decoration: BoxDecoration(
                       color: Colors.green,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.mic,
                       color: Colors.white,
-                      size: 24,
+                      size: 24 * _scale,
                     ),
                   ),
                 )
@@ -769,16 +795,16 @@ class RecordingAction extends StatelessWidget {
                     _messageFormKey.currentState?.save();
                   },
                   child: Container(
-                    height: 40,
-                    width: 40,
+                    height: 40 * _scale,
+                    width: 40 * _scale,
                     decoration: BoxDecoration(
                       color: Colors.lightBlue,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.mic,
                       color: Colors.white,
-                      size: 24,
+                      size: 24 * _scale,
                     ),
                   ),
                 );
@@ -808,7 +834,10 @@ class RecordingAction extends StatelessWidget {
 class BottomTabs extends StatefulWidget {
   const BottomTabs({
     super.key,
-  });
+    required double scale,
+  }) : _scale = scale;
+
+  final double _scale;
 
   @override
   State<BottomTabs> createState() => _BottomTabsState();
@@ -826,54 +855,41 @@ class _BottomTabsState extends State<BottomTabs> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      elevation: 0.0,
-      selectedItemColor: Colors.purple,
-      unselectedItemColor: Colors.grey.shade600,
-      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-      // TODO: shifted will not work since you need to tap the icon itself
-      type: BottomNavigationBarType.fixed,
-      onTap: _onItemTapped,
-      currentIndex: _selectedIndex,
-      items: [
-        BottomNavigationBarItem(
-          label: "Mensajes",
-          icon: IconButton(
-              // padding: EdgeInsets.all(20),
-              onPressed: () {
-                Navigator.of(context).pushNamed('/opciones/mensajes');
-              },
-              icon: const Badge(
-                  label: Text("24"),
-                  backgroundColor: Colors.orangeAccent,
-                  textColor: Colors.black87,
-                  child: Icon(Icons.message))),
-        ),
-        BottomNavigationBarItem(
-          label: "Lola",
-          icon: IconButton(
-              onPressed: () {},
-              icon: const Badge(
-                  // label: Text("24"),
-                  backgroundColor: Colors.orangeAccent,
-                  textColor: Colors.black87,
-                  child: Icon(Icons.auto_awesome_mosaic))),
-        ),
-        // BottomNavigationBarItem(
-        //   label: "Perfil",
-        //   icon: IconButton(
-        //       onPressed: () {
-        //         Navigator.of(context)
-        //             .pushNamed('/opciones/profile', arguments: "jamon");
-        //       },
-        //       icon: const Badge(
-        //           // label: Text("24"),
-        //           backgroundColor: Colors.orangeAccent,
-        //           textColor: Colors.black87,
-        //           child: Icon(Icons.account_box))),
-        // ),
-      ],
-    );
+        elevation: 0.0,
+        selectedItemColor: Colors.purple,
+        unselectedItemColor: Colors.grey.shade600,
+        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+        // TODO: shifted will not work since you need to tap the icon itself
+        type: BottomNavigationBarType.fixed,
+        onTap: _onItemTapped,
+        currentIndex: _selectedIndex,
+        unselectedFontSize: 14 * widget._scale,
+        selectedFontSize: 14 * widget._scale,
+        items: [
+          BottomNavigationBarItem(
+              label: "Mensajes",
+              icon: IconButton(
+                  // padding: EdgeInsets.all(20),
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/opciones/mensajes');
+                  },
+                  icon: Badge(
+                      label: Text("24",
+                          style: TextStyle(fontSize: 12 * widget._scale)),
+                      backgroundColor: Colors.orangeAccent,
+                      textColor: Colors.black87,
+                      child: const Icon(Icons.message)))),
+          BottomNavigationBarItem(
+              label: "Lola",
+              icon: IconButton(
+                  onPressed: () {},
+                  icon: const Badge(
+                      // label: Text("24"),
+                      backgroundColor: Colors.orangeAccent,
+                      textColor: Colors.black87,
+                      child: Icon(Icons.auto_awesome_mosaic))))
+        ]);
   }
 }
 

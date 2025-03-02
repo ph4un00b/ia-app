@@ -182,11 +182,14 @@ class _InitialVozScreenState extends State<InitialVozScreen> {
                             );
                           },
                           icon: Badge(
-                              offset: const Offset(24, 0),
-                              label: Text(screenScale.toStringAsFixed(2)),
-                              backgroundColor: Colors.orangeAccent,
-                              textColor: Colors.black87,
-                              child: const Icon(Icons.text_fields))))
+                                    offset: const Offset(24, 0),
+                                    label: Text(screenScale.toStringAsFixed(2)),
+                                    textStyle: TextStyle(
+                                        fontSize: 12 * screenScale,
+                                        fontWeight: FontWeight.w600),
+                                    backgroundColor: Colors.orangeAccent,
+                                    textColor: Colors.black87,
+                                    child: const Icon(Icons.text_fields))))
                 ]))),
       ),
       body: InitialVozBody(scale: screenScale),
