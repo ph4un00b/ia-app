@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Voz/voz_controller.dart';
@@ -436,14 +435,16 @@ class _StackedBodyState extends State<StackedBody> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        SafeArea(child: LolaServerMessagePad(scale: 1.0, stream: _lolaStream)),
-        // const SingleChildScrollView(
-        //     physics: BouncingScrollPhysics(),
-        //     child: SafeArea(
-        //       child: Column(
-        //           crossAxisAlignment: CrossAxisAlignment.start,
-        //           children: [MessagesBuilder(), SizedBox(height: _INPUT_H)]),
-        //     )),
+        // SafeArea(child: LolaServerMessagePad(scale: 1.0, stream: _lolaStream)),
+        SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: SafeArea(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  MessagesBuilder(stream: _lolaStream, scale: widget._scale),
+                  SizedBox(height: _INPUT_H * 2.2 * widget._scale)
+                ]))),
         InputMessageForm(
           messageFormKey: _messageFormKey,
           userNotifier: _userNotifier,
@@ -459,67 +460,92 @@ class _StackedBodyState extends State<StackedBody> {
 class MessagesBuilder extends StatelessWidget {
   const MessagesBuilder({
     super.key,
-  });
+    required double scale,
+    required Stream<LolaServiceState>? stream,
+  })  : _scale = scale,
+        _stream = stream;
+
+  final double _scale;
+  final Stream<LolaServiceState>? _stream;
 
   @override
   Widget build(BuildContext context) {
+    return StreamBuilder(
+        stream: _stream,
+        builder: (context, snapshot) {
+          final service = snapshot.data;
+          return switch (service) {
+            null => respuestaLola([
+                ChatMessage(msgContent: "null", msgType: "sender"),
+                ChatMessage(msgContent: "null", msgType: "receiver"),
+              ]),
+            IdleService() => respuestaLola([
+                ChatMessage(msgContent: "idle", msgType: "sender"),
+                ChatMessage(msgContent: "idle", msgType: "receiver"),
+              ]),
+            Loading() => respuestaLola([
+                ChatMessage(msgContent: "loading", msgType: "sender"),
+                ChatMessage(msgContent: "loading", msgType: "receiver"),
+              ]),
+            Data(payload: final message) => respuestaLola([
+                ChatMessage(msgContent: message, msgType: "receiver"),
+              ]),
+            Error() => respuestaLola([
+                ChatMessage(msgContent: "error", msgType: "sender"),
+              ]),
+          };
+        });
+  }
+
+  ListView respuestaLola(List<ChatMessage> messages) {
     return ListView.builder(
-      itemCount: messages.length,
-      shrinkWrap: true,
-      padding: const EdgeInsets.only(top: 10, bottom: 10),
-      physics: const NeverScrollableScrollPhysics(),
-      itemBuilder: (context, index) {
-        return Padding(
-          // padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: LayoutBuilder(
-            builder: (_, constrains) {
-              // return Align(
-              //   alignment: (messages[index].msgType == "receiver"
-              //       ? Alignment.topLeft
-              //       : Alignment.topRight),``
-              //   child: Container(
-              //     decoration: BoxDecoration(``
-              //       borderRadius: BorderRadius.circular(20),
-              //       color: (messages[index].msgType == "receiver"
-              //           ? Colors.grey.shade800
-              //           : Colors.blue[800]),
-              //     ),
-              //     padding: EdgeInsets.all(16),
-              //     child: Text(
-              //       messages[index].msgContent,
-              //       style: TextStyle(fontSize: 35),
-              //     ),
-              //   ),
-              // );
-              return Row(
-                children: [
+        itemCount: messages.length,
+        shrinkWrap: true,
+        padding: const EdgeInsets.only(top: 10, bottom: 10),
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) {
+          return Padding(
+              // padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              child: LayoutBuilder(builder: (_, constrains) {
+                // return Align(
+                //   alignment: (messages[index].msgType == "receiver"
+                //       ? Alignment.topLeft
+                //       : Alignment.topRight),``
+                //   child: Container(
+                //     decoration: BoxDecoration(``
+                //       borderRadius: BorderRadius.circular(20),
+                //       color: (messages[index].msgType == "receiver"
+                //           ? Colors.grey.shade800
+                //           : Colors.blue[800]),
+                //     ),
+                //     padding: EdgeInsets.all(16),
+                //     child: Text(
+                //       messages[index].msgContent,
+                //       style: TextStyle(fontSize: 35),
+                //     ),
+                //   ),
+                // );
+                return Row(children: [
                   if (messages[index].msgType == "sender") const Spacer(),
                   ConstrainedBox(
-                    constraints: BoxConstraints(maxWidth: constrains.maxWidth),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                          color: (messages[index].msgType == "receiver"
-                              ? Colors.grey.shade800
-                              : Colors.blue[800]),
-                          borderRadius: BorderRadius.circular(16)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Text(
-                          messages[index].msgContent,
-                          style: const TextStyle(fontSize: 15),
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (messages[index].msgType != "sender") const Spacer(),
-                ],
-              );
-            },
-          ),
-        );
-      },
-    );
+                      constraints:
+                          BoxConstraints(maxWidth: constrains.maxWidth),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                            color: (messages[index].msgType == "receiver"
+                                ? Colors.grey.shade800
+                                : Colors.blue[800]),
+                            borderRadius: BorderRadius.circular(16)),
+                        child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Text(messages[index].msgContent,
+                                style: TextStyle(fontSize: 15 * _scale))),
+                      )),
+                  if (messages[index].msgType != "sender") const Spacer()
+                ]);
+              }));
+        });
   }
 }
 
@@ -550,7 +576,7 @@ class InputMessageForm extends StatelessWidget {
         alignment: Alignment.bottomLeft,
         child: Container(
             padding: const EdgeInsets.only(left: 0, bottom: 0, top: 0),
-            // color: Colors.grey[900],
+            color: Colors.black87,
             height: _INPUT_H * 2.2,
             width: double.infinity,
             child: Column(children: [
