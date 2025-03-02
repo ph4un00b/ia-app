@@ -248,7 +248,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
                                   );
                                 },
                                 icon: Badge(
-                                    offset: const Offset(24, 0),
+                                    offset: const Offset(24, -6),
                                     label: Text(screenScale.toStringAsFixed(2)),
                                     textStyle: TextStyle(
                                         fontSize: 12 * screenScale,
