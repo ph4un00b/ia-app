@@ -144,6 +144,8 @@ class _VoiceScreenState extends State<VoiceScreen> {
                                 onPressed: () {
                                   showModalBottomSheet(
                                     context: context,
+                                    constraints: const BoxConstraints(
+                                        maxHeight: _INPUT_H * 3),
                                     showDragHandle: true,
                                     barrierColor: Colors.transparent,
                                     builder: (bottomSheetContext) {
@@ -152,95 +154,118 @@ class _VoiceScreenState extends State<VoiceScreen> {
                                         return Padding(
                                           padding: const EdgeInsets.fromLTRB(
                                               20, 0, 20, 30),
-                                          child: Row(
+                                          child: Column(
                                             children: [
-                                              SizedBox(
-                                                width: 100,
-                                                child: FilledButton.tonal(
-                                                  onPressed: () {},
-                                                  child: Text(
-                                                      screenScale
-                                                          .toStringAsFixed(2),
-                                                      style: const TextStyle(
-                                                          fontSize: 14)),
-                                                ),
-                                              ),
-                                              Expanded(
-                                                child: FilledButton.tonal(
-                                                  onPressed: () async {
-                                                    double newScale =
-                                                        screenScale - 0.1;
-                                                    setState(() =>
-                                                        screenScale = newScale);
-                                                    setStateModal(() =>
-                                                        screenScale = newScale);
-
-                                                    debugPrint(
-                                                        "screen-scale: ${screenScale - 0.1}");
-                                                    final prefs =
-                                                        await SharedPreferences
-                                                            .getInstance();
-                                                    prefs.setDouble(
-                                                      'screen-lola-voz',
-                                                      screenScale,
-                                                    );
-                                                  },
-                                                  child: const Icon(
-                                                      Icons.text_decrease,
-                                                      size: 16),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 3),
-                                              Expanded(
-                                                child: FilledButton.tonal(
-                                                  onPressed: () async {
-                                                    double newScale =
-                                                        screenScale + 0.1;
-                                                    setState(() =>
-                                                        screenScale = newScale);
-                                                    setStateModal(() =>
-                                                        screenScale = newScale);
-
-                                                    debugPrint(
-                                                        "screen-scale: ${screenScale + 0.1}");
-                                                    final prefs =
-                                                        await SharedPreferences
-                                                            .getInstance();
-                                                    prefs.setDouble(
-                                                      'screen-lola-voz',
-                                                      screenScale,
-                                                    );
-                                                  },
-                                                  child: const Icon(
-                                                    Icons.text_increase,
-                                                    size: 22,
+                                              Text("Ajuste de texto",
+                                                  style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 20.0 *
+                                                          screenScale.clamp(
+                                                            0.5,
+                                                            1.5,
+                                                          ))),
+                                              const SizedBox(height: 10),
+                                              Row(
+                                                children: [
+                                                  SizedBox(
+                                                    width: 100,
+                                                    child: FilledButton.tonal(
+                                                      onPressed: () {},
+                                                      child: Text(
+                                                          screenScale
+                                                              .toStringAsFixed(
+                                                                  2),
+                                                          style:
+                                                              const TextStyle(
+                                                                  fontSize:
+                                                                      14)),
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
-                                              const SizedBox(width: 10),
-                                              SizedBox(
-                                                width: 100,
-                                                child: FilledButton.tonal(
-                                                  onPressed: () async {
-                                                    debugPrint(
-                                                        "screen-scale: 1.0");
-                                                    double newScale = 1.0;
-                                                    setState(() =>
-                                                        screenScale = newScale);
-                                                    setStateModal(() =>
-                                                        screenScale = newScale);
+                                                  Expanded(
+                                                    child: FilledButton.tonal(
+                                                      onPressed: () async {
+                                                        double newScale =
+                                                            screenScale - 0.1;
+                                                        setState(() =>
+                                                            screenScale =
+                                                                newScale);
+                                                        setStateModal(() =>
+                                                            screenScale =
+                                                                newScale);
 
-                                                    (await SharedPreferences
-                                                            .getInstance())
-                                                        .setDouble(
-                                                      'screen-lola-voz',
-                                                      1.0,
-                                                    );
-                                                  },
-                                                  child: const Text("Reset",
-                                                      style: TextStyle(
-                                                          fontSize: 14)),
-                                                ),
+                                                        debugPrint(
+                                                            "screen-scale: ${screenScale - 0.1}");
+                                                        final prefs =
+                                                            await SharedPreferences
+                                                                .getInstance();
+                                                        prefs.setDouble(
+                                                          'screen-lola-voz',
+                                                          screenScale,
+                                                        );
+                                                      },
+                                                      child: const Icon(
+                                                          Icons.text_decrease,
+                                                          size: 16),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 3),
+                                                  Expanded(
+                                                    child: FilledButton.tonal(
+                                                      onPressed: () async {
+                                                        double newScale =
+                                                            screenScale + 0.1;
+                                                        setState(() =>
+                                                            screenScale =
+                                                                newScale);
+                                                        setStateModal(() =>
+                                                            screenScale =
+                                                                newScale);
+
+                                                        debugPrint(
+                                                            "screen-scale: ${screenScale + 0.1}");
+                                                        final prefs =
+                                                            await SharedPreferences
+                                                                .getInstance();
+                                                        prefs.setDouble(
+                                                          'screen-lola-voz',
+                                                          screenScale,
+                                                        );
+                                                      },
+                                                      child: const Icon(
+                                                        Icons.text_increase,
+                                                        size: 22,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 10),
+                                                  SizedBox(
+                                                    width: 100,
+                                                    child: FilledButton.tonal(
+                                                      onPressed: () async {
+                                                        debugPrint(
+                                                            "screen-scale: 1.0");
+                                                        double newScale = 1.0;
+                                                        setState(() =>
+                                                            screenScale =
+                                                                newScale);
+                                                        setStateModal(() =>
+                                                            screenScale =
+                                                                newScale);
+
+                                                        (await SharedPreferences
+                                                                .getInstance())
+                                                            .setDouble(
+                                                          'screen-lola-voz',
+                                                          1.0,
+                                                        );
+                                                      },
+                                                      child: const Text("Reset",
+                                                          style: TextStyle(
+                                                              fontSize: 14)),
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ],
                                           ),
@@ -267,7 +292,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
           //   ],
           // ),
           ),
-      bottomNavigationBar: BottomTabs(scale: screenScale),
+      bottomNavigationBar: BottomTabs(scale: screenScale.clamp(0.8, 1.7)),
       // bottomNavigationBar: buildCustomBottomTabs(context),
       // body: const VoiceBody(),
       body: StackedBody(scale: screenScale),
@@ -452,7 +477,7 @@ class _StackedBodyState extends State<StackedBody> {
           userNotifier: _userNotifier,
           lolaController: _lolaController,
           lolaStream: _audioStream,
-          scale: widget._scale,
+          scale: widget._scale.clamp(0.5, 2.5),
         )
       ],
     );
@@ -716,13 +741,13 @@ class InputMessageForm extends StatelessWidget {
                                     userNotifier: _userNotifier,
                                     messageFormKey: _messageFormKey,
                                     lolaController: _lolaController,
-                                    scale: _scale),
+                                    scale: _scale.clamp(0.5, 1.50)),
                                 // const SizedBox(width: 16),
                                 SendAction(
                                     userNotifier: _userNotifier,
                                     messageFormKey: _messageFormKey,
                                     lolaController: _lolaController,
-                                    scale: _scale),
+                                    scale: _scale.clamp(0.5, 1.50)),
 
                                 // const SizedBox(width: 4),
                               ]),
@@ -733,7 +758,7 @@ class InputMessageForm extends StatelessWidget {
                                 LolaAudioHandler(
                                   stream: _lolaStream,
                                   lolaController: _lolaController,
-                                  scale: _scale,
+                                  scale: _scale.clamp(0.5, 1.20),
                                 )
                                 // const SizedBox(width: 4),
                               ])
