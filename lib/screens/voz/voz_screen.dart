@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lola_ai_app/features/App/components/setting_text.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/components/debug_voice_selector.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
@@ -8,7 +7,6 @@ import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
 import 'package:lola_ai_app/features/Memory/components/debug.dart';
 import 'package:lola_ai_app/features/Voz/components/debug.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_control_form.dart';
-import 'package:lola_ai_app/features/Voz/components/voz_control_message.dart';
 import 'package:lola_ai_app/features/Voz/components/voz_pad.dart';
 import 'package:lola_ai_app/features/Voz/voz_controller.dart';
 import 'package:lola_ai_app/features/core/components/debug_widget.dart';

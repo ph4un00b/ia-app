@@ -1066,7 +1066,7 @@ class VoiceBody extends StatefulWidget {
 
 class _VoiceBodyState extends State<VoiceBody> {
   final _userNotifier = VozController();
-  final _lola = LolaController();
+  // final _lola = LolaController();
   final _messageFormKey = GlobalKey<FormState>();
 
   ///////////// KEYBOARD ACTIONS ////////////////

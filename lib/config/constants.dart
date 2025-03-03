@@ -10,4 +10,6 @@ abstract class Constants {
 
   /// Maximum number of characters to store in memory
   static const int maxTokens = 2048;
+
+  static const double inputHeight = 130.0;
 }

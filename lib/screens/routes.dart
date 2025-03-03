@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/core/routes.dart';
 import 'package:lola_ai_app/screens/splash/splash_screen.dart';
+import 'package:lola_ai_app/screens/voz/chat_screen.dart';
 import 'package:lola_ai_app/screens/voz/initial_screen.dart';
-import 'package:lola_ai_app/screens/voz/voice_screen.dart';
-import 'package:lola_ai_app/screens/voz/voz_screen.dart';
 
 import 'opciones/messages/messages_screen.dart';
 import 'opciones/others/options_others_screen.dart';
@@ -12,7 +11,7 @@ import 'opciones/profile/options_profile_screen.dart';
 final appRoutes = <String, WidgetBuilder>{
   '/': (ctx) => const SplashScreen(),
   '/initial': (ctx) => const InitialVozScreen(),
-  '/voz': (ctx) => const VoiceScreen(),
+  '/voz': (ctx) => const ChatScreen(),
   // '/voz': (ctx) => const VozScreen(),
   // '/opciones': (ctx) => const OptProfileScreen(),
   // '/opciones/messages': (ctx) =>
