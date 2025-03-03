@@ -427,8 +427,8 @@ class _StackedBodyState extends State<StackedBody> {
   Stream<LolaServiceState>? _lolaStream;
   Stream<AudioState>? _audioStream;
 
-  var _debugLolaState = '';
-  var _debugLolaAudioState = '';
+  // var _debugLolaState = '';
+  // var _debugLolaAudioState = '';
   // var _scale = Constants.scale;
 
   @override
@@ -441,11 +441,11 @@ class _StackedBodyState extends State<StackedBody> {
 
     if (_debug) {
       _lolaStream?.listen((state) {
-        _debugLolaState = state.toString();
+        // _debugLolaState = state.toString();
       });
 
       _audioStream?.listen((state) {
-        _debugLolaAudioState = state.toString();
+        // _debugLolaAudioState = state.toString();
       });
     }
   }
