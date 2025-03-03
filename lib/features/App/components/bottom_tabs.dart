@@ -43,12 +43,7 @@ class _BottomTabsState extends State<BottomTabs> {
               onPressed: () {
                 Navigator.of(context).pushNamed('/opciones/recordatorios');
               },
-              icon: const Badge(
-                  // label: Text("24",
-                  //     style: TextStyle(fontSize: 12 * widget._scale)),
-                  // backgroundColor: Colors.orangeAccent,
-                  textColor: Colors.black87,
-                  child: Icon(Icons.hail_outlined)),
+              icon:  const Icon(Icons.hail_outlined),
             )),
         BottomNavigationBarItem(
             label: "Resumen",
@@ -57,12 +52,7 @@ class _BottomTabsState extends State<BottomTabs> {
               onPressed: () {
                 Navigator.of(context).pushNamed('/opciones/resumen');
               },
-              icon: const Badge(
-                  // label: Text("24",
-                  //     style: TextStyle(fontSize: 12 * widget._scale)),
-                  // backgroundColor: Colors.orangeAccent,
-                  textColor: Colors.black87,
-                  child: Icon(Icons.smart_toy_outlined)),
+              icon: const Icon(Icons.smart_toy_outlined),
             )),
         BottomNavigationBarItem(
             label: "Mensajes",
