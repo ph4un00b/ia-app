@@ -36,7 +36,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
       appBar: AppBar(
         flexibleSpace: SafeArea(
             child: Container(
-                padding: const EdgeInsets.only(right: 66, left: 0),
+                padding: const EdgeInsets.only(right: 66, left: 40),
                 child: Row(children: [
                   const SizedBox(width: 16),
                   const CircleAvatar(
