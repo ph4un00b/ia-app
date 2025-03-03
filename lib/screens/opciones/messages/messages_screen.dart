@@ -30,10 +30,7 @@ class _MessagesScreenState extends State<MessagesScreen> {
                 padding: const EdgeInsets.only(right: 66, left: 40),
                 child: Row(children: [
                   const SizedBox(width: 16),
-                  const Expanded(
-                    flex: 8,
-                    child: MessagesTitle()
-                  ),
+                  const Expanded(flex: 8, child: MessagesTitle()),
                   Expanded(
                       child: IconButton(
                           onPressed: () {
@@ -144,14 +141,14 @@ class _MessagesScreenState extends State<MessagesScreen> {
                             );
                           },
                           icon: Badge(
-                                    offset: const Offset(24, -6),
-                                    label: Text(screenScale.toStringAsFixed(2)),
-                                    textStyle: TextStyle(
-                                        fontSize: 12 * screenScale,
-                                        fontWeight: FontWeight.w600),
-                                    backgroundColor: Colors.orangeAccent,
-                                    textColor: Colors.black87,
-                                    child: const Icon(Icons.text_fields))))
+                              offset: const Offset(24, -6),
+                              label: Text(screenScale.toStringAsFixed(2)),
+                              textStyle: TextStyle(
+                                  fontSize: 12 * screenScale,
+                                  fontWeight: FontWeight.w600),
+                              backgroundColor: Colors.orangeAccent,
+                              textColor: Colors.black87,
+                              child: const Icon(Icons.text_fields))))
                 ]))),
       ),
       body: Container(
@@ -186,8 +183,9 @@ class MessageChildren extends StatefulWidget {
 
   const MessageChildren({
     super.key,
-    required this.controller, required double scale,
-  }): _scale = scale;
+    required this.controller,
+    required double scale,
+  }) : _scale = scale;
 
   final double _scale;
 
@@ -218,7 +216,8 @@ class _MessageChildrenState extends State<MessageChildren> {
       children: [
         Expanded(
           flex: 1,
-          child: MessagesSearch(controller: widget.controller, scale: widget._scale),
+          child: MessagesSearch(
+              controller: widget.controller, scale: widget._scale),
         ),
         const SizedBox(height: 18),
         // Expanded(
