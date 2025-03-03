@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/core/routes.dart';
+import 'package:lola_ai_app/screens/opciones/recordatorios/reminders_screen.dart';
 import 'package:lola_ai_app/screens/opciones/resumen/resumen_screen.dart';
 import 'package:lola_ai_app/screens/splash/splash_screen.dart';
 import 'package:lola_ai_app/screens/voz/chat_screen.dart';
@@ -14,10 +15,7 @@ final appRoutes = <String, WidgetBuilder>{
   '/initial': (ctx) => const InitialVozScreen(),
   '/voz': (ctx) => const ChatScreen(),
   // '/voz': (ctx) => const VozScreen(),
-  // '/opciones': (ctx) => const OptProfileScreen(),
-  // '/opciones/messages': (ctx) =>
-  //     MessagesScreen(items: List<String>.generate(10000, (i) => 'Item $i')),
-  '/opciones/recordatorios': (ctx) => const OptProfileScreen(),
+  '/opciones/recordatorios': (ctx) => const RemindersScreen(),
   '/opciones/resumen': (ctx) => const ResumenScreen(),
 };
 
