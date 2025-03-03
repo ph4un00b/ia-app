@@ -103,7 +103,9 @@ class _VoiceScreenState extends State<VoiceScreen> {
                         //   ),
                         // ),
                         const SizedBox(width: 16),
-                        const CircleAvatar(
+                        CircleAvatar(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.inversePrimary,
                           // backgroundImage: NetworkImage(
                           //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
                           maxRadius: 20,
@@ -303,12 +305,12 @@ class _VoiceScreenState extends State<VoiceScreen> {
                   icon: pageIndex == 0
                       ? const Icon(
                           Icons.home_filled,
-                          color: Colors.white,
+                          color: Colors.white70,
                           size: 35,
                         )
                       : const Icon(
                           Icons.home_outlined,
-                          color: Colors.white,
+                          color: Colors.white70,
                           size: 35,
                         ),
                 ),
@@ -322,12 +324,12 @@ class _VoiceScreenState extends State<VoiceScreen> {
                   icon: pageIndex == 1
                       ? const Icon(
                           Icons.work_rounded,
-                          color: Colors.white,
+                          color: Colors.white70,
                           size: 35,
                         )
                       : const Icon(
                           Icons.work_outline_outlined,
-                          color: Colors.white,
+                          color: Colors.white70,
                           size: 35,
                         ),
                 ),
@@ -341,12 +343,12 @@ class _VoiceScreenState extends State<VoiceScreen> {
                   icon: pageIndex == 2
                       ? const Icon(
                           Icons.widgets_rounded,
-                          color: Colors.white,
+                          color: Colors.white70,
                           size: 35,
                         )
                       : const Icon(
                           Icons.widgets_outlined,
-                          color: Colors.white,
+                          color: Colors.white70,
                           size: 35,
                         ),
                 ),
@@ -360,12 +362,12 @@ class _VoiceScreenState extends State<VoiceScreen> {
                   icon: pageIndex == 3
                       ? const Icon(
                           Icons.person,
-                          color: Colors.white,
+                          color: Colors.white70,
                           size: 35,
                         )
                       : const Icon(
                           Icons.person_outline,
-                          color: Colors.white,
+                          color: Colors.white70,
                           size: 35,
                         ),
                 ),
@@ -480,7 +482,10 @@ class MessagesBuilder extends StatelessWidget {
                 ChatMessage(msgContent: "null", msgType: "receiver"),
               ]),
             IdleService(payload: final _) => respuestaLola([
-                ChatMessage(msgContent: "idle", msgType: "sender"),
+                ChatMessage(
+                    msgContent:
+                        "Bienvenido/a. Puedes comenzar la conversación cuando lo desees, estoy aquí para ayudarte y responderé a todos tus mensajes.",
+                    msgType: "sender"),
                 // ChatMessage(msgContent: message.reply, msgType: "receiver"),
               ]),
             Loading(payload: final payload) => respuestaLola([
@@ -539,13 +544,22 @@ class MessagesBuilder extends StatelessWidget {
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                             color: (messages[index].msgType == "receiver"
-                                ? Colors.grey.shade800
-                                : Colors.blue[800]),
+                                // ? Colors.grey.shade900
+                                ? Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainerHighest
+                                : Theme.of(context)
+                                    .colorScheme
+                                    .surfaceContainer),
                             borderRadius: BorderRadius.circular(16)),
                         child: Padding(
                             padding: const EdgeInsets.all(12),
                             child: Text(messages[index].msgContent,
-                                style: TextStyle(fontSize: 15 * _scale))),
+                                style: TextStyle(
+                                    color: messages[index].msgType == "receiver"
+                                        ? Colors.white70
+                                        : Theme.of(context).colorScheme.primary,
+                                    fontSize: 15 * _scale))),
                       )),
                   if (messages[index].msgType != "sender") const Spacer()
                 ]);
@@ -582,6 +596,7 @@ class InputMessageForm extends StatelessWidget {
         child: Container(
             padding: const EdgeInsets.only(left: 0, bottom: 0, top: 0),
             color: Colors.black87,
+            // color: Colors.amber,
             height: _INPUT_H * 2.2,
             width: double.infinity,
             child: Column(children: [
@@ -596,6 +611,7 @@ class InputMessageForm extends StatelessWidget {
                           return Form(
                               key: _messageFormKey,
                               child: TextFormField(
+
                                   // style: ,
                                   style: TextStyle(
                                     fontSize: 16.0 * _scale,
@@ -634,21 +650,37 @@ class InputMessageForm extends StatelessWidget {
                                       },
                                       child: Icon(
                                         Icons.delete_forever,
-                                        color: Colors.white,
+                                        color: Colors.white70,
                                         size: 24 * _scale,
                                       ),
                                     ),
+                                    // fillColor: Colors.grey[900],
+                                    filled: true,
                                     fillColor: Colors.grey[900],
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(14.0),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(14.0),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(14.0),
+                                      borderSide: BorderSide.none,
+                                    ),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                        horizontal: 20, vertical: 10),
+
                                     // alignLabelWithHint: true,
-                                    contentPadding: const EdgeInsets.all(10),
-                                    // filled: false,
 
                                     hintText: "Escribe a Lola",
                                     hintStyle: TextStyle(
                                       color: Colors.white54,
                                       fontSize: 16 * _scale,
                                     ),
-                                    border: InputBorder.none,
+
+                                    // border: InputBorder.none,
                                   ),
                                   onFieldSubmitted: (value) {
                                     debugPrint(
@@ -678,7 +710,7 @@ class InputMessageForm extends StatelessWidget {
                         children: [
                           const SizedBox(height: 12),
                           Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
                                 RecordingAction(
                                     userNotifier: _userNotifier,
@@ -733,47 +765,44 @@ class SendAction extends StatelessWidget {
     return ListenableBuilder(
         listenable: _userNotifier,
         builder: (_, __) {
-          return _userNotifier.currentStatus == RecordState.recording
-              ? GestureDetector(
-                  onTap: () async {
-                    _messageFormKey.currentState?.save();
-                    await _lolaController.queryReply(
-                        userQuestion: _userNotifier.content(), debug: true);
-                  },
-                  child: Container(
-                    height: 40 * _scale,
-                    width: 40 * _scale,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Icon(
-                      Icons.send,
-                      color: Colors.white,
-                      size: 22 * _scale,
-                    ),
-                  ),
-                )
-              : GestureDetector(
-                  onTap: () async {
-                    _messageFormKey.currentState?.save();
-                    await _lolaController.queryReply(
-                        userQuestion: _userNotifier.content(), debug: true);
-                  },
-                  child: Container(
-                    height: 40 * _scale,
-                    width: 40 * _scale,
-                    decoration: BoxDecoration(
-                      color: Colors.lightBlue,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Icon(
-                      Icons.send,
-                      color: Colors.white,
-                      size: 22 * _scale,
-                    ),
-                  ),
-                );
+          return Material(
+            elevation: 0,
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(30),
+              onTap: () async {
+                _messageFormKey.currentState?.save();
+                await _lolaController.queryReply(
+                    userQuestion: _userNotifier.content(), debug: true);
+              },
+              child: Ink(
+                height: 40 * _scale,
+                width: 40 * _scale,
+                decoration: BoxDecoration(
+                  // color: Colors.lightBlue,
+                  color: Colors.grey.shade900,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Icon(
+                  Icons.send,
+                  color: Colors.white70,
+                  size: 22 * _scale,
+                ),
+              ),
+            ),
+          );
+          // return ElevatedButton(
+          //     style: ElevatedButton.styleFrom(
+          //       fixedSize: const Size.fromWidth(5),
+          //       shape: const RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.all(Radius.circular(20))),
+          //     ),
+          //     onPressed: () async {
+          //       _messageFormKey.currentState?.save();
+          //       await _lolaController.queryReply(
+          //           userQuestion: _userNotifier.content(), debug: true);
+          //     },
+          //     child: Icon(Icons.send, size: 22 * _scale));
         });
   }
 }
@@ -800,45 +829,122 @@ class RecordingAction extends StatelessWidget {
     return ListenableBuilder(
         listenable: _userNotifier,
         builder: (_, __) {
-          return _userNotifier.currentStatus == RecordState.recording
-              ? GestureDetector(
-                  onTap: () {
-                    _handleUserRecording();
-                    _messageFormKey.currentState?.save();
-                  },
-                  child: Container(
-                    height: 40 * _scale,
-                    width: 40 * _scale,
-                    decoration: BoxDecoration(
-                      color: Colors.green,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Icon(
-                      Icons.mic,
-                      color: Colors.white,
-                      size: 24 * _scale,
-                    ),
+          if (_userNotifier.currentStatus == RecordState.recording) {
+            // return ElevatedButton(
+            //     style: ElevatedButton.styleFrom(
+            //         shape: const CircleBorder(),
+            //         fixedSize: Size.fromHeight(40 * _scale)),
+            //     onPressed: () async {
+            //       _messageFormKey.currentState?.save();
+            //       await _lolaController.queryReply(
+            //           userQuestion: _userNotifier.content(), debug: true);
+            //     },
+            //     child: Icon(Icons.send, size: 22 * _scale));
+
+            // return GestureDetector(
+            //   onTap: () {
+            //     _handleUserRecording();
+            //     _messageFormKey.currentState?.save();
+            //   },
+            //   child: Container(
+            //     height: 40 * _scale,
+            //     width: 40 * _scale,
+            //     decoration: BoxDecoration(
+            //       color: Colors.green,
+            //       borderRadius: BorderRadius.circular(30),
+            //     ),
+            //     child: Icon(
+            //       Icons.mic,
+            //       color: Colors.white,
+            //       size: 24 * _scale,
+            //     ),
+            //   ),
+            // );
+
+            return Material(
+              elevation: 0,
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () {
+                  _handleUserRecording();
+                  _messageFormKey.currentState?.save();
+                },
+                child: Ink(
+                  height: 40 * _scale,
+                  width: 40 * _scale,
+                  decoration: BoxDecoration(
+                    // color: Colors.lightBlue,
+                    color: Colors.grey.shade900,
+                    borderRadius: BorderRadius.circular(30),
                   ),
-                )
-              : GestureDetector(
-                  onTap: () {
-                    _handleUserRecording();
-                    _messageFormKey.currentState?.save();
-                  },
-                  child: Container(
-                    height: 40 * _scale,
-                    width: 40 * _scale,
-                    decoration: BoxDecoration(
-                      color: Colors.lightBlue,
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-                    child: Icon(
-                      Icons.mic,
-                      color: Colors.white,
-                      size: 24 * _scale,
-                    ),
+                  child: Icon(
+                    Icons.mic,
+                    color: Colors.green,
+                    size: 24 * _scale,
                   ),
-                );
+                ),
+              ),
+            );
+          } else {
+            return Material(
+              elevation: 0,
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(30),
+                onTap: () {
+                  _handleUserRecording();
+                  _messageFormKey.currentState?.save();
+                },
+                child: Ink(
+                  height: 40 * _scale,
+                  width: 40 * _scale,
+                  decoration: BoxDecoration(
+                    // color: Colors.lightBlue,
+                    color: Colors.grey.shade900,
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Icon(
+                    Icons.mic,
+                    color: Colors.white70,
+                    size: 24 * _scale,
+                  ),
+                ),
+              ),
+            );
+            // return GestureDetector(
+            //   onTap: () {
+            //     _handleUserRecording();
+            //     _messageFormKey.currentState?.save();
+            //   },
+            //   child: Container(
+            //     height: 40 * _scale,
+            //     width: 40 * _scale,
+            //     decoration: BoxDecoration(
+            //       color: Colors.lightBlue,
+            //       borderRadius: BorderRadius.circular(30),
+            //     ),
+            //     child: Icon(
+            //       Icons.mic,
+            //       color: Colors.white,
+            //       size: 24 * _scale,
+            //     ),
+            //   ),
+            // );
+
+            // return ElevatedButton(
+            //     style: ElevatedButton.styleFrom(
+            //       fixedSize: const Size.fromWidth(5),
+            //       shape: const RoundedRectangleBorder(
+            //           borderRadius: BorderRadius.all(Radius.circular(20))),
+            //     ),
+            //     onPressed: () async {
+            //       _messageFormKey.currentState?.save();
+            //       await _lolaController.queryReply(
+            //           userQuestion: _userNotifier.content(), debug: true);
+            //     },
+            //     child: Icon(Icons.send, size: 22 * _scale));
+          }
         });
   }
 
@@ -887,7 +993,7 @@ class _BottomTabsState extends State<BottomTabs> {
   Widget build(BuildContext context) {
     return BottomNavigationBar(
         elevation: 0.0,
-        selectedItemColor: Colors.purple,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Colors.grey.shade600,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
         unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
@@ -1304,21 +1410,33 @@ class InputChatMessage extends StatelessWidget {
                     TextEditingController(text: _userNotifier.content()),
                 keyboardType: TextInputType.multiline,
                 textInputAction: TextInputAction.unspecified,
-                decoration: InputDecoration(
-                  // filled: !true,
-                  // isDense: !true,
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      borderSide: BorderSide.none),
-                  // border: state == VozMessageState.editing
-                  // ? const OutlineInputBorder()
-                  // : InputBorder.none,
-                  // labelText: 'Presiona para grabar mensaje',
-                  labelStyle: const TextStyle(
-                      color: Colors.white70,
-                      fontStyle: FontStyle.normal,
-                      fontSize: 36),
-                ),
+
+                // decoration: InputDecoration(
+                //   filled: true,
+                //   // fillColor: Colors.grey[900],
+                //   border: OutlineInputBorder(
+                //     borderRadius: BorderRadius.circular(30.0),
+                //     borderSide: BorderSide.none,
+                //   ),
+                //   enabledBorder: OutlineInputBorder(
+                //     borderRadius: BorderRadius.circular(30.0),
+                //     borderSide: BorderSide.none,
+                //   ),
+                //   focusedBorder: OutlineInputBorder(
+                //     borderRadius: BorderRadius.circular(30.0),
+                //     borderSide: BorderSide.none,
+                //   ),
+                //   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+
+                //   // border: state == VozMessageState.editing
+                //   // ? const OutlineInputBorder()
+                //   // : InputBorder.none,
+                //   // labelText: 'Presiona para grabar mensaje',
+                //   labelStyle: const TextStyle(
+                //       color: Colors.white70,
+                //       fontStyle: FontStyle.normal,
+                //       fontSize: 36),
+                // ),
                 style: const TextStyle(
                   fontSize: 36.0,
                   color: Colors.white70,

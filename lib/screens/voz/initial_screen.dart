@@ -299,7 +299,8 @@ class _InitialVozBodyState extends State<InitialVozBody> {
                           child: ActionButton(
                             icon: const Icon(Icons.check),
                             text: 'Continuar',
-                            scale: widget._scale,
+                            // TODO: actualizar el actionButton scale para evitar el reescalmiento en este nivel
+                            scale: widget._scale * 0.8,
                             onPressed: () async {
                               final navigator = Navigator.of(context);
 

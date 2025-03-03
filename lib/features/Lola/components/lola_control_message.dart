@@ -45,13 +45,13 @@ class LolaControlMessage extends StatelessWidget {
             ActionButton(
               icon: const Icon(Icons.expand_less),
               text: 'Ver',
-              scale: scale,
+              scale: scale * 0.8,
               onPressed: () => _showMessage(context, message.reply),
             ),
           Loading() => ActionButton(
               icon: const Icon(Icons.expand_less),
               text: 'Ver',
-              scale: scale,
+              scale: scale * 0.8,
               color: Colors.grey,
             ),
         };
