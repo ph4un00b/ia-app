@@ -1,14 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/App/components/bottom_tabs.dart';
+import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Chat/components/input_form.dart';
 import 'package:lola_ai_app/features/Chat/components/message_builder.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/User/user_settings.dart';
 import 'package:lola_ai_app/features/Voz/voz_controller.dart';
+import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -25,6 +31,24 @@ class _ChatScreenState extends State<ChatScreen> {
   void initState() {
     super.initState();
     _loadUserPrefereces();
+    _loadUserMetadata();
+  }
+
+  Future<void> _loadUserMetadata() async {
+    try {
+      final userMetadata = await UserSettings.metadata();
+      AppStatus.instance.currentUserStatus = userMetadata!.appStatus;
+      debugPrint(
+          '🚀 ChatScreen.initState: ${DateTime.now()} : ${AppStatus.instance.user?.email} : ${AppStatus.instance.currentUserStatus}');
+    } on PostgrestException catch (e) {
+      //! manejamos el error de PostgrestException de Supabase por que
+      //! se pierde el stacktrace de la excepcion en el logger
+      ErrorLogger.logException(e, StackTrace.current);
+    } on TimeoutException catch (e) {
+      ErrorLogger.logException(e, StackTrace.current);
+    } catch (e, st) {
+      ErrorLogger.logException(e, st);
+    }
   }
 
   Future<void> _loadUserPrefereces() async {

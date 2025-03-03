@@ -13,7 +13,7 @@ class BottomTabs extends StatefulWidget {
 }
 
 class _BottomTabsState extends State<BottomTabs> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 3;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -24,40 +24,69 @@ class _BottomTabsState extends State<BottomTabs> {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-        elevation: 0.0,
-        selectedItemColor: Theme.of(context).colorScheme.primary,
-        unselectedItemColor: Colors.grey.shade600,
-        selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-        unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
-        // TODO: shifted will not work since you need to tap the icon itself
-        type: BottomNavigationBarType.fixed,
-        onTap: _onItemTapped,
-        currentIndex: _selectedIndex,
-        unselectedFontSize: 14 * widget._scale,
-        selectedFontSize: 14 * widget._scale,
-        items: [
-          BottomNavigationBarItem(
-              label: "Mensajes",
-              icon: IconButton(
-                  // padding: EdgeInsets.all(20),
-                  onPressed: () {
-                    Navigator.of(context).pushNamed('/opciones/mensajes');
-                  },
-                  icon: Badge(
-                      label: Text("24",
-                          style: TextStyle(fontSize: 12 * widget._scale)),
-                      backgroundColor: Colors.orangeAccent,
-                      textColor: Colors.black87,
-                      child: const Icon(Icons.message)))),
-          BottomNavigationBarItem(
-              label: "Lola",
-              icon: IconButton(
-                  onPressed: () {},
-                  icon: const Badge(
-                      // label: Text("24"),
-                      backgroundColor: Colors.orangeAccent,
-                      textColor: Colors.black87,
-                      child: Icon(Icons.auto_awesome_mosaic))))
-        ]);
+      elevation: 0.0,
+      selectedItemColor: Theme.of(context).colorScheme.primary,
+      unselectedItemColor: Colors.grey.shade600,
+      selectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.w600),
+      // TODO: shifted will not work since you need to tap the icon itself
+      type: BottomNavigationBarType.fixed,
+      onTap: _onItemTapped,
+      currentIndex: _selectedIndex,
+      unselectedFontSize: 14 * widget._scale,
+      selectedFontSize: 14 * widget._scale,
+      items: [
+        BottomNavigationBarItem(
+            label: "Recordar",
+            icon: IconButton(
+              // padding: EdgeInsets.all(20),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/opciones/recordatorios');
+              },
+              icon: const Badge(
+                  // label: Text("24",
+                  //     style: TextStyle(fontSize: 12 * widget._scale)),
+                  // backgroundColor: Colors.orangeAccent,
+                  textColor: Colors.black87,
+                  child: Icon(Icons.hail_outlined)),
+            )),
+        BottomNavigationBarItem(
+            label: "Resumen",
+            icon: IconButton(
+              // padding: EdgeInsets.all(20),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/opciones/resumen');
+              },
+              icon: const Badge(
+                  // label: Text("24",
+                  //     style: TextStyle(fontSize: 12 * widget._scale)),
+                  // backgroundColor: Colors.orangeAccent,
+                  textColor: Colors.black87,
+                  child: Icon(Icons.smart_toy_outlined)),
+            )),
+        BottomNavigationBarItem(
+            label: "Mensajes",
+            icon: IconButton(
+                // padding: EdgeInsets.all(20),
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/opciones/mensajes');
+                },
+                icon: Badge(
+                    label: Text("24",
+                        style: TextStyle(fontSize: 12 * widget._scale)),
+                    backgroundColor: Colors.orangeAccent,
+                    textColor: Colors.black87,
+                    child: const Icon(Icons.message)))),
+        BottomNavigationBarItem(
+            label: "Lola",
+            icon: IconButton(
+                onPressed: () {},
+                icon: const Badge(
+                    // label: Text("24"),
+                    backgroundColor: Colors.orangeAccent,
+                    textColor: Colors.black87,
+                    child: Icon(Icons.auto_awesome_mosaic))))
+      ],
+    );
   }
 }

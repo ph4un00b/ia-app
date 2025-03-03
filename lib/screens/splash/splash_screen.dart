@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/screens/auth/auth_screen.dart';
+import 'package:lola_ai_app/screens/voz/chat_screen.dart';
 import 'package:lola_ai_app/screens/voz/initial_screen.dart';
 
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
@@ -15,7 +16,7 @@ class SplashScreen extends StatelessWidget {
       body: Center(
           child: activeSession == null
               ? const AuthScreen()
-              : const InitialVozScreen()),
+              : const ChatScreen()),
               // : const VozScreen()),
     );
   }

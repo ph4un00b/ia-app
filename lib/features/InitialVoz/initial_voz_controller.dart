@@ -89,7 +89,7 @@ final class InitialVozController with AudioPlayerHandlers {
       serviceState
           .add(const IdleService(payload: Payload(reply: 'loading summary')));
     } else {
-      serviceState.add(Loading());
+      serviceState.add(const Loading());
     }
 
     try {

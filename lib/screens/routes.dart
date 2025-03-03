@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/core/routes.dart';
+import 'package:lola_ai_app/screens/opciones/resumen/resumen_screen.dart';
 import 'package:lola_ai_app/screens/splash/splash_screen.dart';
 import 'package:lola_ai_app/screens/voz/chat_screen.dart';
 import 'package:lola_ai_app/screens/voz/initial_screen.dart';
@@ -16,21 +17,8 @@ final appRoutes = <String, WidgetBuilder>{
   // '/opciones': (ctx) => const OptProfileScreen(),
   // '/opciones/messages': (ctx) =>
   //     MessagesScreen(items: List<String>.generate(10000, (i) => 'Item $i')),
-  // '/opciones/others': (ctx) => const OptOthersScreen(),
-  // '/opciones/profile': (ctx) => const OptProfileScreen(),
-  // '/opciones/settings': (ctx) => const SettingsScreen(),
-  // '/opciones/settings/notifications': (ctx) => const SettingsNotificationsScreen(),
-  // '/opciones/settings/privacy': (ctx) => const SettingsPrivacyScreen(),
-  // '/opciones/settings/security': (ctx) => const SettingsSecurityScreen(),
-  // '/opciones/settings/theme': (ctx) => const SettingsThemeScreen(),
-  // '/opciones/settings/about': (ctx) => const SettingsAboutScreen(),
-  // '/opciones/settings/help': (ctx) => const SettingsHelpScreen(),
-  // '/opciones/settings/feedback': (ctx) => const SettingsFeedbackScreen(),
-  // '/opciones/settings/terms': (ctx) => const SettingsTermsScreen(),
-  // '/opciones/settings/support': (ctx) => const SettingsSupportScreen(),
-  // '/opciones/settings/contact': (ctx) => const SettingsContactScreen(),
-  // '/opciones/settings/legal': (ctx) => const SettingsLegalScreen(),
-  // '/opciones/settings/account': (ctx) => const SettingsAccountScreen(),
+  '/opciones/recordatorios': (ctx) => const OptProfileScreen(),
+  '/opciones/resumen': (ctx) => const ResumenScreen(),
 };
 
 Route<dynamic>? routesProvider(RouteSettings settings) {
