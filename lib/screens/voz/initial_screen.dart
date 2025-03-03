@@ -102,10 +102,10 @@ class _InitialVozScreenState extends State<InitialVozScreen> {
                                             onPressed: () async {
                                               double newScale =
                                                   screenScale - 0.1;
-                                              setState(
-                                                  () => screenScale = newScale);
-                                              setStateModal(
-                                                  () => screenScale = newScale);
+                                              setState(() => screenScale =
+                                                  newScale.clamp(0.5, 4.0));
+                                              setStateModal(() => screenScale =
+                                                  newScale.clamp(0.5, 4.0));
 
                                               debugPrint(
                                                   "screen-scale: ${screenScale - 0.1}");
@@ -128,10 +128,10 @@ class _InitialVozScreenState extends State<InitialVozScreen> {
                                             onPressed: () async {
                                               double newScale =
                                                   screenScale + 0.1;
-                                              setState(
-                                                  () => screenScale = newScale);
-                                              setStateModal(
-                                                  () => screenScale = newScale);
+                                              setState(() => screenScale =
+                                                  newScale.clamp(0.5, 4.0));
+                                              setStateModal(() => screenScale =
+                                                  newScale.clamp(0.5, 4.0));
 
                                               debugPrint(
                                                   "screen-scale: ${screenScale + 0.1}");
@@ -156,17 +156,15 @@ class _InitialVozScreenState extends State<InitialVozScreen> {
                                             onPressed: () async {
                                               debugPrint("screen-scale: 1.0");
                                               double newScale = 1.0;
-                                              setState(
-                                                  () => screenScale = newScale);
-                                              setStateModal(
-                                                  () => screenScale = newScale);
+                                              setState(() => screenScale =
+                                                  newScale.clamp(0.5, 4.0));
+                                              setStateModal(() => screenScale =
+                                                  newScale.clamp(0.5, 4.0));
 
                                               (await SharedPreferences
                                                       .getInstance())
                                                   .setDouble(
-                                                'screen-initial',
-                                                1.0,
-                                              );
+                                                      'screen-initial', 1.0);
                                             },
                                             child: const Text(
                                               "Reset",
@@ -200,7 +198,8 @@ class _InitialVozScreenState extends State<InitialVozScreen> {
     final prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      screenScale = prefs.getDouble('screen-initial') ?? screenScale;
+      screenScale = prefs.getDouble('screen-initial') ?? Constants.scale;
+      // screenScale = Constants.scale;
     });
   }
 }
