@@ -70,8 +70,13 @@ class _ChatScreenState extends State<ChatScreen> {
                     children: [
                       const SizedBox(width: 16),
                       CircleAvatar(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.inversePrimary,
+                        backgroundColor: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHighest,
+                        // Colors.transparent,
+                        backgroundImage:
+                            Image.asset("assets/common/avatar-lola-1.jpg")
+                                .image,
                         // backgroundImage: NetworkImage(
                         //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
                         maxRadius: 20,
