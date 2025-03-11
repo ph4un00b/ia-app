@@ -54,7 +54,7 @@ final class InitialVozController with AudioPlayerHandlers {
     ..add(const IdleService());
   final audioState = StreamController<AudioState>()..add(NoAudioPath());
 
-  VoiceLola currentVoice = VoiceLola.nova;
+  VoiceLola currentVoice = VoiceLola.alia;
   InitialState currentState = InitialState.idle;
   bool _isHttpCancelled = false;
   String _currentOutput = '';

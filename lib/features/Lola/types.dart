@@ -52,6 +52,7 @@ enum VoiceLola {
   // elena(label: 'elena', voice: '4VDZLGtT3KMPG6CtDKCT', ai: Ai.elevenlabs),
   sofi(label: 'sofi', voice: 'vqoh9orw2tmOS3mY7D2p', ai: Ai.elevenlabs),
   rosa(label: 'rosa', voice: 'ypIbR1aohyRSdDv25DPr', ai: Ai.elevenlabs),
+  alia(label: 'alia', voice: 'yrTLAnTx4cVYEuiqiOGI', ai: Ai.elevenlabs),
   loida(label: 'loida', voice: 'HYlEvvU9GMan5YdjFYpg', ai: Ai.elevenlabs);
   //low
   // angie(label: 'angie', voice: '6yaxfNs1EwgOLYsNHlcf', ai: Ai.elevenlabs);
