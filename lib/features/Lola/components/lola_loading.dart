@@ -24,9 +24,9 @@ class LolaLoading extends StatelessWidget {
                 IntentKind.greeting =>
                   const LinearProgressIndicator(color: Colors.yellow),
                 IntentKind.reminder =>
-                  const LinearProgressIndicator(color: Colors.blue),
+                  const LinearProgressIndicator(color: Colors.indigoAccent),
                 IntentKind.createReminder =>
-                  const LinearProgressIndicator(color: Colors.green),
+                  const LinearProgressIndicator(color: Colors.lightGreenAccent),
                 IntentKind.none =>
                   const LinearProgressIndicator(color: Colors.white70),
               },
