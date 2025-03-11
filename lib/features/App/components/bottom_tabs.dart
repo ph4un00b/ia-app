@@ -43,7 +43,7 @@ class _BottomTabsState extends State<BottomTabs> {
               onPressed: () {
                 Navigator.of(context).pushNamed('/opciones/recordatorios');
               },
-              icon:  const Icon(Icons.hail_outlined),
+              icon: const Icon(Icons.hail_outlined),
             )),
         BottomNavigationBarItem(
             label: "Resumen",
@@ -61,12 +61,12 @@ class _BottomTabsState extends State<BottomTabs> {
                 onPressed: () {
                   Navigator.of(context).pushNamed('/opciones/mensajes');
                 },
-                icon: Badge(
-                    label: Text("24",
-                        style: TextStyle(fontSize: 12 * widget._scale)),
-                    backgroundColor: Colors.orangeAccent,
-                    textColor: Colors.black87,
-                    child: const Icon(Icons.message)))),
+                // icon: Badge(
+                //     label: Text("24",
+                //         style: TextStyle(fontSize: 12 * widget._scale)),
+                //     backgroundColor: Colors.orangeAccent,
+                //     textColor: Colors.black87,
+                icon: const Icon(Icons.message))),
         BottomNavigationBarItem(
             label: "Lola",
             icon: IconButton(

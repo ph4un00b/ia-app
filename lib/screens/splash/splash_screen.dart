@@ -12,8 +12,8 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // : const VozScreen()),
     return Center(
         child: activeSession == null ? const AuthScreen() : const ChatScreen());
-    // : const VozScreen()),
   }
 }

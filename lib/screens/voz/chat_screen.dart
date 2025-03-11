@@ -277,6 +277,19 @@ class _StackedBodyState extends State<StackedBody> {
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              StreamBuilder(
+                  stream: _lolaStream,
+                  builder: (context, snapshot) {
+                    final service = snapshot.data;
+                    return switch (service) {
+                      null => const SizedBox.shrink(),
+                      IdleService() => const SizedBox.shrink(),
+                      Loading() => const LinearProgressIndicator(),
+                      Data() => const SizedBox.shrink(),
+                      Error() =>
+                        const LinearProgressIndicator(color: Colors.deepOrange),
+                    };
+                  }),
               MessagesBuilder(stream: _lolaStream, scale: widget._scale),
               SizedBox(height: Constants.inputHeight * widget._scale)
             ],

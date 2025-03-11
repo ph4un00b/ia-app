@@ -63,35 +63,33 @@ class MessagesBuilder extends StatelessWidget {
         physics: const NeverScrollableScrollPhysics(),
         itemBuilder: (context, index) => Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: LayoutBuilder(
-                builder: (_, constrains) => Row(children: [
-                      if (messages[index].msgType == "sender") const Spacer(),
-                      ConstrainedBox(
-                          constraints:
-                              BoxConstraints(maxWidth: constrains.maxWidth),
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                                color: (messages[index].msgType == "receiver"
-                                    ? Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainerHighest
-                                    : Theme.of(context)
-                                        .colorScheme
-                                        .surfaceContainer),
-                                borderRadius: BorderRadius.circular(16)),
-                            child: Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: Text(messages[index].msgContent,
-                                    style: TextStyle(
-                                        color: messages[index].msgType ==
-                                                "receiver"
-                                            ? Colors.white70
-                                            : Theme.of(context)
-                                                .colorScheme
-                                                .primary,
-                                        fontSize: 15 * _scale))),
-                          )),
-                      if (messages[index].msgType != "sender") const Spacer()
-                    ]))));
+            child: LayoutBuilder(builder: (_, constrains) {
+              var textStyle = TextStyle(
+                  color: messages[index].msgType == "receiver"
+                      ? Colors.white70
+                      : Theme.of(context).colorScheme.primary,
+                  fontSize: 15 * _scale);
+
+              var boxDecoration = BoxDecoration(
+                  color: (messages[index].msgType == "receiver"
+                      ? Theme.of(context).colorScheme.surfaceContainerHighest
+                      : Theme.of(context).colorScheme.surfaceContainer),
+                  borderRadius: BorderRadius.circular(16));
+
+              return Row(children: [
+                if (messages[index].msgType == "sender") const Spacer(),
+                ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: constrains.maxWidth),
+                    child: DecoratedBox(
+                      decoration: boxDecoration,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child:
+                            Text(messages[index].msgContent, style: textStyle),
+                      ),
+                    )),
+                if (messages[index].msgType != "sender") const Spacer()
+              ]);
+            })));
   }
 }
