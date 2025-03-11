@@ -20,12 +20,13 @@ class LLMUtils {
 
     return client.createChatCompletion(
       request: CreateChatCompletionRequest(
-        model: const ChatCompletionModel.model(ChatCompletionModels.gpt4oMini),
-        messages: messages,
         temperature: 0,
+        messages: messages,
+        responseFormat: responseFormat,
+        model: const ChatCompletionModel.model(ChatCompletionModels.gpt4oMini),
+        // TODO: parece que hay que comentar de los dos.
         maxCompletionTokens: kDebugMode ? 1024 : Constants.maxTokens,
         maxTokens: kDebugMode ? 1024 : Constants.maxTokens,
-        responseFormat: responseFormat,
       ),
     );
   }
