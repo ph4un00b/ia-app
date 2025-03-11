@@ -21,10 +21,14 @@ class LolaLoading extends StatelessWidget {
             IdleService() => const SizedBox.shrink(),
             Loading(intent: final userIntent) => switch (userIntent) {
                 IntentKind.text => const LinearProgressIndicator(),
-                IntentKind.greeting => const LinearProgressIndicator(color: Colors.yellow),
-                IntentKind.reminder => const LinearProgressIndicator(color: Colors.blue),
-                IntentKind.createReminder => const LinearProgressIndicator(color: Colors.green),
-                IntentKind.none => const LinearProgressIndicator(color: Colors.white70),
+                IntentKind.greeting =>
+                  const LinearProgressIndicator(color: Colors.yellow),
+                IntentKind.reminder =>
+                  const LinearProgressIndicator(color: Colors.blue),
+                IntentKind.createReminder =>
+                  const LinearProgressIndicator(color: Colors.green),
+                IntentKind.none =>
+                  const LinearProgressIndicator(color: Colors.white70),
               },
             Data() => const SizedBox.shrink(),
             Error() => const LinearProgressIndicator(color: Colors.deepOrange),
