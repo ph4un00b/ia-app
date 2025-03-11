@@ -9,6 +9,7 @@ import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Chat/components/input_form.dart';
 import 'package:lola_ai_app/features/Chat/components/message_builder.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_loading.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/User/user_settings.dart';
@@ -272,19 +273,7 @@ class _StackedBodyState extends State<StackedBody> {
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              StreamBuilder(
-                  stream: _lolaStream,
-                  builder: (context, snapshot) {
-                    final service = snapshot.data;
-                    return switch (service) {
-                      null => const SizedBox.shrink(),
-                      IdleService() => const SizedBox.shrink(),
-                      Loading() => const LinearProgressIndicator(),
-                      Data() => const SizedBox.shrink(),
-                      Error() =>
-                        const LinearProgressIndicator(color: Colors.deepOrange),
-                    };
-                  }),
+              LolaLoading(lolaStream: _lolaStream),
               MessagesBuilder(stream: _lolaStream, scale: widget._scale),
               SizedBox(height: Constants.inputHeight * widget._scale)
             ],

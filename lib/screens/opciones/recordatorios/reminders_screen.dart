@@ -6,6 +6,7 @@ import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/InitialVoz/initial_voz_controller.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_control_message.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_loading.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -251,6 +252,7 @@ class _InitialVozBodyState extends State<InitialVozBody> {
       padding: const EdgeInsets.all(18),
       child: Column(
         children: [
+          LolaLoading(lolaStream: _serviceStream),
           Expanded(
             flex: 4,
             child: LolaServerMessagePad(
