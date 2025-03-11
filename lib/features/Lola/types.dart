@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dart_openai/dart_openai.dart';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/config/env.dart';
+import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/core/time.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -116,7 +117,8 @@ final class IdleService implements LolaServiceState {
 
 final class Loading implements LolaServiceState {
   final Payload payload;
-  const Loading({this.payload = const Payload()});
+  final IntentKind intent;
+  const Loading({this.payload = const Payload(), required this.intent});
 
   @override
   String toString() {

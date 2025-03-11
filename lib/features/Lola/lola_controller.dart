@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/queries/response.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
@@ -52,11 +53,21 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
     required String userQuestion,
     bool debug = false,
   }) async {
-    if (debug) serviceState.add(const IdleService(payload: Payload(reply: 'loading response')));
+    if (debug) {
+      serviceState
+          .add(const IdleService(payload: Payload(reply: 'loading response')));
+    }
+
     try {
-      serviceState.add(Loading(payload: Payload(userQuestion: userQuestion, reply: "...")));
+      final userIntent =
+          await StructuredAgent.classification.query(userQuestion);
+
+      serviceState.add(Loading(
+          intent: userIntent,
+          payload: Payload(userQuestion: userQuestion, reply: "...")));
 
       final result = await LolaResponse.query(
+        userIntent: userIntent,
         userQuery: userQuestion,
         voiceModel: currentVoice,
         debug: debug,

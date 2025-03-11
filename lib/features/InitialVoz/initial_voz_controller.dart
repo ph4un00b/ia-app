@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart' as audio;
+import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/App/init.dart';
 import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
@@ -89,7 +90,7 @@ final class InitialVozController with AudioPlayerHandlers {
       serviceState
           .add(const IdleService(payload: Payload(reply: 'loading summary')));
     } else {
-      serviceState.add(const Loading());
+      serviceState.add(const Loading(intent: IntentKind.text));
     }
 
     try {
@@ -162,7 +163,7 @@ final class InitialVozController with AudioPlayerHandlers {
     }
 
     try {
-      serviceState.add(Loading());
+      serviceState.add(const Loading(intent: IntentKind.reminder));
 
       final now = DateTime.now();
       final today = now.toIso8601String().split('T').first;

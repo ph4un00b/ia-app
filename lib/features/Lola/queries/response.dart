@@ -17,9 +17,8 @@ class LolaResponse {
     required bool debug,
     required String userQuery,
     required VoiceLola voiceModel,
+    required IntentKind userIntent,
   }) async {
-    final userIntent = await StructuredAgent.classification.query(userQuery);
-
     if (AppStatus.isOnboarding()) {
       const message =
           "Hola! Para poder usar mi inteligencia primero debes crear un recordatorio."
