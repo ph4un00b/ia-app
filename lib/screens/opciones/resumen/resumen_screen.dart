@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/config/constants.dart';
+import 'package:lola_ai_app/features/App/components/core/avatar_lola.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/InitialVoz/initial_voz_controller.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
@@ -39,11 +40,7 @@ class _ResumenScreenState extends State<ResumenScreen> {
                 padding: const EdgeInsets.only(right: 66, left: 40),
                 child: Row(children: [
                   const SizedBox(width: 16),
-                  const CircleAvatar(
-                    // backgroundImage: NetworkImage(
-                    //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
-                    maxRadius: 20,
-                  ),
+                  const AvatarLola(),
                   const SizedBox(width: 12),
                   Expanded(
                     flex: 8,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/config/constants.dart';
+import 'package:lola_ai_app/features/App/components/core/avatar_lola.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
@@ -103,13 +104,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
                         //   ),
                         // ),
                         const SizedBox(width: 16),
-                        CircleAvatar(
-                          backgroundColor:
-                              Theme.of(context).colorScheme.inversePrimary,
-                          // backgroundImage: NetworkImage(
-                          //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
-                          maxRadius: 20,
-                        ),
+                        const AvatarLola(),
                         const SizedBox(width: 12),
                         Expanded(
                           flex: 8,

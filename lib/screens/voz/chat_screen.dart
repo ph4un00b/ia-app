@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/App/components/bottom_tabs.dart';
+import 'package:lola_ai_app/features/App/components/core/avatar_lola.dart';
 import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Chat/components/input_form.dart';
@@ -69,18 +70,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   child: Row(
                     children: [
                       const SizedBox(width: 16),
-                      CircleAvatar(
-                        backgroundColor: Theme.of(context)
-                            .colorScheme
-                            .surfaceContainerHighest,
-                        // Colors.transparent,
-                        backgroundImage:
-                            Image.asset("assets/common/avatar-lola-1.jpg")
-                                .image,
-                        // backgroundImage: NetworkImage(
-                        //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
-                        maxRadius: 20,
-                      ),
+                      const AvatarLola(),
                       const SizedBox(width: 12),
                       Expanded(
                           flex: 8,
