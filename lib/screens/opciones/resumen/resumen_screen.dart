@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/config/constants.dart';
-import 'package:lola_ai_app/features/App/components/core/avatar_lola.dart';
+import 'package:lola_ai_app/features/Lola/components/avatar_lola.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/InitialVoz/initial_voz_controller.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
