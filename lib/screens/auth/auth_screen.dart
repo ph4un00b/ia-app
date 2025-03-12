@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/core/types.dart';
+import 'package:lola_ai_app/screens/voz/chat_screen.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 extension _BuildContextExtensions on BuildContext {
-  void handleIdentifiedUser() {
+  void handleIdentifiedUser({required nextScreen}) {
     unawaited(AppEvent.userIdentified
         .track(params: {"user": AppStatus.instance.userId}));
-    Navigator.pushNamed(this, '/initial');
+    Navigator.pushNamed(this, nextScreen);
   }
 
   void showErrorSnackBar(Object error) =>
@@ -51,17 +52,16 @@ class AuthScreen extends StatelessWidget {
             children: [
               const Text(
                 'Lola App',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18,
-                ),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
               ),
               const SizedBox(height: 24.0),
               SupaEmailAuth(
                 redirectTo: _AuthConfig.redirectUrl,
                 localization: _AuthConfig.emailLocalization,
-                onSignInComplete: (_) => context.handleIdentifiedUser(),
-                onSignUpComplete: (_) => context.handleIdentifiedUser(),
+                onSignInComplete: (_) => context.handleIdentifiedUser(
+                    nextScreen: ChatScreen.routeName),
+                onSignUpComplete: (_) => context.handleIdentifiedUser(
+                    nextScreen: ChatScreen.routeName),
                 onError: (error) => context.showErrorSnackBar(error),
               ),
               // SupaSocialsAuth(
