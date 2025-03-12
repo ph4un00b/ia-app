@@ -159,7 +159,7 @@ class InputMessageForm extends StatelessWidget {
                                 LolaAudioHandler(
                                   stream: _lolaStream,
                                   lolaController: _lolaController,
-                                  scale: _scale.clamp(0.5, 1.20),
+                                  scale: _scale.clamp(0.5, 1.10),
                                 )
                                 // const SizedBox(width: 4),
                               ])

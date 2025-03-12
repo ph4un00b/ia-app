@@ -116,7 +116,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     fontSize: 20.0 *
                         screenScale.clamp(
                           0.5,
-                          1.5,
+                          1.2,
                         ))),
             const SizedBox(height: 10),
             Row(
