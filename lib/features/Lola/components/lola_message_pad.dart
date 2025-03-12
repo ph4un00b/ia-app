@@ -10,7 +10,7 @@ extension MessageText on Widget {
           Expanded(
             child: Text(
               message,
-              textScaler: TextScaler.linear(2.6 * scale),
+              textScaler: TextScaler.linear(1.5 * scale),
               maxLines: maxLines,
               softWrap: true,
               overflow: overflow ?? TextOverflow.ellipsis,
