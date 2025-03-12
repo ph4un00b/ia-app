@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/config/constants.dart';
-import 'package:lola_ai_app/features/Lola/components/avatar_lola.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_topbar.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/InitialVoz/initial_voz_controller.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
@@ -41,34 +41,9 @@ class _RemindersScreenState extends State<RemindersScreen> {
                 padding: const EdgeInsets.only(right: 66, left: 40),
                 child: Row(children: [
                   const SizedBox(width: 16),
-                  const AvatarLola(),
+                  const LolaAvatar(),
                   const SizedBox(width: 12),
-                  Expanded(
-                    flex: 8,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Lola",
-                          style: GoogleFonts.satisfy(
-                            textStyle: Theme.of(context).textTheme.displayLarge,
-                            fontSize: 28,
-                            fontWeight: FontWeight.w200,
-                            fontStyle: FontStyle.italic,
-                          ),
-                          // style: TextStyle(
-                          //     fontSize: 16, fontWeight: FontWeight.w600),
-                        ),
-                        // const SizedBox(height: 6),
-                        Text(
-                          "Online",
-                          style: TextStyle(
-                              color: Colors.grey.shade400, fontSize: 13),
-                        )
-                      ],
-                    ),
-                  ),
+                  const Expanded(flex: 8, child: LolaStatus()),
                   Expanded(
                       child: IconButton(
                           onPressed: () {
