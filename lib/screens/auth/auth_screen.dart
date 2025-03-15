@@ -1,22 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/App/status.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_topbar.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/screens/voz/chat_screen.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart';
 
 extension _BuildContextExtensions on BuildContext {
   void handleIdentifiedUser({required nextScreen}) {
-    unawaited(AppEvent.userIdentified
-        .track(params: {"user": AppStatus.instance.userId}));
+    unawaited(AppEvent.userIdentified.track(params: {"user": AppStatus.instance.userId}));
     Navigator.pushNamed(this, nextScreen);
   }
 
   void showErrorSnackBar(Object error) =>
-      ScaffoldMessenger.of(this).showSnackBar(
-        SnackBar(content: Text(error.toString())),
-      );
+      ScaffoldMessenger.of(this).showSnackBar(SnackBar(content: Text(error.toString())));
 }
 
 abstract class _AuthConfig {
@@ -39,47 +39,66 @@ abstract class _AuthConfig {
   );
 }
 
-class AuthScreen extends StatelessWidget {
+class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
 
   @override
+  State<AuthScreen> createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
+  double screenScale = Constants.scale;
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListView(
-        padding: const EdgeInsets.fromLTRB(24.0, 96.0, 24.0, 24.0),
-        children: [
-          Column(
-            children: [
-              const Text(
-                'Lola App',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-              ),
-              const SizedBox(height: 24.0),
-              SupaEmailAuth(
-                redirectTo: _AuthConfig.redirectUrl,
-                localization: _AuthConfig.emailLocalization,
-                onSignInComplete: (_) => context.handleIdentifiedUser(
-                    nextScreen: ChatScreen.routeName),
-                onSignUpComplete: (_) => context.handleIdentifiedUser(
-                    nextScreen: ChatScreen.routeName),
-                onError: (error) => context.showErrorSnackBar(error),
-              ),
-              // SupaSocialsAuth(
-              //   socialProviders: const [
-              //     OAuthProvider.google,
-              //     OAuthProvider.github,
-              //   ],
-              //   redirectUrl: "myjamon://com.example.lola_ai_app",
-              //   onSuccess: (session) =>
-              //       Navigator.pushNamed(context, '/initial'),
-              //   onError: (error) => SnackBar(
-              //     content: Text(error.toString()),
-              //   ),
-              // ),
-            ],
-          ),
-        ],
-      ),
+    return const Scaffold(body: AuthListBody());
+  }
+}
+
+class AuthListBody extends StatelessWidget {
+  const AuthListBody({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(24.0, 96.0, 24.0, 24.0),
+      children: [
+        Column(
+          children: [
+            const LolaAvatar(),
+            const SizedBox(height: 24.0),
+            Text("Lola App",
+                style: GoogleFonts.satisfy(
+                  textStyle: Theme.of(context).textTheme.displayLarge,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w200,
+                  fontStyle: FontStyle.normal,
+                )),
+            const SizedBox(height: 24.0),
+            SupaEmailAuth(
+              redirectTo: _AuthConfig.redirectUrl,
+              localization: _AuthConfig.emailLocalization,
+              onSignInComplete: (_) => context.handleIdentifiedUser(nextScreen: ChatScreen.routeName),
+              onSignUpComplete: (_) => context.handleIdentifiedUser(nextScreen: ChatScreen.routeName),
+              onError: (error) => context.showErrorSnackBar(error),
+            ),
+            // SupaSocialsAuth(
+            //   socialProviders: const [
+            //     OAuthProvider.google,
+            //     OAuthProvider.github,
+            //   ],
+            //   redirectUrl: "myjamon://com.example.lola_ai_app",
+            //   onSuccess: (session) =>
+            //       Navigator.pushNamed(context, '/initial'),
+            //   onError: (error) => SnackBar(
+            //     content: Text(error.toString()),
+            //   ),
+            // ),
+          ],
+        ),
+      ],
     );
   }
 }
