@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart' as audio;
 import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/queries/response.dart';
@@ -8,13 +9,11 @@ import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Mensajes/mutations/save_conversation.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
-import 'package:just_audio/just_audio.dart' as audio;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final class LolaController with QueryContent, AudioPlayerHandlers {
   final audio.AudioPlayer _audioplayer = audio.AudioPlayer();
-  final serviceState = StreamController<LolaServiceState>()
-    ..add(const IdleService());
+  final serviceState = StreamController<LolaServiceState>()..add(const IdleService());
   final audioState = StreamController<AudioState>()..add(NoAudioPath());
   VoiceLola currentVoice = VoiceLola.alia;
   String _currentOutput = '';
@@ -54,17 +53,13 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
     bool debug = false,
   }) async {
     if (debug) {
-      serviceState
-          .add(const IdleService(payload: Payload(reply: 'loading response')));
+      serviceState.add(const IdleService(payload: Payload(reply: 'loading response')));
     }
 
     try {
-      final userIntent =
-          await StructuredAgent.classification.query(userQuestion);
+      final userIntent = await StructuredAgent.classification.query(userQuestion);
 
-      serviceState.add(Loading(
-          intent: userIntent,
-          payload: Payload(userQuestion: userQuestion, reply: "...")));
+      serviceState.add(Loading(intent: userIntent, payload: Payload(userQuestion: userQuestion, reply: "...")));
 
       final result = await LolaResponse.query(
         userIntent: userIntent,
@@ -75,8 +70,7 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
       _currentAudioPath = result.path;
       _currentOutput = result.reply;
 
-      serviceState.add(Data(
-          payload: Payload(userQuestion: userQuestion, reply: result.reply)));
+      serviceState.add(Data(payload: Payload(userQuestion: userQuestion, reply: result.reply)));
 
       await Conversation.save(
         user: userQuestion,
@@ -86,14 +80,11 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
       await _playAudio(result.path);
     } on PostgrestException catch (e) {
       //! manejamos el error de PostgrestException de Supabase por que
-      //! se pierde el stacktrace de la excepcion en el logger
+      //! se pierde el stacktrace de la exception en el logger
       if (debug) {
-        serviceState.add(Error(
-            payload: Payload(userQuestion: userQuestion, reply: e.toString())));
+        serviceState.add(Error(payload: Payload(userQuestion: userQuestion, reply: e.toString())));
       } else {
-        serviceState.add(Data(
-            payload:
-                Payload(userQuestion: userQuestion, reply: _currentOutput)));
+        serviceState.add(Data(payload: Payload(userQuestion: userQuestion, reply: _currentOutput)));
       }
 
       debugPrint('Error occurred: ${e.toJson().toString()}');
@@ -102,23 +93,17 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
       ErrorLogger.logException(e, StackTrace.current);
 
       if (debug) {
-        serviceState.add(Error(
-            payload: Payload(userQuestion: userQuestion, reply: e.toString())));
+        serviceState.add(Error(payload: Payload(userQuestion: userQuestion, reply: e.toString())));
       } else {
-        serviceState.add(Data(
-            payload:
-                Payload(userQuestion: userQuestion, reply: _currentOutput)));
+        serviceState.add(Data(payload: Payload(userQuestion: userQuestion, reply: _currentOutput)));
       }
     } catch (e, st) {
       ErrorLogger.logException(e, st);
 
       if (debug) {
-        serviceState.add(Error(
-            payload: Payload(userQuestion: userQuestion, reply: e.toString())));
+        serviceState.add(Error(payload: Payload(userQuestion: userQuestion, reply: e.toString())));
       } else {
-        serviceState.add(Data(
-            payload:
-                Payload(userQuestion: userQuestion, reply: _currentOutput)));
+        serviceState.add(Data(payload: Payload(userQuestion: userQuestion, reply: _currentOutput)));
       }
     }
   }

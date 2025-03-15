@@ -3,12 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/App/components/bottom_tabs.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_topbar.dart';
 import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Chat/components/input_form.dart';
 import 'package:lola_ai_app/features/Chat/components/message_builder.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_loading.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_topbar.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/User/user_settings.dart';
@@ -33,7 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   void initState() {
     super.initState();
-    _loadUserPrefereces();
+    _loadUserPreferences();
     _loadUserMetadata();
   }
 
@@ -45,7 +45,7 @@ class _ChatScreenState extends State<ChatScreen> {
           '🚀 ChatScreen.initState: ${DateTime.now()} : ${AppStatus.instance.user?.email} : ${AppStatus.instance.currentUserStatus}');
     } on PostgrestException catch (e) {
       //! manejamos el error de PostgrestException de Supabase por que
-      //! se pierde el stacktrace de la excepcion en el logger
+      //! se pierde el stacktrace de la exception en el logger
       ErrorLogger.logException(e, StackTrace.current);
     } on TimeoutException catch (e) {
       ErrorLogger.logException(e, StackTrace.current);
@@ -54,7 +54,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  Future<void> _loadUserPrefereces() async {
+  Future<void> _loadUserPreferences() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       screenScale = prefs.getDouble('screen-lola-voz') ?? screenScale;
@@ -80,20 +80,16 @@ class _ChatScreenState extends State<ChatScreen> {
                               onPressed: () {
                                 showModalBottomSheet(
                                   context: context,
-                                  constraints:
-                                      const BoxConstraints(maxHeight: 180),
+                                  constraints: const BoxConstraints(maxHeight: 180),
                                   showDragHandle: true,
                                   barrierColor: Colors.transparent,
-                                  builder: (bottomSheetContext) =>
-                                      _textPickerModal(),
+                                  builder: (bottomSheetContext) => _textPickerModal(),
                                 );
                               },
                               icon: Badge(
                                   offset: const Offset(24, -6),
                                   label: Text(screenScale.toStringAsFixed(2)),
-                                  textStyle: TextStyle(
-                                      fontSize: 12 * screenScale,
-                                      fontWeight: FontWeight.w600),
+                                  textStyle: TextStyle(fontSize: 12 * screenScale, fontWeight: FontWeight.w600),
                                   backgroundColor: Colors.orangeAccent,
                                   textColor: Colors.black87,
                                   child: const Icon(Icons.text_fields))))
@@ -125,8 +121,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   width: 100,
                   child: FilledButton.tonal(
                     onPressed: () {},
-                    child: Text(screenScale.toStringAsFixed(2),
-                        style: const TextStyle(fontSize: 14)),
+                    child: Text(screenScale.toStringAsFixed(2), style: const TextStyle(fontSize: 14)),
                   ),
                 ),
                 Expanded(
@@ -134,8 +129,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: () async {
                       double newScale = screenScale - 0.1;
                       setState(() => screenScale = newScale.clamp(0.5, 4.0));
-                      setStateModal(
-                          () => screenScale = newScale.clamp(0.5, 4.0));
+                      setStateModal(() => screenScale = newScale.clamp(0.5, 4.0));
 
                       debugPrint("screen-scale: ${screenScale - 0.1}");
                       final prefs = await SharedPreferences.getInstance();
@@ -153,8 +147,7 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: () async {
                       double newScale = screenScale + 0.1;
                       setState(() => screenScale = newScale.clamp(0.5, 4.0));
-                      setStateModal(
-                          () => screenScale = newScale.clamp(0.5, 4.0));
+                      setStateModal(() => screenScale = newScale.clamp(0.5, 4.0));
 
                       debugPrint("screen-scale: ${screenScale + 0.1}");
                       final prefs = await SharedPreferences.getInstance();
@@ -177,8 +170,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       debugPrint("screen-scale: 1.0");
                       double newScale = 1.0;
                       setState(() => screenScale = newScale.clamp(0.5, 4.0));
-                      setStateModal(
-                          () => screenScale = newScale.clamp(0.5, 4.0));
+                      setStateModal(() => screenScale = newScale.clamp(0.5, 4.0));
 
                       (await SharedPreferences.getInstance()).setDouble(
                         'screen-lola-voz',

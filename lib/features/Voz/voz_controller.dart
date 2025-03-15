@@ -1,12 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:just_audio/just_audio.dart' as audio;
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
 import 'package:lola_ai_app/services/Transcription/transcription.dart';
 import 'package:lola_ai_app/services/Transcription/types.dart';
-import 'package:just_audio/just_audio.dart' as audio;
 import 'package:record/record.dart' as rec;
 
 import 'utils.dart';
@@ -134,7 +134,7 @@ final class VozController with ChangeNotifier, ContentHandler {
 
       if (hasPermission) {
         var encoder = rec.AudioEncoder.aacLc;
-        bool isSupported = await _isEncoderSupportted(encoder);
+        bool isSupported = await _isEncoderSupported(encoder);
         if (!isSupported) {
           return;
         }
@@ -143,8 +143,7 @@ final class VozController with ChangeNotifier, ContentHandler {
         // debugPrint(">> devices: $devices");
 
         var config = rec.RecordConfig(encoder: encoder, numChannels: 2);
-        String path =
-            await buildPath(encoder: encoder, folder: FolderKind.temp);
+        String path = await buildPath(encoder: encoder, folder: FolderKind.temp);
         _path = path;
 
         currentStatus = RecordState.recording;
@@ -181,7 +180,7 @@ final class VozController with ChangeNotifier, ContentHandler {
     _player.dispose();
   }
 
-  Future<bool> _isEncoderSupportted(rec.AudioEncoder encoder) async {
+  Future<bool> _isEncoderSupported(rec.AudioEncoder encoder) async {
     final isSupported = await _recorder.isEncoderSupported(encoder);
 
     if (!isSupported) {
