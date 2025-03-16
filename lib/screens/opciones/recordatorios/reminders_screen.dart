@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/config/constants.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_topbar.dart';
+import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/InitialVoz/initial_voz_controller.dart';
-import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_control_message.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_loading.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_message_pad.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_topbar.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,64 +51,46 @@ class _RemindersScreenState extends State<RemindersScreen> {
                               showDragHandle: true,
                               barrierColor: Colors.transparent,
                               builder: (bottomSheetContext) {
-                                return StatefulBuilder(
-                                    builder: (context, setStateModal) {
+                                return StatefulBuilder(builder: (context, setStateModal) {
                                   return Padding(
-                                    padding: const EdgeInsets.fromLTRB(
-                                        20, 0, 20, 30),
+                                    padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
                                     child: Row(
                                       children: [
                                         SizedBox(
                                           width: 100,
                                           child: FilledButton.tonal(
                                             onPressed: () {},
-                                            child: Text(
-                                                screenScale.toStringAsFixed(2),
-                                                style: const TextStyle(
-                                                    fontSize: 14)),
+                                            child: Text(screenScale.toStringAsFixed(2),
+                                                style: const TextStyle(fontSize: 14)),
                                           ),
                                         ),
                                         Expanded(
                                           child: FilledButton.tonal(
                                             onPressed: () async {
-                                              double newScale =
-                                                  screenScale - 0.1;
-                                              setState(() => screenScale =
-                                                  newScale.clamp(0.5, 4.0));
-                                              setStateModal(() => screenScale =
-                                                  newScale.clamp(0.5, 4.0));
+                                              double newScale = screenScale - 0.1;
+                                              setState(() => screenScale = newScale.clamp(0.5, 4.0));
+                                              setStateModal(() => screenScale = newScale.clamp(0.5, 4.0));
 
-                                              debugPrint(
-                                                  "screen-scale: ${screenScale - 0.1}");
-                                              final prefs =
-                                                  await SharedPreferences
-                                                      .getInstance();
+                                              debugPrint("screen-scale: ${screenScale - 0.1}");
+                                              final prefs = await SharedPreferences.getInstance();
                                               prefs.setDouble(
                                                 'screen-initial',
                                                 screenScale,
                                               );
                                             },
-                                            child: const Icon(
-                                                Icons.text_decrease,
-                                                size: 16),
+                                            child: const Icon(Icons.text_decrease, size: 16),
                                           ),
                                         ),
                                         const SizedBox(width: 3),
                                         Expanded(
                                           child: FilledButton.tonal(
                                             onPressed: () async {
-                                              double newScale =
-                                                  screenScale + 0.1;
-                                              setState(() => screenScale =
-                                                  newScale.clamp(0.5, 4.0));
-                                              setStateModal(() => screenScale =
-                                                  newScale.clamp(0.5, 4.0));
+                                              double newScale = screenScale + 0.1;
+                                              setState(() => screenScale = newScale.clamp(0.5, 4.0));
+                                              setStateModal(() => screenScale = newScale.clamp(0.5, 4.0));
 
-                                              debugPrint(
-                                                  "screen-scale: ${screenScale + 0.1}");
-                                              final prefs =
-                                                  await SharedPreferences
-                                                      .getInstance();
+                                              debugPrint("screen-scale: ${screenScale + 0.1}");
+                                              final prefs = await SharedPreferences.getInstance();
                                               prefs.setDouble(
                                                 'screen-initial',
                                                 screenScale,
@@ -128,15 +109,10 @@ class _RemindersScreenState extends State<RemindersScreen> {
                                             onPressed: () async {
                                               debugPrint("screen-scale: 1.0");
                                               double newScale = 1.0;
-                                              setState(() => screenScale =
-                                                  newScale.clamp(0.5, 4.0));
-                                              setStateModal(() => screenScale =
-                                                  newScale.clamp(0.5, 4.0));
+                                              setState(() => screenScale = newScale.clamp(0.5, 4.0));
+                                              setStateModal(() => screenScale = newScale.clamp(0.5, 4.0));
 
-                                              (await SharedPreferences
-                                                      .getInstance())
-                                                  .setDouble(
-                                                      'screen-initial', 1.0);
+                                              (await SharedPreferences.getInstance()).setDouble('screen-initial', 1.0);
                                             },
                                             child: const Text(
                                               "Reset",
@@ -154,9 +130,7 @@ class _RemindersScreenState extends State<RemindersScreen> {
                           icon: Badge(
                               offset: const Offset(24, -6),
                               label: Text(screenScale.toStringAsFixed(2)),
-                              textStyle: TextStyle(
-                                  fontSize: 12 * screenScale,
-                                  fontWeight: FontWeight.w600),
+                              textStyle: TextStyle(fontSize: 12 * screenScale, fontWeight: FontWeight.w600),
                               backgroundColor: Colors.orangeAccent,
                               textColor: Colors.black87,
                               child: const Icon(Icons.text_fields))))
@@ -230,8 +204,7 @@ class _InitialVozBodyState extends State<InitialVozBody> {
           LolaLoading(lolaStream: _serviceStream),
           Expanded(
             flex: 4,
-            child: LolaServerMessagePad(
-                stream: _serviceStream, scale: widget._scale, maxLines: 20),
+            child: LolaServerMessagePad(stream: _serviceStream, scale: widget._scale, maxLines: 20),
           ),
           Expanded(
             flex: 1,
@@ -276,8 +249,7 @@ class _InitialVozBodyState extends State<InitialVozBody> {
     String voz = prefs.getString('lola-voice') ?? 'nova';
 
     setState(() {
-      _initialCtrl.currentVoice =
-          VoiceLola.values.firstWhere((v) => v.name == voz);
+      _initialCtrl.currentVoice = VoiceLola.values.firstWhere((v) => v.name == voz);
     });
   }
 }
