@@ -19,6 +19,14 @@ When modifying the .env file, the generator might not pick up the change
 - reminders: `$ clear; flutter test lib/features/Reminders`
 - app init: `$ clear; flutter test lib/features/App/init.test.dart`
 
+# clean ios
+- `cd ios`
+  - `rm -rf Podfile.lock Pods Runner.xcworkspace`
+  - `pod deintegrate`
+  - `pod install --repo-update`
+  - `flutter clean`
+  - `flutter pub get`
+
 # todo
 
 - [ ] router observing for logging <https://scribe.rip/@atefelsaid3/mastering-navigation-tracking-in-flutter-a-complete-guide-to-routeobserver-with-riverpod-ea23a12fb80c>

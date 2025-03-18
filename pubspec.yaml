@@ -3,7 +3,7 @@ description: "A new Flutter project."
 
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+7
+version: 1.0.0+11
 
 environment:
   sdk: '>=3.5.0 <=3.27.4'
@@ -147,7 +147,7 @@ flavorizr:
       #     foreground: "assets/prod/app-icon-foreground.png"
       #     background: "assets/android/app-icon-background.png"
       ios:
-        bundleId: "com.example.lolaAiApp"
+        bundleId: "com.lolaai.app"
         icon: "assets/prod/app-icon.png"
 
 # @see https://docs.sentry.io/platforms/flutter/upload-debug/#available-configuration-fields
