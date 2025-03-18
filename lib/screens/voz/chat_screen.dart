@@ -11,9 +11,12 @@ import 'package:lola_ai_app/features/Lola/components/lola_loading.dart';
 import 'package:lola_ai_app/features/Lola/components/lola_topbar.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
+import 'package:lola_ai_app/features/Reminders/types.dart';
+import 'package:lola_ai_app/features/User/types.dart';
 import 'package:lola_ai_app/features/User/user_settings.dart';
 import 'package:lola_ai_app/features/Voz/voz_controller.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
+import 'package:lola_ai_app/features/core/types.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -68,35 +71,74 @@ class _ChatScreenState extends State<ChatScreen> {
       appBar: AppBar(
           flexibleSpace: SafeArea(
               child: Container(
-                  padding: const EdgeInsets.only(right: 66, left: 0),
+                  padding: const EdgeInsets.only(right: 0, left: 0),
                   child: Row(
                     children: [
                       const SizedBox(width: 16),
                       const LolaAvatar(),
                       const SizedBox(width: 12),
                       const Expanded(flex: 8, child: LolaStatus()),
-                      Expanded(
-                          child: IconButton(
-                              onPressed: () {
-                                showModalBottomSheet(
-                                  context: context,
-                                  constraints: const BoxConstraints(maxHeight: 180),
-                                  showDragHandle: true,
-                                  barrierColor: Colors.transparent,
-                                  builder: (bottomSheetContext) => _textPickerModal(),
-                                );
-                              },
-                              icon: Badge(
-                                  offset: const Offset(24, -6),
-                                  label: Text(screenScale.toStringAsFixed(2)),
-                                  textStyle: TextStyle(fontSize: 12 * screenScale, fontWeight: FontWeight.w600),
-                                  backgroundColor: Colors.orangeAccent,
-                                  textColor: Colors.black87,
-                                  child: const Icon(Icons.text_fields))))
+                      buildLeftWidgets(context),
                     ],
                   )))),
       bottomNavigationBar: BottomTabs(scale: screenScale.clamp(0.8, 1.7)),
       body: StackedBody(scale: screenScale),
+    );
+  }
+
+  Widget buildLeftWidgets(BuildContext context) {
+    return Expanded(
+      flex: 4,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  constraints: const BoxConstraints(maxHeight: 180),
+                  showDragHandle: true,
+                  barrierColor: Colors.transparent,
+                  builder: (bottomSheetContext) => _textPickerModal(),
+                );
+              },
+              icon: Badge(
+                  offset: const Offset(10, -12),
+                  label: Text(screenScale.toStringAsFixed(2)),
+                  textStyle: TextStyle(fontSize: 12 * screenScale, fontWeight: FontWeight.w600),
+                  backgroundColor: Colors.orangeAccent,
+                  textColor: Colors.black87,
+                  child: const Icon(Icons.text_fields))),
+          // const SizedBox(width: 12),
+          IconButton(
+              onPressed: () async {
+                try {
+                  debugPrint(AppStatus.instance.user.toString());
+                  await Supabase.instance.client.auth.signOut();
+                } catch (e) {
+                  debugPrint('Error signing out: $e');
+                  ErrorLogger.logException(e, StackTrace.current);
+                } finally {
+                  AppStatus.instance.user == null;
+
+                  unawaited(AppEvent.userReset.track());
+                  debugPrint('>> session? ${Supabase.instance.client.auth.currentSession}');
+                  AppStatus.instance.reminderStatus = ReminderState.idle;
+                  AppStatus.instance.currentUserStatus = UserState.idle;
+                  AppStatus.instance.lolaStatus = LolaState.idle;
+                  AppStatus.instance.currentReminderChat = [];
+                  AppStatus.instance.currentReminder = {};
+                }
+
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pushNamed('/');
+                  Navigator.of(context).pop();
+                }
+              },
+              icon: const Icon(Icons.exit_to_app_sharp)),
+        ],
+      ),
     );
   }
 
