@@ -34,7 +34,7 @@ class InputMessageForm extends StatelessWidget {
         child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-                color: Colors.grey.shade900.withAlpha(200)),
+                color: Colors.grey.shade900.withAlpha(225)),
             padding: const EdgeInsets.only(left: 0, bottom: 0, top: 0),
             // color: Colors.black45,
             // color: Colors.transparent,
@@ -85,7 +85,7 @@ class InputMessageForm extends StatelessWidget {
                               ),
                               // fillColor: Colors.grey[900],
                               filled: true,
-                              fillColor: Colors.grey.shade900.withAlpha(100),
+                              fillColor: Colors.grey.shade900.withAlpha(200),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(40.0), borderSide: BorderSide.none),
                               enabledBorder: OutlineInputBorder(
