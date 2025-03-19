@@ -39,8 +39,7 @@ class InputMessageForm extends StatelessWidget {
             width: double.infinity,
             child: Column(children: [
               Expanded(
-                  child:
-                      Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 Expanded(
                     flex: 1,
                     child: ListenableBuilder(
@@ -52,8 +51,7 @@ class InputMessageForm extends StatelessWidget {
                                   fontSize: 16.0 * _scale,
                                 ),
                                 maxLength: 2048,
-                                maxLengthEnforcement:
-                                    MaxLengthEnforcement.enforced,
+                                maxLengthEnforcement: MaxLengthEnforcement.enforced,
                                 // expands: true,
                                 validator: (value) {
                                   debugPrint('input valido? $value');
@@ -69,15 +67,13 @@ class InputMessageForm extends StatelessWidget {
                                 },
                                 minLines: null,
                                 maxLines: 3,
-                                controller: TextEditingController(
-                                    text: _userNotifier.content()),
+                                controller: TextEditingController(text: _userNotifier.content()),
                                 keyboardType: TextInputType.multiline,
                                 textInputAction: TextInputAction.unspecified,
                                 decoration: InputDecoration(
                                   suffixIcon: GestureDetector(
                                     onTap: () {
-                                      debugPrint(_messageFormKey.currentState
-                                          .toString());
+                                      debugPrint(_messageFormKey.currentState.toString());
                                       _messageFormKey.currentState?.reset();
                                       _userNotifier.updateContent("");
                                     },
@@ -102,8 +98,7 @@ class InputMessageForm extends StatelessWidget {
                                     borderRadius: BorderRadius.circular(14.0),
                                     borderSide: BorderSide.none,
                                   ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 20, vertical: 10),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                                   hintText: "Escribe a Lola",
                                   hintStyle: TextStyle(
                                     color: Colors.white54,
@@ -111,12 +106,9 @@ class InputMessageForm extends StatelessWidget {
                                   ),
                                 ),
                                 onFieldSubmitted: (value) {
-                                  debugPrint(
-                                      '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
-                                  var sk =
-                                      SnackBar(content: Text('Hello: $value'));
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(sk);
+                                  debugPrint('>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
+                                  var sk = SnackBar(content: Text('Hello: $value'));
+                                  ScaffoldMessenger.of(context).showSnackBar(sk);
                                 },
                                 onSaved: (value) {
                                   debugPrint('>> on-saved-value: $value');
@@ -131,39 +123,33 @@ class InputMessageForm extends StatelessWidget {
                 SizedBox(
                     width: 122,
                     // color: Colors.amber,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 12),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                RecordingAction(
-                                    userNotifier: _userNotifier,
-                                    messageFormKey: _messageFormKey,
-                                    lolaController: _lolaController,
-                                    scale: _scale.clamp(0.5, 1.50)),
-                                // const SizedBox(width: 16),
-                                SendAction(
-                                    userNotifier: _userNotifier,
-                                    messageFormKey: _messageFormKey,
-                                    lolaController: _lolaController,
-                                    scale: _scale.clamp(0.5, 1.50)),
+                    child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                      const SizedBox(height: 12),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                        RecordingAction(
+                            userNotifier: _userNotifier,
+                            messageFormKey: _messageFormKey,
+                            lolaController: _lolaController,
+                            scale: _scale.clamp(0.5, 1.50)),
+                        // const SizedBox(width: 16),
+                        SendAction(
+                            userNotifier: _userNotifier,
+                            messageFormKey: _messageFormKey,
+                            lolaController: _lolaController,
+                            scale: _scale.clamp(0.5, 1.50)),
 
-                                // const SizedBox(width: 4),
-                              ]),
-                          const SizedBox(height: 10),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                LolaAudioHandler(
-                                  stream: _lolaStream,
-                                  lolaController: _lolaController,
-                                  scale: _scale.clamp(0.5, 1.10),
-                                )
-                                // const SizedBox(width: 4),
-                              ])
-                        ]))
+                        // const SizedBox(width: 4),
+                      ]),
+                      const SizedBox(height: 10),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                        LolaAudioHandler(
+                          stream: _lolaStream,
+                          lolaController: _lolaController,
+                          scale: _scale.clamp(0.5, 1.10),
+                        )
+                        // const SizedBox(width: 4),
+                      ])
+                    ]))
               ]))
             ])));
   }
@@ -198,19 +184,18 @@ class SendAction extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
               onTap: () async {
                 _messageFormKey.currentState?.save();
-                await _lolaController.queryReply(
-                    userQuestion: _userNotifier.content(), debug: true);
+                await _lolaController.queryReply(userQuestion: _userNotifier.content(), debug: true);
               },
               child: Ink(
                 height: 40 * _scale,
                 width: 40 * _scale,
                 decoration: BoxDecoration(
                   // color: Colors.lightBlue,
-                  color: Colors.grey.shade900,
+                  color: Colors.deepPurpleAccent.shade700,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Icon(
-                  Icons.send,
+                  Icons.arrow_upward_outlined,
                   color: Colors.white70,
                   size: 22 * _scale,
                 ),
@@ -311,8 +296,7 @@ class RecordingAction extends StatelessWidget {
       await _userNotifier.startRecording();
     } else if (_userNotifier.currentStatus case RecordState.recording) {
       await _userNotifier.stopRecording();
-      await _lolaController.queryReply(
-          userQuestion: _userNotifier.content(), debug: true);
+      await _lolaController.queryReply(userQuestion: _userNotifier.content(), debug: true);
     } else if (_userNotifier.currentStatus case _) {
       debugPrint('noop');
     }
