@@ -6,7 +6,6 @@ import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Reminders/types.dart';
 import 'package:lola_ai_app/features/core/types.dart';
-import 'package:path/path.dart' as p;
 
 import '../reminder_draft_handler.dart';
 import '../reminder_edit_handler.dart';
@@ -40,7 +39,7 @@ final class CreateReminderHandler {
   /// 2. user: todo perfecto
   ///  - guarda el recordatorio
   /// 3. user: que es el presidente de peru?
-  static Future<LolaResult> handle(
+  static Future<LolaTextResult> handle(
     String userQuery,
     VoiceLola voiceModel,
   ) async {
@@ -53,8 +52,7 @@ final class CreateReminderHandler {
           final botReply = draftResult['bot_reply'];
           final otherProperties = Map.from(draftResult)..remove('bot_reply');
 
-          unawaited(AppEvent.reminderDraft
-              .track(params: {"from": "idle", ...otherProperties}));
+          unawaited(AppEvent.reminderDraft.track(params: {"from": "idle", ...otherProperties}));
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.draft,
@@ -65,8 +63,7 @@ final class CreateReminderHandler {
           final botReply = draftResult['bot_reply'];
           final otherProperties = Map.from(draftResult)..remove('bot_reply');
 
-          unawaited(AppEvent.reminderDraft
-              .track(params: {"from": "create", ...otherProperties}));
+          unawaited(AppEvent.reminderDraft.track(params: {"from": "create", ...otherProperties}));
           return ReminderResponse(
             payload: botReply,
             status: ReminderState.draft,
@@ -79,27 +76,22 @@ final class CreateReminderHandler {
             UserInputIntent.change => () async {
                 final editResult = await ReminderEditHandler.query(userQuery);
                 final botReply = editResult['bot_reply'];
-                final otherProperties = Map<String, dynamic>.from(editResult)
-                  ..remove('bot_reply');
+                final otherProperties = Map<String, dynamic>.from(editResult)..remove('bot_reply');
 
                 AppStatus.instance.reminderStatus = ReminderState.edited;
-                unawaited(
-                    AppEvent.reminderEdited.track(params: otherProperties));
+                unawaited(AppEvent.reminderEdited.track(params: otherProperties));
                 return ReminderResponse(
                   payload: botReply,
                   status: ReminderState.edited,
                 );
               }(),
             UserInputIntent.approved || UserInputIntent.other => () async {
-                final filledResult =
-                    await ReminderFilledHandler.query(userQuery);
+                final filledResult = await ReminderFilledHandler.query(userQuery);
                 final botReply = filledResult['bot_reply'];
-                final otherProperties = Map<String, dynamic>.from(filledResult)
-                  ..remove('bot_reply');
+                final otherProperties = Map<String, dynamic>.from(filledResult)..remove('bot_reply');
 
                 AppStatus.instance.reminderStatus = ReminderState.filled;
-                unawaited(
-                    AppEvent.reminderFilled.track(params: otherProperties));
+                unawaited(AppEvent.reminderFilled.track(params: otherProperties));
                 return ReminderResponse(
                   payload: botReply,
                   status: ReminderState.filled,
@@ -123,14 +115,9 @@ final class CreateReminderHandler {
       ReminderResponse(payload: final payload, status: ReminderState.idle) ||
       ReminderResponse(payload: final payload, status: ReminderState.draft) ||
       ReminderResponse(payload: final payload, status: ReminderState.edited) =>
-        LolaResult(
-          p.normalize((await voiceModel.synthesize(text: payload)).path),
-          payload,
-        ),
-      ReminderResponse(payload: final payload, status: ReminderState.filled) =>
-        handle(payload, voiceModel),
-      ReminderResponse(payload: final payload) when payload.isEmpty =>
-        throw LolaResponseException('Empty response'),
+        LolaTextResult(text: payload),
+      ReminderResponse(payload: final payload, status: ReminderState.filled) => handle(payload, voiceModel),
+      ReminderResponse(payload: final payload) when payload.isEmpty => throw LolaResponseException('Empty response'),
       _ => throw LolaResponseException('Unexpected response'),
     };
   }
@@ -142,8 +129,7 @@ final class CreateReminderHandler {
       UserInputIntent.change => () async {
           final editedResult = await ReminderEditedHandler.query(userInput);
           final botReply = editedResult['bot_reply'];
-          final otherProperties = Map<String, dynamic>.from(editedResult)
-            ..remove('bot_reply');
+          final otherProperties = Map<String, dynamic>.from(editedResult)..remove('bot_reply');
 
           AppStatus.instance.reminderStatus = ReminderState.edited;
           unawaited(AppEvent.reminderEdited.track(params: otherProperties));
@@ -155,8 +141,7 @@ final class CreateReminderHandler {
       UserInputIntent.approved || UserInputIntent.other => () async {
           final filledResult = await ReminderFilledHandler.query(userInput);
           final botReply = filledResult['bot_reply'];
-          final otherProperties = Map<String, dynamic>.from(filledResult)
-            ..remove('bot_reply');
+          final otherProperties = Map<String, dynamic>.from(filledResult)..remove('bot_reply');
 
           AppStatus.instance.reminderStatus = ReminderState.filled;
           unawaited(AppEvent.reminderFilled.track(params: otherProperties));

@@ -26,11 +26,19 @@ class LolaResponseException implements Exception {
   String toString() => 'LolaResponseException: $message';
 }
 
-class LolaResult {
-  final String path;
-  final String reply;
+sealed class LolaResult {}
 
-  LolaResult(this.path, this.reply);
+final class LolaTextResult implements LolaResult {
+  final String text;
+
+  LolaTextResult({required this.text});
+}
+
+final class LolaAudioResult implements LolaResult {
+  final String text;
+  final String path;
+
+  LolaAudioResult({required this.text, required this.path});
 }
 
 enum Ai {
@@ -106,7 +114,7 @@ enum VoiceLola {
 sealed class LolaServiceState {}
 
 final class IdleService implements LolaServiceState {
-   final Payload payload;
+  final Payload payload;
   const IdleService({this.payload = const Payload()});
 
   @override

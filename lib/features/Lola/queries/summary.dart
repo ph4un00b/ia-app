@@ -4,14 +4,13 @@ import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Memory/queries/short_memory_messages.dart';
 import 'package:lola_ai_app/features/Prompts/micro_summary.dart';
 import 'package:lola_ai_app/features/core/write_file.dart';
-import 'package:path/path.dart' as p;
 
 class LolaSummaryGenerator {
-  static Future<LolaResult> generate({
+  static Future<LolaTextResult> generate({
     required VoiceLola voice,
     required bool debug,
   }) async {
-    //! se pueden optimizar llamadas inncesarias, por ahora está bien.
+    //! se pueden optimizar llamadas innecesarias, por ahora está bien.
     final userQuestions = await ShortMemoryMessages.userQuestions();
 
     if (debug) {
@@ -32,9 +31,6 @@ class LolaSummaryGenerator {
       throw LolaResponseException('empty response');
     }
 
-    return LolaResult(
-      p.normalize((await voice.synthesize(text: summary)).path),
-      summary,
-    );
+    return LolaTextResult(text: summary);
   }
 }

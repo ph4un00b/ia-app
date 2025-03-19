@@ -1,22 +1,18 @@
-import 'dart:io';
-
 import 'package:lola_ai_app/features/Agents/types.dart';
 import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/Reminders/types.dart';
-import 'package:path/path.dart' as p;
 
 import '../types.dart';
 
 final class AskLola {
-  static Future<LolaResult> query(
+  static Future<LolaTextResult> query(
     userQuery,
     VoiceLola voiceModel, {
     required IntentKind intention,
   }) async {
     AppStatus.instance.lolaStatus = LolaState.running;
 
-    if (intention == IntentKind.createReminder &&
-        AppStatus.instance.reminderStatus == ReminderState.idle) {
+    if (intention == IntentKind.createReminder && AppStatus.instance.reminderStatus == ReminderState.idle) {
       final response = await Agent.text.query(userQuery);
 
       AppStatus.instance.reminderStatus = ReminderState.create;
@@ -26,10 +22,11 @@ final class AskLola {
         throw LolaResponseException('empty response');
       }
 
-      File speechFile = await voiceModel.synthesize(text: response.payload);
-      String path = p.normalize(speechFile.path);
+      // File speechFile = await voiceModel.synthesize(text: response.payload);
+      // String path = p.normalize(speechFile.path);
 
-      return LolaResult(path, response.payload);
+      // return LolaAudioResult(text: response.payload, path: path);
+      return LolaTextResult(text: response.payload);
     }
 
     LLMResponse response = switch (intention) {
@@ -42,17 +39,18 @@ final class AskLola {
         }(userQuery),
       IntentKind.reminder => await Agent.reminder.query(userQuery),
       IntentKind.text => await Agent.text.query(userQuery),
-      IntentKind.greeting =>
-        throw StateError("greeting response not implemented"),
+      IntentKind.greeting => throw StateError("greeting response not implemented"),
     };
 
     if (response.payload.isEmpty) {
       throw LolaResponseException('empty response');
     }
 
-    File speechFile = await voiceModel.synthesize(text: response.payload);
-    String path = p.normalize(speechFile.path);
-
-    return LolaResult(path, response.payload);
+    return LolaTextResult(text: response.payload);
+    //
+    // File speechFile = await voiceModel.synthesize(text: response.payload);
+    // String path = p.normalize(speechFile.path);
+    //
+    // return LolaResult(path, response.payload);
   }
 }

@@ -97,11 +97,15 @@ final class InitialVozController with AudioPlayerHandlers {
 
       unawaited(AppEvent.summaryFetched.track(params: {'userStatus': AppStatus.instance.currentUserStatus}));
 
-      _currentAudioPath = result.path;
-      _currentOutput = result.reply;
+      serviceState.add(Loading(intent: IntentKind.text, payload: Payload(userQuestion: "", reply: result.text)));
 
-      serviceState.add(Data(payload: Payload(reply: result.reply)));
-      await _playAudio(result.path);
+      _currentOutput = result.text;
+
+      String path = p.normalize((await currentVoice.synthesize(text: result.text)).path);
+      _currentAudioPath = path;
+
+      serviceState.add(Data(payload: Payload(reply: result.text)));
+      await _playAudio(path);
     } on PostgrestException catch (e) {
       _handleDbError(debug, e);
     } on TimeoutException catch (e) {
@@ -171,6 +175,8 @@ final class InitialVozController with AudioPlayerHandlers {
 
       unawaited(AppEvent.remindersFetched.track(params: {'userStatus': AppStatus.instance.currentUserStatus}));
 
+      serviceState.add(Loading(intent: IntentKind.reminder, payload: Payload(reply: reminderResponse.payload)));
+
       await _processAndPlayResponse(reminderResponse.payload);
     } on PostgrestException catch (e) {
       _handleDbError(debug, e);
@@ -206,8 +212,11 @@ final class InitialVozController with AudioPlayerHandlers {
     try {
       unawaited(AppEvent.remindersFirstTime.track());
 
-      await _processAndPlayResponse(
-          "Hola!, Soy Lola, tu asistente para recordatorios. Cuando tengas recordatorios aquí te ayudaré a recordarlos.");
+      const text =
+          "Hola!, Soy Lola, tu asistente para recordatorios. Cuando tengas recordatorios aquí te ayudaré a recordarlos.";
+
+      serviceState.add(const Loading(intent: IntentKind.reminder, payload: Payload(reply: text)));
+      await _processAndPlayResponse(text);
     } catch (e, st) {
       ErrorLogger.logException(e, st);
 
@@ -220,15 +229,12 @@ final class InitialVozController with AudioPlayerHandlers {
   }
 
   Future<void> _processAndPlayResponse(String payload) async {
-    final speechFile = await currentVoice.synthesize(text: payload);
-    final path = p.normalize(speechFile.path);
+    final path = p.normalize((await currentVoice.synthesize(text: payload)).path);
+    _currentAudioPath = path;
+    _currentOutput = payload;
 
-    final result = LolaResult(path, payload);
-
-    _currentAudioPath = result.path;
-    _currentOutput = result.reply;
-    serviceState.add(Data(payload: Payload(reply: result.reply)));
-    await _playAudio(result.path);
+    serviceState.add(Data(payload: Payload(reply: payload)));
+    await _playAudio(path);
   }
 
   Future<void> _playAudio(String audioPath) async {

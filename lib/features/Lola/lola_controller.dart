@@ -9,6 +9,7 @@ import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Mensajes/mutations/save_conversation.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
+import 'package:path/path.dart' as p;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final class LolaController with QueryContent, AudioPlayerHandlers {
@@ -67,17 +68,23 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
         voiceModel: currentVoice,
         debug: debug,
       );
-      _currentAudioPath = result.path;
-      _currentOutput = result.reply;
 
-      serviceState.add(Data(payload: Payload(userQuestion: userQuestion, reply: result.reply)));
+      _currentOutput = result.text;
+
+      serviceState.add(Loading(intent: userIntent, payload: Payload(userQuestion: userQuestion, reply: result.text)));
+
+      String path = p.normalize((await currentVoice.synthesize(text: result.text)).path);
+      _currentAudioPath = path;
+
+      serviceState.add(Data(payload: Payload(userQuestion: userQuestion, reply: result.text)));
+
+      await _playAudio(path);
 
       await Conversation.save(
         user: userQuestion,
-        lola: result.reply,
-        audioPath: result.path,
+        lola: result.text,
+        audioPath: path,
       );
-      await _playAudio(result.path);
     } on PostgrestException catch (e) {
       //! manejamos el error de PostgrestException de Supabase por que
       //! se pierde el stacktrace de la exception en el logger
