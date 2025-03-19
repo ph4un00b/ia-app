@@ -134,7 +134,6 @@ class _ChatScreenState extends State<ChatScreen> {
                 if (context.mounted) {
                   Navigator.of(context).pop();
                   Navigator.of(context).pushNamed('/');
-                  Navigator.of(context).pop();
                 }
               },
               icon: const Icon(Icons.exit_to_app_sharp)),
