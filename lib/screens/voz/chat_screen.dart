@@ -69,6 +69,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+          automaticallyImplyLeading: false,
           flexibleSpace: SafeArea(
               child: Container(
                   padding: const EdgeInsets.only(right: 0, left: 0),
