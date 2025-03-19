@@ -25,14 +25,13 @@ class LLMUtils {
         responseFormat: responseFormat,
         model: const ChatCompletionModel.model(ChatCompletionModels.gpt4oMini),
         // TODO: parece que hay que comentar de los dos.
-        maxCompletionTokens: kDebugMode ? 1024 : Constants.maxTokens,
+        // maxCompletionTokens: kDebugMode ? 1024 : Constants.maxTokens,
         maxTokens: kDebugMode ? 1024 : Constants.maxTokens,
       ),
     );
   }
 
-  static Future<Map<String, dynamic>> parseResponseContent(
-      CreateChatCompletionResponse response) async {
+  static Future<Map<String, dynamic>> parseResponseContent(CreateChatCompletionResponse response) async {
     await trace("$blueColor BEFORE message $resetColor");
     final ChatCompletionAssistantMessage? message = assistantMessage(response);
     await trace("$blueColor AFTER message $resetColor");
@@ -46,25 +45,20 @@ class LLMUtils {
         }(),
       ChatCompletionAssistantMessage(refusal: final refusal?) =>
         throw StateError("Request refused by the model: $refusal"),
-      ChatCompletionAssistantMessage() => throw StateError(
-          "Unexpected message format: content and refusal are both null"),
+      ChatCompletionAssistantMessage() =>
+        throw StateError("Unexpected message format: content and refusal are both null"),
       null => throw StateError("No message available in the response"),
     };
   }
 
-  static ChatCompletionAssistantMessage? assistantMessage(
-      CreateChatCompletionResponse response) {
+  static ChatCompletionAssistantMessage? assistantMessage(CreateChatCompletionResponse response) {
     return switch (response.choices.firstOrNull?.finishReason) {
       null => throw StateError("No choices in response"),
       ChatCompletionFinishReason.stop => response.choices.firstOrNull?.message,
-      ChatCompletionFinishReason.length =>
-        throw StateError("Max length reached"),
-      ChatCompletionFinishReason.toolCalls =>
-        throw StateError("Unexpected tool calls"),
-      ChatCompletionFinishReason.contentFilter =>
-        throw StateError("Content filtered"),
-      ChatCompletionFinishReason.functionCall =>
-        throw StateError("Unexpected function call"),
+      ChatCompletionFinishReason.length => throw StateError("Max length reached"),
+      ChatCompletionFinishReason.toolCalls => throw StateError("Unexpected tool calls"),
+      ChatCompletionFinishReason.contentFilter => throw StateError("Content filtered"),
+      ChatCompletionFinishReason.functionCall => throw StateError("Unexpected function call"),
     };
   }
 
