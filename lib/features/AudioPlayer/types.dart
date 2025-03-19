@@ -34,13 +34,7 @@ sealed class AudioState {
     AudioCallback? onPressed,
     Color? color,
   }) =>
-      ActionButton(
-        icon: Icon(icon),
-        text: text,
-        scale: scale,
-        color: color,
-        onPressed: onPressed,
-      );
+      ActionButton(icon: Icon(icon), text: text, scale: scale, color: color, onPressed: onPressed);
 }
 
 extension PlayButtonConfig on AudioState {
@@ -49,24 +43,16 @@ extension PlayButtonConfig on AudioState {
     AudioCallback? onPressed,
     Color? color,
   }) =>
-      buildButton(
-        scale: scale,
-        onPressed: onPressed,
-        text: 'Repetir',
-        icon: Icons.play_arrow_rounded,
-        color: color,
-      );
+      buildButton(scale: scale, onPressed: onPressed, text: 'Play', icon: Icons.play_arrow_rounded, color: color);
 }
 
 final class NoAudioPath extends AudioState {
-  Widget build({required double scale}) =>
-      buildPlayButton(scale: scale, color: Colors.grey);
+  Widget build({required double scale}) => buildPlayButton(scale: scale, color: Colors.grey);
 }
 
 final class PlayingAudio extends AudioState {
   Widget build({required double scale, required AudioCallback onStop}) =>
-      buildButton(
-          scale: scale, onPressed: onStop, text: 'Parar', icon: Icons.stop);
+      buildButton(scale: scale, onPressed: onStop, text: 'Parar', icon: Icons.stop);
 }
 
 final class PlayingAudioErr extends AudioState {

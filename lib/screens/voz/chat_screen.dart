@@ -83,7 +83,16 @@ class _ChatScreenState extends State<ChatScreen> {
                     ],
                   )))),
       bottomNavigationBar: BottomTabs(scale: screenScale.clamp(0.8, 1.7)),
-      body: StackedBody(scale: screenScale),
+      body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: [0.57, 0.9],
+              colors: [Colors.black87, Colors.deepPurple],
+            ),
+          ),
+          child: StackedBody(scale: screenScale)),
     );
   }
 
@@ -149,13 +158,7 @@ class _ChatScreenState extends State<ChatScreen> {
         child: Column(
           children: [
             Text("Ajuste de texto",
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0 *
-                        screenScale.clamp(
-                          0.5,
-                          1.2,
-                        ))),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0 * screenScale.clamp(0.5, 1.2))),
             const SizedBox(height: 10),
             Row(
               children: [
@@ -198,10 +201,7 @@ class _ChatScreenState extends State<ChatScreen> {
                         screenScale,
                       );
                     },
-                    child: const Icon(
-                      Icons.text_increase,
-                      size: 22,
-                    ),
+                    child: const Icon(Icons.text_increase, size: 22),
                   ),
                 ),
                 const SizedBox(width: 10),

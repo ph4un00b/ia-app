@@ -32,126 +32,134 @@ class InputMessageForm extends StatelessWidget {
     return Align(
         alignment: Alignment.bottomLeft,
         child: Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
+                color: Colors.grey.shade900.withAlpha(200)),
             padding: const EdgeInsets.only(left: 0, bottom: 0, top: 0),
-            color: Colors.black87,
-            // color: Colors.amber,
+            // color: Colors.black45,
+            // color: Colors.transparent,
             height: Constants.inputHeight,
             width: double.infinity,
-            child: Column(children: [
-              Expanded(
-                  child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+            child: Column(
+              children: [
                 Expanded(
-                    flex: 1,
-                    child: ListenableBuilder(
+                    child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: ListenableBuilder(
                         listenable: _userNotifier,
                         builder: (_, __) => Form(
-                            key: _messageFormKey,
-                            child: TextFormField(
-                                style: TextStyle(
-                                  fontSize: 16.0 * _scale,
-                                ),
-                                maxLength: 2048,
-                                maxLengthEnforcement: MaxLengthEnforcement.enforced,
-                                // expands: true,
-                                validator: (value) {
-                                  debugPrint('input valido? $value');
-                                  // TODO: como hacer mas prolijo ese is String?
-                                  if (value is String) {
-                                    if (value.isEmpty) {
-                                      return 'Field required';
-                                    } else {
-                                      return null;
-                                    }
-                                  }
-                                  return 'Field Required';
+                          key: _messageFormKey,
+                          child: TextFormField(
+                            style: TextStyle(fontSize: 16.0 * _scale),
+                            maxLength: 2048,
+                            maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                            // expands: true,
+                            validator: (value) {
+                              debugPrint('input valido? $value');
+                              // TODO: como hacer mas prolijo ese is String?
+                              if (value is String) {
+                                if (value.isEmpty) {
+                                  return 'Field required';
+                                } else {
+                                  return null;
+                                }
+                              }
+                              return 'Field Required';
+                            },
+                            minLines: null,
+                            maxLines: 3,
+                            controller: TextEditingController(text: _userNotifier.content()),
+                            keyboardType: TextInputType.multiline,
+                            textInputAction: TextInputAction.unspecified,
+                            decoration: InputDecoration(
+                              suffixIcon: GestureDetector(
+                                onTap: () {
+                                  debugPrint(_messageFormKey.currentState.toString());
+                                  _messageFormKey.currentState?.reset();
+                                  _userNotifier.updateContent("");
                                 },
-                                minLines: null,
-                                maxLines: 3,
-                                controller: TextEditingController(text: _userNotifier.content()),
-                                keyboardType: TextInputType.multiline,
-                                textInputAction: TextInputAction.unspecified,
-                                decoration: InputDecoration(
-                                  suffixIcon: GestureDetector(
-                                    onTap: () {
-                                      debugPrint(_messageFormKey.currentState.toString());
-                                      _messageFormKey.currentState?.reset();
-                                      _userNotifier.updateContent("");
-                                    },
-                                    child: Icon(
-                                      Icons.delete_forever,
-                                      color: Colors.white70,
-                                      size: 24 * _scale,
-                                    ),
-                                  ),
-                                  // fillColor: Colors.grey[900],
-                                  filled: true,
-                                  fillColor: Colors.grey[900],
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14.0),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14.0),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(14.0),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                  hintText: "Escribe a Lola",
-                                  hintStyle: TextStyle(
-                                    color: Colors.white54,
-                                    fontSize: 16 * _scale,
-                                  ),
-                                ),
-                                onFieldSubmitted: (value) {
-                                  debugPrint('>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
-                                  var sk = SnackBar(content: Text('Hello: $value'));
-                                  ScaffoldMessenger.of(context).showSnackBar(sk);
-                                },
-                                onSaved: (value) {
-                                  debugPrint('>> on-saved-value: $value');
-                                  if (value == null) return;
+                                child: Icon(Icons.delete_forever, color: Colors.white70, size: 24 * _scale),
+                              ),
+                              // fillColor: Colors.grey[900],
+                              filled: true,
+                              fillColor: Colors.grey.shade900.withAlpha(100),
+                              border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(40.0), borderSide: BorderSide.none),
+                              enabledBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(40.0), borderSide: BorderSide.none),
+                              focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(40.0), borderSide: BorderSide.none),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              hintText: "Escribe a Lola",
+                              hintStyle: TextStyle(color: Colors.white54, fontSize: 16 * _scale),
+                            ),
+                            onFieldSubmitted: (value) {
+                              debugPrint('>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
+                              var sk = SnackBar(content: Text('Hello: $value'));
+                              ScaffoldMessenger.of(context).showSnackBar(sk);
+                            },
+                            onSaved: (value) {
+                              debugPrint('>> on-saved-value: $value');
+                              if (value == null) return;
 
-                                  _userNotifier.updateContent(value);
-                                },
-                                onTapOutside: (event) {
-                                  debugPrint('>> unfocusing: $event');
-                                  FocusManager.instance.primaryFocus?.unfocus();
-                                })))),
-                SizedBox(
-                    width: 122,
-                    // color: Colors.amber,
-                    child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-                      const SizedBox(height: 12),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                        RecordingAction(
-                            userNotifier: _userNotifier,
-                            messageFormKey: _messageFormKey,
-                            lolaController: _lolaController,
-                            scale: _scale.clamp(0.5, 1.50)),
-                        // const SizedBox(width: 16),
-                        SendAction(
-                            userNotifier: _userNotifier,
-                            messageFormKey: _messageFormKey,
-                            lolaController: _lolaController,
-                            scale: _scale.clamp(0.5, 1.50)),
-
-                        // const SizedBox(width: 4),
-                      ]),
-                      const SizedBox(height: 10),
-                      Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                        LolaAudioHandler(
-                          stream: _lolaStream,
-                          lolaController: _lolaController,
-                          scale: _scale.clamp(0.5, 1.10),
-                        )
-                        // const SizedBox(width: 4),
-                      ])
-                    ]))
-              ]))
-            ])));
+                              _userNotifier.updateContent(value);
+                            },
+                            onTapOutside: (event) {
+                              debugPrint('>> unfocusing: $event');
+                              FocusManager.instance.primaryFocus?.unfocus();
+                            },
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: 122,
+                      // color: Colors.amber,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 12),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              RecordingAction(
+                                userNotifier: _userNotifier,
+                                messageFormKey: _messageFormKey,
+                                lolaController: _lolaController,
+                                scale: _scale.clamp(0.5, 1.50),
+                              ),
+                              // const SizedBox(width: 16),
+                              SendAction(
+                                userNotifier: _userNotifier,
+                                messageFormKey: _messageFormKey,
+                                lolaController: _lolaController,
+                                scale: _scale.clamp(0.5, 1.50),
+                              ),
+                              // const SizedBox(width: 4),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              LolaAudioHandler(
+                                stream: _lolaStream,
+                                lolaController: _lolaController,
+                                scale: _scale.clamp(0.5, 1.10),
+                              )
+                              // const SizedBox(width: 4),
+                            ],
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ))
+              ],
+            )));
   }
 }
 
@@ -191,7 +199,7 @@ class SendAction extends StatelessWidget {
                 width: 40 * _scale,
                 decoration: BoxDecoration(
                   // color: Colors.lightBlue,
-                  color: Colors.deepPurpleAccent.shade700,
+                  color: Colors.deepPurple.shade700,
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child: Icon(

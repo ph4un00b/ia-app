@@ -37,18 +37,15 @@ class MessagesBuilder extends StatelessWidget {
                 // ChatMessage(msgContent: message.reply, msgType: "receiver"),
               ]),
             Loading(payload: final payload) => respuestaLola([
-                ChatMessage(
-                    msgContent: payload.userQuestion, msgType: "sender"),
+                ChatMessage(msgContent: payload.userQuestion, msgType: "sender"),
                 ChatMessage(msgContent: payload.reply, msgType: "receiver"),
               ]),
             Data(payload: final payload) => respuestaLola([
-                ChatMessage(
-                    msgContent: payload.userQuestion, msgType: "sender"),
+                ChatMessage(msgContent: payload.userQuestion, msgType: "sender"),
                 ChatMessage(msgContent: payload.reply, msgType: "receiver"),
               ]),
             Error(payload: final message) => respuestaLola([
-                ChatMessage(
-                    msgContent: message.userQuestion, msgType: "sender"),
+                ChatMessage(msgContent: message.userQuestion, msgType: "sender"),
                 ChatMessage(msgContent: message.reply, msgType: "receiver"),
               ]),
           };
@@ -65,14 +62,13 @@ class MessagesBuilder extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: LayoutBuilder(builder: (_, constrains) {
               var textStyle = TextStyle(
-                  color: messages[index].msgType == "receiver"
-                      ? Colors.white70
-                      : Theme.of(context).colorScheme.primary,
-                  fontSize: 15 * _scale);
+                color: messages[index].msgType == "receiver" ? Colors.white70 : Theme.of(context).colorScheme.primary,
+                fontSize: 15 * _scale,
+              );
 
               var boxDecoration = BoxDecoration(
                   color: (messages[index].msgType == "receiver"
-                      ? Theme.of(context).colorScheme.surfaceContainerHighest
+                      ? Colors.grey.shade900.withAlpha(200)
                       : Theme.of(context).colorScheme.surfaceContainer),
                   borderRadius: BorderRadius.circular(16));
 
@@ -84,8 +80,7 @@ class MessagesBuilder extends StatelessWidget {
                       decoration: boxDecoration,
                       child: Padding(
                         padding: const EdgeInsets.all(12),
-                        child:
-                            Text(messages[index].msgContent, style: textStyle),
+                        child: Text(messages[index].msgContent, style: textStyle),
                       ),
                     )),
                 if (messages[index].msgType != "sender") const Spacer()
