@@ -67,7 +67,7 @@ class AuthListBody extends StatelessWidget {
       children: [
         Column(
           children: [
-            const LolaAvatar(),
+            const LolaAvatar(size: 84.0),
             const SizedBox(height: 24.0),
             Text("Lola App",
                 style: GoogleFonts.satisfy(

@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class LolaAvatar extends StatelessWidget {
+  final double size;
+
   const LolaAvatar({
     super.key,
+    this.size = 20.0,
   });
 
   @override
   Widget build(BuildContext context) {
     return CircleAvatar(
+      radius: size,
       backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       // Colors.transparent,
       backgroundImage: Image.asset("assets/common/avatar-lola-1.jpg").image,
       // backgroundImage: NetworkImage(
       //     "<https://randomuser.me/api/portraits/women/84.jpg>"),
-      maxRadius: 20,
+      // maxRadius: 20,
     );
   }
 }
