@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lola_ai_app/config/constants.dart';
+import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
@@ -14,13 +15,13 @@ class InputMessageForm extends StatelessWidget {
     required VozController userNotifier,
     required GlobalKey<FormState> messageFormKey,
     required LolaController lolaController,
-    required Stream<AudioState>? lolaStream,
+    required Stream<AudioState>? audioStream,
     required double scale,
     required TextEditingController queryController,
     // TODO: preguntar sobre este patron de init
   })  : _userNotifier = userNotifier,
         _lolaController = lolaController,
-        _lolaStream = lolaStream,
+        _audioStream = audioStream,
         _messageFormKey = messageFormKey,
         _queryController = queryController,
         _scale = scale;
@@ -29,7 +30,7 @@ class InputMessageForm extends StatelessWidget {
   final GlobalKey<FormState> _messageFormKey;
   final TextEditingController _queryController;
   final LolaController _lolaController;
-  final Stream<AudioState>? _lolaStream;
+  final Stream<AudioState>? _audioStream;
   final double _scale;
 
   @override
@@ -131,7 +132,7 @@ class InputMessageForm extends StatelessWidget {
                           children: [
                             const SizedBox(height: 10),
                             LolaAudioHandler(
-                              stream: _lolaStream,
+                              stream: _audioStream,
                               lolaController: _lolaController,
                               scale: _scale.clamp(0.5, 1.10),
                             ),
@@ -160,7 +161,39 @@ class InputMessageForm extends StatelessWidget {
                         // const SizedBox(height: 10),
                       ],
                     ),
-                    const SizedBox(height: 2),
+                    ListenableBuilder(
+                        listenable: _userNotifier,
+                        builder: (_, __) {
+                          return switch (_userNotifier.currentStatus) {
+                            RecordState.idle => const SizedBox(height: 2),
+                            RecordState.recording => AppStatus.isActive()
+                                ? const LinearProgressIndicator(color: Colors.lightGreenAccent)
+                                : const LinearProgressIndicator(color: Colors.white70),
+                            RecordState.recordingError => AppStatus.isActive()
+                                ? const LinearProgressIndicator(color: Colors.lightGreenAccent)
+                                : const LinearProgressIndicator(color: Colors.white70),
+                            RecordState.recordingOk => AppStatus.isActive()
+                                ? const LinearProgressIndicator(color: Colors.tealAccent)
+                                : const LinearProgressIndicator(color: Colors.white70),
+                            RecordState.stopRecording => const SizedBox(height: 2),
+                            RecordState.stopRecordingError => AppStatus.isActive()
+                                ? const LinearProgressIndicator(color: Colors.blueAccent)
+                                : const LinearProgressIndicator(color: Colors.white70),
+                            RecordState.playing => AppStatus.isActive()
+                                ? const LinearProgressIndicator(color: Colors.amber)
+                                : const LinearProgressIndicator(color: Colors.white70),
+                            RecordState.playingError => AppStatus.isActive()
+                                ? const LinearProgressIndicator(color: Colors.orangeAccent)
+                                : const LinearProgressIndicator(color: Colors.white70),
+                            RecordState.stopPlaying => AppStatus.isActive()
+                                ? const LinearProgressIndicator(color: Colors.purple)
+                                : const LinearProgressIndicator(color: Colors.white70),
+                            RecordState.stopPlayingError => AppStatus.isActive()
+                                ? const LinearProgressIndicator(color: Colors.deepPurpleAccent)
+                                : const LinearProgressIndicator(color: Colors.white70),
+                            RecordState.playingCompleted => const SizedBox(height: 2),
+                          };
+                        }),
                   ],
                 ))
               ],

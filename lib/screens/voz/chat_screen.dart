@@ -309,12 +309,13 @@ class _StackedBodyState extends State<StackedBody> {
             ],
           ))),
       InputMessageForm(
-          messageFormKey: _messageFormKey,
-          queryController: _queryController,
-          userNotifier: _userNotifier,
-          lolaController: _lolaController,
-          lolaStream: _audioStream,
-          scale: widget._scale.clamp(0.5, 2.5))
+        messageFormKey: _messageFormKey,
+        queryController: _queryController,
+        userNotifier: _userNotifier,
+        lolaController: _lolaController,
+        audioStream: _audioStream,
+        scale: widget._scale.clamp(0.5, 2.5),
+      ),
     ]);
   }
 }
