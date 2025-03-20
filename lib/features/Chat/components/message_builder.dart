@@ -32,11 +32,12 @@ class MessagesBuilder extends StatelessWidget {
                 ChatMessage(msgContent: "null", msgType: "sender"),
                 ChatMessage(msgContent: "null", msgType: "receiver"),
               ]),
-            IdleService(payload: final _) => respuestaLola([
+            IdleService(payload: final _) => defaultMessage([
                 ChatMessage(
-                    msgContent:
-                        "Bienvenido/a. Puedes comenzar la conversación cuando lo desees, estoy aquí para ayudarte y responderé a todos tus mensajes.",
-                    msgType: "sender"),
+                  msgContent:
+                      "Bienvenido/a. Puedes comenzar la conversación cuando lo desees, estoy aquí para ayudarte y responderé a todos tus mensajes.",
+                  msgType: "sender",
+                ),
                 // ChatMessage(msgContent: message.reply, msgType: "receiver"),
               ]),
             // IdleService(payload: final _) => respuestaLola(messages),
@@ -56,7 +57,9 @@ class MessagesBuilder extends StatelessWidget {
         });
   }
 
-  ListView respuestaLola(List<ChatMessage> messages) {
+  ListView respuestaLola(
+    List<ChatMessage> messages,
+  ) {
     return ListView.builder(
         itemCount: messages.length,
         shrinkWrap: true,
@@ -117,6 +120,43 @@ class MessagesBuilder extends StatelessWidget {
                         ],
                       ),
                   ],
+                ),
+                if (messages[index].msgType != "sender") const Spacer()
+              ]);
+            })));
+  }
+
+  ListView defaultMessage(List<ChatMessage> messages) {
+    return ListView.builder(
+        itemCount: messages.length,
+        shrinkWrap: true,
+        padding: const EdgeInsets.only(top: 10, bottom: 10),
+        physics: const NeverScrollableScrollPhysics(),
+        itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: LayoutBuilder(builder: (_, constrains) {
+              var textStyle = TextStyle(
+                color: messages[index].msgType == "receiver" ? Colors.white70 : Theme.of(context).colorScheme.primary,
+                fontSize: 15 * _scale,
+              );
+
+              var boxDecoration = BoxDecoration(
+                  color: (messages[index].msgType == "receiver"
+                      ? Colors.grey.shade900.withAlpha(200)
+                      : Theme.of(context).colorScheme.surfaceContainer),
+                  borderRadius: BorderRadius.circular(16));
+
+              return Row(children: [
+                if (messages[index].msgType == "sender") const Spacer(),
+                ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: constrains.maxWidth),
+                  child: DecoratedBox(
+                    decoration: boxDecoration,
+                    child: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: Text(messages[index].msgContent, style: textStyle),
+                    ),
+                  ),
                 ),
                 if (messages[index].msgType != "sender") const Spacer()
               ]);
