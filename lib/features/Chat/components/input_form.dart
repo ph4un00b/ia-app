@@ -94,14 +94,14 @@ class InputMessageForm extends StatelessWidget {
                               ),
                               // fillColor: Colors.grey[900],
                               filled: true,
-                              fillColor: Colors.grey.shade900.withAlpha(00),
+                              fillColor: Colors.grey.shade900.withAlpha(0),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(40.0), borderSide: BorderSide.none),
                               enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(40.0), borderSide: BorderSide.none),
                               focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(40.0), borderSide: BorderSide.none),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
                               hintText: "Escribe a Lola",
                               hintStyle: TextStyle(color: Colors.white54, fontSize: 16 * _scale),
                             ),
@@ -160,7 +160,7 @@ class InputMessageForm extends StatelessWidget {
                         // const SizedBox(height: 10),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 2),
                   ],
                 ))
               ],
