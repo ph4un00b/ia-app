@@ -17,6 +17,7 @@ import 'package:lola_ai_app/features/User/user_settings.dart';
 import 'package:lola_ai_app/features/Voz/voz_controller.dart';
 import 'package:lola_ai_app/features/core/logger.dart';
 import 'package:lola_ai_app/features/core/types.dart';
+import 'package:lola_ai_app/screens/splash/splash_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -130,6 +131,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ErrorLogger.logException(e, StackTrace.current);
                 } finally {
                   AppStatus.instance.user == null;
+                  ACTIVE_SESSION = null;
 
                   unawaited(AppEvent.userReset.track());
                   debugPrint('>> session? ${Supabase.instance.client.auth.currentSession}');
