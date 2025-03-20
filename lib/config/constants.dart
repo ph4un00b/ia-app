@@ -3,7 +3,7 @@ abstract class Constants {
   static const int maxTimeout = 45;
 
   /// Default UI scale factor
-  static const double scale = 0.75;
+  static const double scale = 0.95;
 
   /// Maximum number of messages to store in memory
   static const int maxMessages = 36;

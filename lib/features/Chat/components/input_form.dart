@@ -43,7 +43,7 @@ class InputMessageForm extends StatelessWidget {
             child: Column(
               children: [
                 Expanded(
-                    child: Row(
+                    child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Expanded(
@@ -75,6 +75,7 @@ class InputMessageForm extends StatelessWidget {
                             keyboardType: TextInputType.multiline,
                             textInputAction: TextInputAction.unspecified,
                             decoration: InputDecoration(
+                              counterText: "",
                               suffixIcon: GestureDetector(
                                 onTap: () {
                                   debugPrint(_messageFormKey.currentState.toString());
@@ -85,14 +86,14 @@ class InputMessageForm extends StatelessWidget {
                               ),
                               // fillColor: Colors.grey[900],
                               filled: true,
-                              fillColor: Colors.grey.shade900.withAlpha(200),
+                              fillColor: Colors.grey.shade900.withAlpha(00),
                               border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(40.0), borderSide: BorderSide.none),
                               enabledBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(40.0), borderSide: BorderSide.none),
                               focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(40.0), borderSide: BorderSide.none),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                               hintText: "Escribe a Lola",
                               hintStyle: TextStyle(color: Colors.white54, fontSize: 16 * _scale),
                             ),
@@ -115,47 +116,43 @@ class InputMessageForm extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: 122,
-                      // color: Colors.amber,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              RecordingAction(
-                                userNotifier: _userNotifier,
-                                messageFormKey: _messageFormKey,
-                                lolaController: _lolaController,
-                                scale: _scale.clamp(0.5, 1.50),
-                              ),
-                              // const SizedBox(width: 16),
-                              SendAction(
-                                userNotifier: _userNotifier,
-                                messageFormKey: _messageFormKey,
-                                lolaController: _lolaController,
-                                scale: _scale.clamp(0.5, 1.50),
-                              ),
-                              // const SizedBox(width: 4),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              LolaAudioHandler(
-                                stream: _lolaStream,
-                                lolaController: _lolaController,
-                                scale: _scale.clamp(0.5, 1.10),
-                              )
-                              // const SizedBox(width: 4),
-                            ],
-                          )
-                        ],
-                      ),
-                    )
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const SizedBox(height: 10),
+                            LolaAudioHandler(
+                              stream: _lolaStream,
+                              lolaController: _lolaController,
+                              scale: _scale.clamp(0.5, 1.10),
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // const SizedBox(height: 10),
+                            RecordingAction(
+                              userNotifier: _userNotifier,
+                              messageFormKey: _messageFormKey,
+                              lolaController: _lolaController,
+                              scale: _scale.clamp(0.5, 1.50),
+                            ),
+                            const SizedBox(width: 10),
+                            SendAction(
+                              userNotifier: _userNotifier,
+                              messageFormKey: _messageFormKey,
+                              lolaController: _lolaController,
+                              scale: _scale.clamp(0.5, 1.50),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        ),
+                        // const SizedBox(height: 10),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
                   ],
                 ))
               ],
