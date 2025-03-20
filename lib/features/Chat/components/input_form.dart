@@ -117,7 +117,7 @@ class InputMessageForm extends StatelessWidget {
                               _userNotifier.updateContent(value);
                             },
                             onTapOutside: (event) {
-                              debugPrint('>> unfocusing: $event');
+                              debugPrint('>> un-focusing: $event');
                               FocusManager.instance.primaryFocus?.unfocus();
                             },
                           ),

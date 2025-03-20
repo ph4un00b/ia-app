@@ -11,5 +11,6 @@ abstract class Constants {
   /// Maximum number of characters to store in memory
   static const int maxTokens = 2048;
 
+  /// Chat input Height
   static const double inputHeight = 150.0;
 }
