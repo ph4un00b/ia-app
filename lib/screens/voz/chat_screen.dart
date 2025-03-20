@@ -260,6 +260,7 @@ class _StackedBodyState extends State<StackedBody> {
   final _userNotifier = VozController();
   final _lolaController = LolaController();
   final _messageFormKey = GlobalKey<FormState>();
+  final TextEditingController _queryController = TextEditingController();
   Stream<LolaServiceState>? _lolaStream;
   Stream<AudioState>? _audioStream;
 
@@ -299,12 +300,18 @@ class _StackedBodyState extends State<StackedBody> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               LolaLoading(lolaStream: _lolaStream),
-              MessagesBuilder(stream: _lolaStream, scale: widget._scale),
+              MessagesBuilder(
+                queryController: _queryController,
+                userNotifier: _userNotifier,
+                stream: _lolaStream,
+                scale: widget._scale,
+              ),
               SizedBox(height: Constants.inputHeight * widget._scale)
             ],
           ))),
       InputMessageForm(
           messageFormKey: _messageFormKey,
+          queryController: _queryController,
           userNotifier: _userNotifier,
           lolaController: _lolaController,
           lolaStream: _audioStream,

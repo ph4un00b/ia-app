@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lola_ai_app/config/constants.dart';
-import 'package:lola_ai_app/features/Lola/components/lola_topbar.dart';
 import 'package:lola_ai_app/features/AudioPlayer/components/audio_handler.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
+import 'package:lola_ai_app/features/Lola/components/lola_topbar.dart';
 import 'package:lola_ai_app/features/Lola/lola_controller.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
 import 'package:lola_ai_app/features/Voz/voz_controller.dart';
@@ -25,32 +25,20 @@ final class ChatMessage {
 List<ChatMessage> messages = [
   ChatMessage(msgContent: "Hello, Will", msgType: "receiver"),
   ChatMessage(msgContent: "How have you been?", msgType: "receiver"),
-  ChatMessage(
-      msgContent: "I am doing fine dude. wbu asdasd dsa ds dsa d af sfafaasf?",
-      msgType: "sender"),
-  ChatMessage(
-      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(msgContent: "I am doing fine dude. wbu asdasd dsa ds dsa d af sfafaasf?", msgType: "sender"),
+  ChatMessage(msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
   ChatMessage(msgContent: "Is there any thing wrong?", msgType: "sender"),
-  ChatMessage(
-      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
   ChatMessage(msgContent: "Hello, Will", msgType: "receiver"),
   ChatMessage(msgContent: "How have you been?", msgType: "receiver"),
-  ChatMessage(
-      msgContent: "I am doing fine dude. wbu asdasd dsa ds dsa d af sfafaasf?",
-      msgType: "sender"),
-  ChatMessage(
-      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(msgContent: "I am doing fine dude. wbu asdasd dsa ds dsa d af sfafaasf?", msgType: "sender"),
+  ChatMessage(msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
   ChatMessage(msgContent: "Is there any thing wrong?", msgType: "sender"),
-  ChatMessage(
-      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
-  ChatMessage(
-      msgContent: "I am doing fine dude. wbu asdasd dsa ds dsa d af sfafaasf?",
-      msgType: "sender"),
-  ChatMessage(
-      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(msgContent: "I am doing fine dude. wbu asdasd dsa ds dsa d af sfafaasf?", msgType: "sender"),
+  ChatMessage(msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
   ChatMessage(msgContent: "Is there any thing wrong?", msgType: "sender"),
-  ChatMessage(
-      msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
+  ChatMessage(msgContent: "ehhhh, doing OK af f fasfaafs.", msgType: "receiver"),
 ];
 
 class VoiceScreen extends StatefulWidget {
@@ -112,22 +100,18 @@ class _VoiceScreenState extends State<VoiceScreen> {
                                 onPressed: () {
                                   showModalBottomSheet(
                                     context: context,
-                                    constraints: const BoxConstraints(
-                                        maxHeight: _INPUT_H * 3),
+                                    constraints: const BoxConstraints(maxHeight: _INPUT_H * 3),
                                     showDragHandle: true,
                                     barrierColor: Colors.transparent,
                                     builder: (bottomSheetContext) {
-                                      return StatefulBuilder(
-                                          builder: (context, setStateModal) {
+                                      return StatefulBuilder(builder: (context, setStateModal) {
                                         return Padding(
-                                          padding: const EdgeInsets.fromLTRB(
-                                              20, 0, 20, 30),
+                                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
                                           child: Column(
                                             children: [
                                               Text("Ajuste de texto",
                                                   style: TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold,
+                                                      fontWeight: FontWeight.bold,
                                                       fontSize: 20.0 *
                                                           screenScale.clamp(
                                                             0.5,
@@ -140,61 +124,37 @@ class _VoiceScreenState extends State<VoiceScreen> {
                                                     width: 100,
                                                     child: FilledButton.tonal(
                                                       onPressed: () {},
-                                                      child: Text(
-                                                          screenScale
-                                                              .toStringAsFixed(
-                                                                  2),
-                                                          style:
-                                                              const TextStyle(
-                                                                  fontSize:
-                                                                      14)),
+                                                      child: Text(screenScale.toStringAsFixed(2),
+                                                          style: const TextStyle(fontSize: 14)),
                                                     ),
                                                   ),
                                                   Expanded(
                                                     child: FilledButton.tonal(
                                                       onPressed: () async {
-                                                        double newScale =
-                                                            screenScale - 0.1;
-                                                        setState(() =>
-                                                            screenScale =
-                                                                newScale);
-                                                        setStateModal(() =>
-                                                            screenScale =
-                                                                newScale);
+                                                        double newScale = screenScale - 0.1;
+                                                        setState(() => screenScale = newScale);
+                                                        setStateModal(() => screenScale = newScale);
 
-                                                        debugPrint(
-                                                            "screen-scale: ${screenScale - 0.1}");
-                                                        final prefs =
-                                                            await SharedPreferences
-                                                                .getInstance();
+                                                        debugPrint("screen-scale: ${screenScale - 0.1}");
+                                                        final prefs = await SharedPreferences.getInstance();
                                                         prefs.setDouble(
                                                           'screen-lola-voz',
                                                           screenScale,
                                                         );
                                                       },
-                                                      child: const Icon(
-                                                          Icons.text_decrease,
-                                                          size: 16),
+                                                      child: const Icon(Icons.text_decrease, size: 16),
                                                     ),
                                                   ),
                                                   const SizedBox(width: 3),
                                                   Expanded(
                                                     child: FilledButton.tonal(
                                                       onPressed: () async {
-                                                        double newScale =
-                                                            screenScale + 0.1;
-                                                        setState(() =>
-                                                            screenScale =
-                                                                newScale);
-                                                        setStateModal(() =>
-                                                            screenScale =
-                                                                newScale);
+                                                        double newScale = screenScale + 0.1;
+                                                        setState(() => screenScale = newScale);
+                                                        setStateModal(() => screenScale = newScale);
 
-                                                        debugPrint(
-                                                            "screen-scale: ${screenScale + 0.1}");
-                                                        final prefs =
-                                                            await SharedPreferences
-                                                                .getInstance();
+                                                        debugPrint("screen-scale: ${screenScale + 0.1}");
+                                                        final prefs = await SharedPreferences.getInstance();
                                                         prefs.setDouble(
                                                           'screen-lola-voz',
                                                           screenScale,
@@ -211,26 +171,17 @@ class _VoiceScreenState extends State<VoiceScreen> {
                                                     width: 100,
                                                     child: FilledButton.tonal(
                                                       onPressed: () async {
-                                                        debugPrint(
-                                                            "screen-scale: 1.0");
+                                                        debugPrint("screen-scale: 1.0");
                                                         double newScale = 1.0;
-                                                        setState(() =>
-                                                            screenScale =
-                                                                newScale);
-                                                        setStateModal(() =>
-                                                            screenScale =
-                                                                newScale);
+                                                        setState(() => screenScale = newScale);
+                                                        setStateModal(() => screenScale = newScale);
 
-                                                        (await SharedPreferences
-                                                                .getInstance())
-                                                            .setDouble(
+                                                        (await SharedPreferences.getInstance()).setDouble(
                                                           'screen-lola-voz',
                                                           1.0,
                                                         );
                                                       },
-                                                      child: const Text("Reset",
-                                                          style: TextStyle(
-                                                              fontSize: 14)),
+                                                      child: const Text("Reset", style: TextStyle(fontSize: 14)),
                                                     ),
                                                   ),
                                                 ],
@@ -245,9 +196,7 @@ class _VoiceScreenState extends State<VoiceScreen> {
                                 icon: Badge(
                                     offset: const Offset(24, -6),
                                     label: Text(screenScale.toStringAsFixed(2)),
-                                    textStyle: TextStyle(
-                                        fontSize: 12 * screenScale,
-                                        fontWeight: FontWeight.w600),
+                                    textStyle: TextStyle(fontSize: 12 * screenScale, fontWeight: FontWeight.w600),
                                     backgroundColor: Colors.orangeAccent,
                                     textColor: Colors.black87,
                                     child: const Icon(Icons.text_fields))))
@@ -434,12 +383,10 @@ class _StackedBodyState extends State<StackedBody> {
         SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
             child: SafeArea(
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                  MessagesBuilder(stream: _lolaStream, scale: widget._scale),
-                  SizedBox(height: _INPUT_H * 2.2 * widget._scale)
-                ]))),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              MessagesBuilder(stream: _lolaStream, scale: widget._scale),
+              SizedBox(height: _INPUT_H * 2.2 * widget._scale)
+            ]))),
         InputMessageForm(
           messageFormKey: _messageFormKey,
           userNotifier: _userNotifier,
@@ -482,18 +429,15 @@ class MessagesBuilder extends StatelessWidget {
                 // ChatMessage(msgContent: message.reply, msgType: "receiver"),
               ]),
             Loading(payload: final payload) => respuestaLola([
-                ChatMessage(
-                    msgContent: payload.userQuestion, msgType: "sender"),
+                ChatMessage(msgContent: payload.userQuestion, msgType: "sender"),
                 ChatMessage(msgContent: payload.reply, msgType: "receiver"),
               ]),
             Data(payload: final payload) => respuestaLola([
-                ChatMessage(
-                    msgContent: payload.userQuestion, msgType: "sender"),
+                ChatMessage(msgContent: payload.userQuestion, msgType: "sender"),
                 ChatMessage(msgContent: payload.reply, msgType: "receiver"),
               ]),
             Error(payload: final message) => respuestaLola([
-                ChatMessage(
-                    msgContent: message.userQuestion, msgType: "sender"),
+                ChatMessage(msgContent: message.userQuestion, msgType: "sender"),
                 ChatMessage(msgContent: message.reply, msgType: "receiver"),
               ]),
           };
@@ -532,18 +476,13 @@ class MessagesBuilder extends StatelessWidget {
                 return Row(children: [
                   if (messages[index].msgType == "sender") const Spacer(),
                   ConstrainedBox(
-                      constraints:
-                          BoxConstraints(maxWidth: constrains.maxWidth),
+                      constraints: BoxConstraints(maxWidth: constrains.maxWidth),
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                             color: (messages[index].msgType == "receiver"
                                 // ? Colors.grey.shade900
-                                ? Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainerHighest
-                                : Theme.of(context)
-                                    .colorScheme
-                                    .surfaceContainer),
+                                ? Theme.of(context).colorScheme.surfaceContainerHighest
+                                : Theme.of(context).colorScheme.surfaceContainer),
                             borderRadius: BorderRadius.circular(16)),
                         child: Padding(
                             padding: const EdgeInsets.all(12),
@@ -594,8 +533,7 @@ class InputMessageForm extends StatelessWidget {
             width: double.infinity,
             child: Column(children: [
               Expanded(
-                  child:
-                      Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+                  child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
                 Expanded(
                     flex: 1,
                     child: ListenableBuilder(
@@ -610,8 +548,7 @@ class InputMessageForm extends StatelessWidget {
                                     fontSize: 16.0 * _scale,
                                   ),
                                   maxLength: 2048,
-                                  maxLengthEnforcement:
-                                      MaxLengthEnforcement.enforced,
+                                  maxLengthEnforcement: MaxLengthEnforcement.enforced,
                                   // expands: true,
                                   validator: (value) {
                                     debugPrint('input valido? $value');
@@ -627,8 +564,7 @@ class InputMessageForm extends StatelessWidget {
                                   },
                                   minLines: null,
                                   maxLines: 3,
-                                  controller: TextEditingController(
-                                      text: _userNotifier.content()),
+                                  controller: TextEditingController(text: _userNotifier.content()),
                                   keyboardType: TextInputType.multiline,
                                   textInputAction: TextInputAction.unspecified,
                                   decoration: InputDecoration(
@@ -636,8 +572,7 @@ class InputMessageForm extends StatelessWidget {
                                     // enabledBorder: const OutlineInputBorder(),
                                     suffixIcon: GestureDetector(
                                       onTap: () {
-                                        debugPrint(_messageFormKey.currentState
-                                            .toString());
+                                        debugPrint(_messageFormKey.currentState.toString());
                                         _messageFormKey.currentState?.reset();
                                         _userNotifier.updateContent("");
                                       },
@@ -662,8 +597,7 @@ class InputMessageForm extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(14.0),
                                       borderSide: BorderSide.none,
                                     ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                        horizontal: 20, vertical: 10),
+                                    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
 
                                     // alignLabelWithHint: true,
 
@@ -676,12 +610,9 @@ class InputMessageForm extends StatelessWidget {
                                     // border: InputBorder.none,
                                   ),
                                   onFieldSubmitted: (value) {
-                                    debugPrint(
-                                        '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
-                                    var sk = SnackBar(
-                                        content: Text('Hello: $value'));
-                                    ScaffoldMessenger.of(context)
-                                        .showSnackBar(sk);
+                                    debugPrint('>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
+                                    var sk = SnackBar(content: Text('Hello: $value'));
+                                    ScaffoldMessenger.of(context).showSnackBar(sk);
                                   },
                                   onSaved: (value) {
                                     debugPrint('>> on-saved-value: $value');
@@ -691,46 +622,39 @@ class InputMessageForm extends StatelessWidget {
                                   },
                                   onTapOutside: (event) {
                                     debugPrint('>> unfocusing: $event');
-                                    FocusManager.instance.primaryFocus
-                                        ?.unfocus();
+                                    FocusManager.instance.primaryFocus?.unfocus();
                                   }));
                         })),
                 SizedBox(
                     width: 122,
                     // color: Colors.amber,
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 12),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                RecordingAction(
-                                    userNotifier: _userNotifier,
-                                    messageFormKey: _messageFormKey,
-                                    lolaController: _lolaController,
-                                    scale: _scale.clamp(0.5, 1.50)),
-                                // const SizedBox(width: 16),
-                                SendAction(
-                                    userNotifier: _userNotifier,
-                                    messageFormKey: _messageFormKey,
-                                    lolaController: _lolaController,
-                                    scale: _scale.clamp(0.5, 1.50)),
+                    child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                      const SizedBox(height: 12),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                        RecordingAction(
+                            userNotifier: _userNotifier,
+                            messageFormKey: _messageFormKey,
+                            lolaController: _lolaController,
+                            scale: _scale.clamp(0.5, 1.50)),
+                        // const SizedBox(width: 16),
+                        SendAction(
+                            userNotifier: _userNotifier,
+                            messageFormKey: _messageFormKey,
+                            lolaController: _lolaController,
+                            scale: _scale.clamp(0.5, 1.50)),
 
-                                // const SizedBox(width: 4),
-                              ]),
-                          const SizedBox(height: 10),
-                          Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                LolaAudioHandler(
-                                  stream: _lolaStream,
-                                  lolaController: _lolaController,
-                                  scale: _scale.clamp(0.5, 1.20),
-                                )
-                                // const SizedBox(width: 4),
-                              ])
-                        ]))
+                        // const SizedBox(width: 4),
+                      ]),
+                      const SizedBox(height: 10),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                        LolaAudioHandler(
+                          stream: _lolaStream,
+                          lolaController: _lolaController,
+                          scale: _scale.clamp(0.5, 1.20),
+                        )
+                        // const SizedBox(width: 4),
+                      ])
+                    ]))
               ]))
             ])));
   }
@@ -765,8 +689,7 @@ class SendAction extends StatelessWidget {
               borderRadius: BorderRadius.circular(30),
               onTap: () async {
                 _messageFormKey.currentState?.save();
-                await _lolaController.queryReply(
-                    userQuestion: _userNotifier.content(), debug: true);
+                await _lolaController.queryReply(userQuestion: _userNotifier.content(), debug: true);
               },
               child: Ink(
                 height: 40 * _scale,
@@ -952,9 +875,8 @@ class RecordingAction extends StatelessWidget {
       await _lolaController.stopAudio();
       await _userNotifier.startRecording();
     } else if (_userNotifier.currentStatus case RecordState.recording) {
-      await _userNotifier.stopRecording();
-      await _lolaController.queryReply(
-          userQuestion: _userNotifier.content(), debug: true);
+      await _userNotifier.stopRecordingAndTranscribe();
+      await _lolaController.queryReply(userQuestion: _userNotifier.content(), debug: true);
     } else if (_userNotifier.currentStatus case _) {
       debugPrint('noop');
     }
@@ -1005,8 +927,7 @@ class _BottomTabsState extends State<BottomTabs> {
                     Navigator.of(context).pushNamed('/opciones/mensajes');
                   },
                   icon: Badge(
-                      label: Text("24",
-                          style: TextStyle(fontSize: 12 * widget._scale)),
+                      label: Text("24", style: TextStyle(fontSize: 12 * widget._scale)),
                       backgroundColor: Colors.orangeAccent,
                       textColor: Colors.black87,
                       child: const Icon(Icons.message)))),
@@ -1085,8 +1006,7 @@ class _VoiceBodyState extends State<VoiceBody> {
             itemBuilder: (context, index) {
               return Padding(
                 // padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                 child: LayoutBuilder(
                   builder: (_, constrains) {
                     // return Align(
@@ -1111,13 +1031,11 @@ class _VoiceBodyState extends State<VoiceBody> {
                       children: [
                         if (messages[index].msgType == "sender") const Spacer(),
                         ConstrainedBox(
-                          constraints:
-                              BoxConstraints(maxWidth: constrains.maxWidth),
+                          constraints: BoxConstraints(maxWidth: constrains.maxWidth),
                           child: DecoratedBox(
                             decoration: BoxDecoration(
-                                color: (messages[index].msgType == "receiver"
-                                    ? Colors.grey.shade800
-                                    : Colors.blue[800]),
+                                color:
+                                    (messages[index].msgType == "receiver" ? Colors.grey.shade800 : Colors.blue[800]),
                                 borderRadius: BorderRadius.circular(16)),
                             child: Padding(
                               padding: const EdgeInsets.all(12),
@@ -1176,8 +1094,7 @@ class SearchBarUI extends StatelessWidget {
           fillColor: Colors.grey.shade100,
           contentPadding: const EdgeInsets.all(8),
           enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(20),
-              borderSide: BorderSide(color: Colors.grey.shade100)),
+              borderRadius: BorderRadius.circular(20), borderSide: BorderSide(color: Colors.grey.shade100)),
         ),
       ),
     );
@@ -1210,8 +1127,7 @@ class HeaderUI extends StatelessWidget {
           //   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
           // ),
           Container(
-            padding:
-                const EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
+            padding: const EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 2),
             height: 30,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
@@ -1259,9 +1175,7 @@ class InputChat extends StatelessWidget {
           Flexible(
               flex: 4,
               // TODO: que es mejor un listener con varios componentes ó varios listener con un componente?
-              child: InputChatMessage(
-                  userNotifier: _userNotifier,
-                  messageFormKey: _messageFormKey)),
+              child: InputChatMessage(userNotifier: _userNotifier, messageFormKey: _messageFormKey)),
           // const SizedBox(width: 12),
           Flexible(
               flex: 1,
@@ -1269,8 +1183,7 @@ class InputChat extends StatelessWidget {
               // height: _messageFormKey.currentContext?.size?.height,
               // height: 200,
               // color: Colors.greenAccent[700],
-              child: InputChatActions(
-                  userNotifier: _userNotifier, messageFormKey: _messageFormKey))
+              child: InputChatActions(userNotifier: _userNotifier, messageFormKey: _messageFormKey))
         ]));
   }
 }
@@ -1298,7 +1211,7 @@ class InputChatActions extends StatelessWidget {
       // await lolaController.stopAudio();
       await _userNotifier.startRecording();
     } else if (_userNotifier.currentStatus case RecordState.recording) {
-      await _userNotifier.stopRecording();
+      await _userNotifier.stopRecordingAndTranscribe();
       // await lolaController.queryReply(
       // userQuestion: _userController.content(), debug: debug);
     } else if (_userNotifier.currentStatus case _) {
@@ -1399,8 +1312,7 @@ class InputChatMessage extends StatelessWidget {
                 },
                 minLines: null,
                 maxLines: 1,
-                controller:
-                    TextEditingController(text: _userNotifier.content()),
+                controller: TextEditingController(text: _userNotifier.content()),
                 keyboardType: TextInputType.multiline,
                 textInputAction: TextInputAction.unspecified,
 
@@ -1435,8 +1347,7 @@ class InputChatMessage extends StatelessWidget {
                   color: Colors.white70,
                 ),
                 onFieldSubmitted: (value) {
-                  debugPrint(
-                      '>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
+                  debugPrint('>> on-field-sbt: ${_messageFormKey.currentContext?.size}');
                   var sk = SnackBar(content: Text('Hello: $value'));
                   ScaffoldMessenger.of(context).showSnackBar(sk);
                 },

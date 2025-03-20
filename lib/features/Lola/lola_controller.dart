@@ -16,7 +16,9 @@ final class LolaController with QueryContent, AudioPlayerHandlers {
   final audio.AudioPlayer _audioplayer = audio.AudioPlayer();
   final serviceState = StreamController<LolaServiceState>()..add(const IdleService());
   final audioState = StreamController<AudioState>()..add(NoAudioPath());
-  VoiceLola currentVoice = VoiceLola.alia;
+  // VoiceLola currentVoice = VoiceLola.alia;
+  VoiceLola currentVoice = VoiceLola.nova;
+
   String _currentOutput = '';
   String _currentAudioPath = '';
 

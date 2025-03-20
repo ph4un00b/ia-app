@@ -158,7 +158,7 @@ final class VozController with ChangeNotifier, ContentHandler {
     }
   }
 
-  Future<void> stopRecording() async {
+  Future<void> stopRecordingAndTranscribe() async {
     currentStatus = RecordState.stopRecording;
     notifyListeners();
     try {
@@ -166,6 +166,19 @@ final class VozController with ChangeNotifier, ContentHandler {
       assert(path == _path);
 
       updateContent(await _fetchAITranscription());
+    } catch (e, st) {
+      ErrorLogger.logException(e, st);
+      currentStatus = RecordState.stopRecordingError;
+      notifyListeners();
+    }
+  }
+
+  Future<void> stopRecording() async {
+    currentStatus = RecordState.stopRecording;
+    notifyListeners();
+    try {
+      var path = await _recorder.stop() ?? '';
+      assert(path == _path);
     } catch (e, st) {
       ErrorLogger.logException(e, st);
       currentStatus = RecordState.stopRecordingError;

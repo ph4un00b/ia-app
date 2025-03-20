@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lola_ai_app/config/constants.dart';
@@ -14,15 +16,18 @@ class InputMessageForm extends StatelessWidget {
     required LolaController lolaController,
     required Stream<AudioState>? lolaStream,
     required double scale,
+    required TextEditingController queryController,
     // TODO: preguntar sobre este patron de init
   })  : _userNotifier = userNotifier,
         _lolaController = lolaController,
         _lolaStream = lolaStream,
         _messageFormKey = messageFormKey,
+        _queryController = queryController,
         _scale = scale;
 
   final VozController _userNotifier;
   final GlobalKey<FormState> _messageFormKey;
+  final TextEditingController _queryController;
   final LolaController _lolaController;
   final Stream<AudioState>? _lolaStream;
   final double _scale;
@@ -53,10 +58,14 @@ class InputMessageForm extends StatelessWidget {
                         builder: (_, __) => Form(
                           key: _messageFormKey,
                           child: TextFormField(
+                            controller: _queryController,
+                            // key: _queryFieldKey,
+                            initialValue: null,
                             style: TextStyle(fontSize: 16.0 * _scale),
                             maxLength: 2048,
                             maxLengthEnforcement: MaxLengthEnforcement.enforced,
                             // expands: true,
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               debugPrint('input valido? $value');
                               // TODO: como hacer mas prolijo ese is String?
@@ -71,7 +80,6 @@ class InputMessageForm extends StatelessWidget {
                             },
                             minLines: null,
                             maxLines: 3,
-                            controller: TextEditingController(text: _userNotifier.content()),
                             keyboardType: TextInputType.multiline,
                             textInputAction: TextInputAction.unspecified,
                             decoration: InputDecoration(
@@ -188,8 +196,14 @@ class SendAction extends StatelessWidget {
             child: InkWell(
               borderRadius: BorderRadius.circular(30),
               onTap: () async {
+                _lolaController.stopAudio();
                 _messageFormKey.currentState?.save();
-                await _lolaController.queryReply(userQuestion: _userNotifier.content(), debug: true);
+
+                // TODO: check how not awaiting affects errors
+                // we are not awaiting in order to clear out the text-field asap
+                _lolaController.queryReply(userQuestion: _userNotifier.content(), debug: !true);
+                _messageFormKey.currentState?.reset();
+                _userNotifier.updateContent("");
               },
               child: Ink(
                 height: 40 * _scale,
@@ -233,59 +247,38 @@ class RecordingAction extends StatelessWidget {
     return ListenableBuilder(
         listenable: _userNotifier,
         builder: (_, __) {
-          if (_userNotifier.currentStatus == RecordState.recording) {
-            return Material(
-              elevation: 0,
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(30),
-                onTap: () {
-                  _handleUserRecording();
-                  _messageFormKey.currentState?.save();
-                },
-                child: Ink(
-                  height: 40 * _scale,
-                  width: 40 * _scale,
-                  decoration: BoxDecoration(
-                    // color: Colors.lightBlue,
-                    color: Colors.grey.shade900,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Icon(
-                    Icons.mic,
-                    color: Colors.green,
-                    size: 24 * _scale,
-                  ),
-                ),
+          return Material(
+            elevation: 0,
+            color: Colors.transparent,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(30),
+              onTapDown: (details) async {
+                // print('tapDown');
+                await _lolaController.stopAudio();
+                await _userNotifier.startRecording();
+                // await _handleUserRecording();
+              },
+              onTapUp: (details) async {
+                // print('onTapUp');
+                // await _handleUserRecording();
+                await _userNotifier.stopRecordingAndTranscribe();
+                _lolaController.queryReply(userQuestion: _userNotifier.content(), debug: !true);
+
+                _messageFormKey.currentState?.reset();
+                _userNotifier.updateContent("");
+              },
+              onTapCancel: () async {
+                // print('cancel');
+                await _userNotifier.stopRecording();
+              },
+              child: Ink(
+                height: 40 * _scale,
+                width: 40 * _scale,
+                decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(30)),
+                child: Icon(Icons.mic, color: Colors.green, size: 24 * _scale),
               ),
-            );
-          } else {
-            return Material(
-              elevation: 0,
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(30),
-                onTap: () {
-                  _handleUserRecording();
-                  _messageFormKey.currentState?.save();
-                },
-                child: Ink(
-                  height: 40 * _scale,
-                  width: 40 * _scale,
-                  decoration: BoxDecoration(
-                    // color: Colors.lightBlue,
-                    color: Colors.grey.shade900,
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Icon(
-                    Icons.mic,
-                    color: Colors.white70,
-                    size: 24 * _scale,
-                  ),
-                ),
-              ),
-            );
-          }
+            ),
+          );
         });
   }
 
@@ -300,7 +293,7 @@ class RecordingAction extends StatelessWidget {
       await _lolaController.stopAudio();
       await _userNotifier.startRecording();
     } else if (_userNotifier.currentStatus case RecordState.recording) {
-      await _userNotifier.stopRecording();
+      await _userNotifier.stopRecordingAndTranscribe();
       await _lolaController.queryReply(userQuestion: _userNotifier.content(), debug: true);
     } else if (_userNotifier.currentStatus case _) {
       debugPrint('noop');

@@ -44,8 +44,7 @@ class VozInputPad extends StatelessWidget {
                 if (value == null) return;
 
                 vozController.updateContent(value);
-                await lolaController.queryReply(
-                    userQuestion: vozController.content(), debug: debug);
+                await lolaController.queryReply(userQuestion: vozController.content(), debug: debug);
               },
             ),
           ),
@@ -65,9 +64,8 @@ class VozInputPad extends StatelessWidget {
       await lolaController.stopAudio();
       await vozController.startRecording();
     } else if (vozController.currentStatus case RecordState.recording) {
-      await vozController.stopRecording();
-      await lolaController.queryReply(
-          userQuestion: vozController.content(), debug: debug);
+      await vozController.stopRecordingAndTranscribe();
+      await lolaController.queryReply(userQuestion: vozController.content(), debug: debug);
     } else if (vozController.currentStatus case _) {
       debugPrint('noop');
     }
