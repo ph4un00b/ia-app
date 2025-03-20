@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/features/Lola/types.dart';
-import 'package:lola_ai_app/features/Voz/voz_controller.dart';
 
 final class ChatMessage {
   String msgContent;
@@ -14,15 +13,12 @@ class MessagesBuilder extends StatelessWidget {
     required double scale,
     required TextEditingController queryController,
     required Stream<LolaServiceState>? stream,
-    required VozController userNotifier,
   })  : _scale = scale,
         _queryController = queryController,
-        _userNotifier = userNotifier,
         _stream = stream;
 
   final double _scale;
   final Stream<LolaServiceState>? _stream;
-  final VozController _userNotifier;
   final TextEditingController _queryController;
 
   @override

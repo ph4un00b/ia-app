@@ -302,7 +302,6 @@ class _StackedBodyState extends State<StackedBody> {
               LolaLoading(lolaStream: _lolaStream),
               MessagesBuilder(
                 queryController: _queryController,
-                userNotifier: _userNotifier,
                 stream: _lolaStream,
                 scale: widget._scale,
               ),
