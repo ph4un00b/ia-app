@@ -97,9 +97,9 @@ class MessagesBuilder extends StatelessWidget {
                           Row(
                             children: [
                               IconButton.outlined(
-                                color: Colors.grey.shade700,
+                                color: Theme.of(context).colorScheme.primary,
                                 style: OutlinedButton.styleFrom(
-                                  side: BorderSide(color: Colors.grey.shade800), // Border color
+                                  side: BorderSide(color: Colors.transparent), // Border color
                                 ),
                                 isSelected: !true,
                                 icon: const Icon(Icons.edit),
@@ -108,7 +108,10 @@ class MessagesBuilder extends StatelessWidget {
                                   _queryController.text = messages[index].msgContent;
                                 },
                               ),
-                              Text('Editar', style: Theme.of(context).textTheme.bodySmall),
+                              Text(
+                                'Editar',
+                                style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 12 * _scale),
+                              ),
                             ],
                           ),
                         ],

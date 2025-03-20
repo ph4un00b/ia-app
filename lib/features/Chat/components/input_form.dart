@@ -275,7 +275,7 @@ class RecordingAction extends StatelessWidget {
                 height: 40 * _scale,
                 width: 40 * _scale,
                 decoration: BoxDecoration(color: Colors.grey.shade900, borderRadius: BorderRadius.circular(30)),
-                child: Icon(Icons.mic, color: Colors.green, size: 24 * _scale),
+                child: Icon(Icons.mic, color: Colors.white70, size: 24 * _scale),
               ),
             ),
           );
