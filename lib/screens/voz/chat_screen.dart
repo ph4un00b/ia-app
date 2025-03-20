@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:lola_ai_app/config/constants.dart';
 import 'package:lola_ai_app/features/App/components/bottom_tabs.dart';
+import 'package:lola_ai_app/features/App/init.dart';
 import 'package:lola_ai_app/features/App/status.dart';
 import 'package:lola_ai_app/features/AudioPlayer/types.dart';
 import 'package:lola_ai_app/features/Chat/components/input_form.dart';
@@ -44,7 +45,16 @@ class _ChatScreenState extends State<ChatScreen> {
   Future<void> _loadUserMetadata() async {
     try {
       final userMetadata = await UserSettings.metadata();
-      AppStatus.instance.currentUserStatus = userMetadata!.appStatus;
+
+      final decisionResult =
+          AppInitDecision.from(userState: AppStatus.instance.currentUserStatus, userMetadata: userMetadata);
+
+      final _ = switch (decisionResult) {
+        AppInitDecision.createUserMetadata => await UserSettings.initialize(),
+        AppInitDecision.updateUserStatus => AppStatus.instance.currentUserStatus = userMetadata!.appStatus,
+        AppInitDecision.none => {},
+      };
+
       debugPrint(
           '🚀 ChatScreen.initState: ${DateTime.now()} : ${AppStatus.instance.user?.email} : ${AppStatus.instance.currentUserStatus}');
     } on PostgrestException catch (e) {
