@@ -93,18 +93,14 @@ final class InitialVozController with AudioPlayerHandlers {
 
     try {
       final result = await LolaSummaryGenerator.generate(voice: currentVoice, debug: debug);
-      if (currentState != InitialState.loadingSummary) return;
-
       unawaited(AppEvent.summaryFetched.track(params: {'userStatus': AppStatus.instance.currentUserStatus}));
-
       serviceState.add(Loading(intent: IntentKind.text, payload: Payload(userQuestion: "", reply: result.text)));
 
       _currentOutput = result.text;
-
       String path = p.normalize((await currentVoice.synthesize(text: result.text)).path);
       _currentAudioPath = path;
-
       serviceState.add(Data(payload: Payload(reply: result.text)));
+
       await _playAudio(path);
     } on PostgrestException catch (e) {
       _handleDbError(debug, e);
@@ -168,7 +164,6 @@ final class InitialVozController with AudioPlayerHandlers {
         'hoy es ${now.dayName} $today, cuales son mis recordatorios para hoy?',
       );
 
-      if (currentState != InitialState.loadingReminders) return;
       if (reminderResponse.payload.isEmpty) {
         throw LolaResponseException('Empty response from ReminderAgent');
       }

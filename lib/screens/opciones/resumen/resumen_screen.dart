@@ -175,6 +175,7 @@ class _InitialVozBodyState extends State<InitialVozBody> {
 
     _serviceStream = _initialCtrl.serviceState.stream.asBroadcastStream();
     _audioStream = _initialCtrl.audioState.stream.asBroadcastStream();
+
     _initialCtrl.loadSummary(debug: _debug);
 
     // if (_debug) {

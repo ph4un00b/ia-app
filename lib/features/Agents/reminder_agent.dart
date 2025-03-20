@@ -45,8 +45,7 @@ class ReminderAgent {
 
     return messages.data.isEmpty
         ? const NoneResponse()
-        : ReminderResponse(
-            payload: messages.data.first.content.first.text.trim());
+        : ReminderResponse(payload: messages.data.first.content.first.text.trim());
   }
 
   static Future<UserMetadata> fetchUserMetadata() async {
@@ -99,8 +98,8 @@ class ReminderAgent {
       _ => linesCount - 1,
     };
 
-    if (reminderCount > 0 && AppStatus.isOnboarding()) {
-      await AppStatus.instance.activateUser();
+    if (reminderCount > 0) {
+      await AppStatus.instance.ACTIVATE_USER();
     }
 
     unawaited(
@@ -205,8 +204,7 @@ class ReminderAgent {
     ThreadObject thread,
     OpenAIClient client,
   ) async {
-    while (
-        run.status == RunStatus.queued || run.status == RunStatus.inProgress) {
+    while (run.status == RunStatus.queued || run.status == RunStatus.inProgress) {
       run = await client.getThreadRun(threadId: thread.id, runId: run.id);
       debugPrint(run.status.toString());
     }

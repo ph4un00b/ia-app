@@ -51,7 +51,7 @@ class AppStatus {
 
   User? get user => db?.auth.currentUser;
 
-  Future<void> activateUser() async {
+  Future<void> ACTIVATE_USER() async {
     if (_instance.currentUserStatus == UserState.active) return;
 
     _instance.currentUserStatus = UserState.active;
@@ -75,8 +75,7 @@ class AppStatus {
   static bool isActive() => _instance.currentUserStatus == UserState.active;
 
   static bool isCreatingReminder() =>
-      _instance.lolaStatus == LolaState.creatingReminder &&
-      _instance.reminderStatus != ReminderState.filled;
+      _instance.lolaStatus == LolaState.creatingReminder && _instance.reminderStatus != ReminderState.filled;
 
   static Flavor flavor() {
     return switch (appFlavor) {
