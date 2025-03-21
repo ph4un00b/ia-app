@@ -268,6 +268,7 @@ class _StackedBodyState extends State<StackedBody> {
   void initState() {
     super.initState();
 
+    _userNotifier.requestPermission();
     _lolaStream = _lolaController.serviceState.stream.asBroadcastStream();
     _audioStream = _lolaController.audioState.stream.asBroadcastStream();
 

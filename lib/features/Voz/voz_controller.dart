@@ -27,6 +27,13 @@ final class VozController with ChangeNotifier, ContentHandler {
 
   String _input = '';
   String _path = '';
+  bool _hasPermissionToRecord = false;
+
+  Future<void> requestPermission() async {
+    if (_hasPermissionToRecord) return;
+
+    _hasPermissionToRecord = await _recorder.hasPermission();
+  }
 
   VozController() {
     _recorder.onStateChanged().listen((event) async {
@@ -130,9 +137,7 @@ final class VozController with ChangeNotifier, ContentHandler {
     unawaited(AppEvent.questionByVoice.track());
 
     try {
-      var hasPermission = await _recorder.hasPermission();
-
-      if (hasPermission) {
+      if (_hasPermissionToRecord) {
         var encoder = rec.AudioEncoder.aacLc;
         bool isSupported = await _isEncoderSupported(encoder);
         if (!isSupported) {
