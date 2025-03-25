@@ -22,9 +22,7 @@ class TextAgent {
       LLM.openaiStructuredOutput => throw UnimplementedError(),
     };
 
-    return responseText == null
-        ? const NoneResponse()
-        : TextResponse(payload: responseText);
+    return responseText == null ? const NoneResponse() : TextResponse(payload: responseText);
   }
 
   static Future<String?> _openaiChat(
