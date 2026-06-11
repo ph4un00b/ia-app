@@ -1,0 +1,65 @@
+TODO: Run Lola AI App in iOS Simulator
+======================================
+
+1. macOS & Xcode
+   [x] macOS machine (iOS Simulator is macOS-only) — macOS 15.7.5 on Apple Silicon
+   [x] Xcode installed (latest stable or compatible with Flutter SDK 3.5.0–3.27.4) — Xcode 15.4 (Build 15F31d)
+   [x] Xcode Command Line Tools installed — xcode-select --install
+   [ ] Accept Xcode license: sudo xcodebuild -license accept — EXIT CODE 69 (NOT ACCEPTED)
+   [x] Open Xcode once to install required components/simulator runtimes — iOS Simulator runtime present
+
+2. Flutter Environment
+   [x] Flutter SDK installed (matching Dart >=3.5.0 <=3.27.4) — Flutter 3.24.5 (Dart 3.5.4) via lola_ai env
+   [x] Puro installed (project uses .puro.json with env lola_ai) — Puro 1.4.6
+   [x] Activate the Puro environment: puro use lola_ai — switched to lola_ai
+   [ ] Verify setup: flutter doctor — PATH points to wrong env (stream_chat/default), use `puro flutter` instead
+   [x] fix dependencies issues blocking the app from running.
+3. Environment Secrets
+   [ ] Create .env.dev in project root with all required keys:
+       APPSTORE_ID=...
+       OPENAI_API_KEY=...
+       OPENAI_API_BASE=...
+       ELEVEN_API_KEY=...
+       DB_URL=...
+       DB_KEY=...
+       SENTRY_DSN=...
+       MIXPANEL_TOKEN=...
+   [ ] Create .env.prod (optional for dev, but required for prod flavor)
+
+4. Code Generation (Envied)
+   [ ] Run build runner to generate .g.dart files:
+       dart run build_runner build --delete-conflicting-outputs
+   (This generates lib/config/env_dev.g.dart and env_prod.g.dart — currently missing)
+
+5. Dependencies & iOS Pods
+   [ ] Get Flutter packages: flutter pub get
+   [ ] Install CocoaPods dependencies: cd ios && pod install
+
+6. iOS Simulator
+   [x] Launch an iOS Simulator from Xcode or: open -a Simulator
+   [x] Ensure a device is booted (e.g., iPhone 15 Pro) — iPhone 15 Pro (F1BEDE42-57E9-4C20-8FBA-37DDE0CB698D) booted
+
+7. Run the App
+   [ ] Run the dev flavor (recommended for development):
+       flutter run --flavor dev -t lib/main_dev.dart
+   [ ] Or run the prod flavor:
+       flutter run --flavor prod -t lib/main_prod.dart
+
+
+TROUBLESHOOTING
+---------------
+- Env.openAiKey assertion fails: Missing .env.dev or .g.dart files not generated
+- CocoaPods error: cd ios && pod deintegrate && pod install
+- Simulator not found: xcrun simctl list devices and boot one
+- Mic permission: NSMicrophoneUsageDescription is already in Info.plist, but mic may not work in Simulator — test on real device if audio recording fails
+
+
+CRITICAL BLOCKERS
+-----------------
+1. [ ] Xcode license not accepted (exit code 69) — run: sudo xcodebuild -license accept
+2. [ ] Missing .env.dev file
+3. [ ] Missing generated .g.dart files (env_dev.g.dart, env_prod.g.dart)
+4. [ ] Missing ios/Pods directory (need pod install)
+5. [ ] PATH issue: `flutter` resolves to stream_chat env instead of lola_ai env
+
+Without these, the app will crash immediately on startup due to empty env variables.
